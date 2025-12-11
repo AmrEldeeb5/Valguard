@@ -17,3 +17,7 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 node_modules/
+
+# Ignore files with API keys
+composeApp/src/commonMain/kotlin/com/example/cryptowallet/app/core/network/HttpClientFactory.kt
+
