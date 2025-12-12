@@ -1,6 +1,6 @@
 package com.example.cryptowallet.app.core.domain
 
-import com.example.cryptowallet.app.core.Error
+import com.example.cryptowallet.app.core.domain.Error
 
 sealed interface Result<out D, out E: Error> {
     data class Success<out D>(val data: D) : Result<D, Nothing>

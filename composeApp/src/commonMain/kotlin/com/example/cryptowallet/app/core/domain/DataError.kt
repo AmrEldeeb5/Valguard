@@ -1,6 +1,6 @@
 package com.example.cryptowallet.app.core.domain
 
-import com.example.cryptowallet.app.core.Error
+import com.example.cryptowallet.app.core.domain.Error
 
 sealed interface DataError: Error {
     enum class Remote: DataError{

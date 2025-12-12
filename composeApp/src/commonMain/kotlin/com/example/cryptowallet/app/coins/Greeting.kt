@@ -1,4 +1,4 @@
-package com.example.cryptowallet.app
+package com.example.cryptowallet.app.coins
 
 import com.example.cryptowallet.getPlatform
 

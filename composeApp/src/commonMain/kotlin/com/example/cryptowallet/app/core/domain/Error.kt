@@ -1,4 +1,4 @@
-package com.example.cryptowallet.app.core
+package com.example.cryptowallet.app.core.domain
 
 interface Error {
     val message: String
