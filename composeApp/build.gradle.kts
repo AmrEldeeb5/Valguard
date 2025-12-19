@@ -73,6 +73,10 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.serialization.json)
+
+            // Coil
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor3)
         }
         iosMain.dependencies {
             // Ktor - iOS
