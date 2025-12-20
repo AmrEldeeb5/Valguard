@@ -46,7 +46,6 @@ fun CoinsListScreen(
         onCoinClicked = onCoinClicked
     )
 }
-
 @Composable
 fun CoinsListContent(
     state: CoinsState,
