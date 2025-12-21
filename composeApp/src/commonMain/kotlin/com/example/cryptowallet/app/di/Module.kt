@@ -8,6 +8,7 @@ import com.example.cryptowallet.app.core.network.HttpClientFactory
 import io.ktor.client.HttpClient
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -36,5 +37,6 @@ val sharedModule = module {
     single { GetCoinsListUseCase(get()) }
 
     // view models
-    viewModelOf(::CoinsListViewModel)
+    //viewModelOf(::CoinsListViewModel)
+    viewModel { CoinsListViewModel(get(), get())  }
 }
