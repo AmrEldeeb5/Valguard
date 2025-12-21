@@ -77,6 +77,7 @@ kotlin {
             // Coil
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor3)
+            implementation(libs.coil.svg)
         }
         iosMain.dependencies {
             // Ktor - iOS
