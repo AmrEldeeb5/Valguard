@@ -2,8 +2,8 @@ package com.example.cryptowallet.app.coins.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cryptowallet.app.coins.domain.GetCoinPriceHistoryUseCase
-import com.example.cryptowallet.app.coins.domain.GetCoinsListUseCase
+import com.example.cryptowallet.app.coins.domain.usecase.GetCoinPriceHistoryUseCase
+import com.example.cryptowallet.app.coins.domain.usecase.GetCoinsListUseCase
 import com.example.cryptowallet.app.core.domain.Result
 import com.example.cryptowallet.app.core.util.formatFiat
 import com.example.cryptowallet.app.core.util.toUiText

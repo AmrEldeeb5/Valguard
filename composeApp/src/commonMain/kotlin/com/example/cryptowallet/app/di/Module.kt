@@ -1,9 +1,9 @@
 package com.example.cryptowallet.app.di
 
 import com.example.cryptowallet.app.coins.data.remote.impl.KtorCoinsRemoteDataSource
-import com.example.cryptowallet.app.coins.domain.GetCoinDetailsUseCase
-import com.example.cryptowallet.app.coins.domain.GetCoinPriceHistoryUseCase
-import com.example.cryptowallet.app.coins.domain.GetCoinsListUseCase
+import com.example.cryptowallet.app.coins.domain.usecase.GetCoinDetailsUseCase
+import com.example.cryptowallet.app.coins.domain.usecase.GetCoinPriceHistoryUseCase
+import com.example.cryptowallet.app.coins.domain.usecase.GetCoinsListUseCase
 import com.example.cryptowallet.app.coins.domain.api.CoinsRemoteDataSource
 import com.example.cryptowallet.app.coins.presentation.CoinsListViewModel
 import com.example.cryptowallet.app.core.network.HttpClientFactory

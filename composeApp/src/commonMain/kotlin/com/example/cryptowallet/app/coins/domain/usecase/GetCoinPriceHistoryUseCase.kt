@@ -1,4 +1,4 @@
-package com.example.cryptowallet.app.coins.domain
+package com.example.cryptowallet.app.coins.domain.usecase
 
 import com.example.cryptowallet.app.coins.domain.api.CoinsRemoteDataSource
 import com.example.cryptowallet.app.coins.domain.model.PriceModel
