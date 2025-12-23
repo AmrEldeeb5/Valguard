@@ -9,4 +9,10 @@ sealed interface Screens {
 
     @Serializable
     data object Portfolio : Screens
+
+    @Serializable
+    data class Sell(val coinId: String) : Screens
+
+    @Serializable
+    data class Buy(val coinId: String) : Screens
 }
