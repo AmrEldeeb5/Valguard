@@ -11,6 +11,7 @@ import com.example.cryptowallet.app.core.database.portfolio.getPortfolioDatabase
 import com.example.cryptowallet.app.core.network.HttpClientFactory
 import com.example.cryptowallet.app.portfolio.data.PortfolioRepositoryImpl
 import com.example.cryptowallet.app.portfolio.domain.PortfolioRepository
+import com.example.cryptowallet.app.portfolio.presentation.PortfolioViewModel
 import io.ktor.client.HttpClient
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -54,4 +55,5 @@ val sharedModule = module {
     // view models
     //viewModelOf(::CoinsListViewModel)
     viewModel { CoinsListViewModel(get(), get())  }
+    viewModelOf(::PortfolioViewModel)
 }
