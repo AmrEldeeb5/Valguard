@@ -54,6 +54,10 @@ kotlin {
             // Navigation
             implementation(libs.androidx.navigation.compose)
 
+            // Navigation 3
+            implementation(libs.androidx.navigation3.runtime)
+            implementation(libs.androidx.navigation3.ui)
+
             // Room
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)
