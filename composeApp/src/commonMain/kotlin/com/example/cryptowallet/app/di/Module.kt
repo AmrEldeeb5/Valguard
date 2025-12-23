@@ -55,5 +55,5 @@ val sharedModule = module {
     // view models
     //viewModelOf(::CoinsListViewModel)
     viewModel { CoinsListViewModel(get(), get())  }
-    viewModelOf(::PortfolioViewModel)
+    viewModel { PortfolioViewModel(get()) }
 }
