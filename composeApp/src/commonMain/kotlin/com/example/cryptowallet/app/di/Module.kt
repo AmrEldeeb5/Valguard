@@ -14,6 +14,8 @@ import com.example.cryptowallet.app.portfolio.domain.PortfolioRepository
 import com.example.cryptowallet.app.portfolio.presentation.PortfolioViewModel
 import com.example.cryptowallet.app.trade.domain.BuyCoinUseCase
 import com.example.cryptowallet.app.trade.domain.SellCoinUseCase
+import com.example.cryptowallet.app.trade.presentation.buy.BuyViewModel
+import com.example.cryptowallet.app.trade.presentation.sell.SellViewModel
 import io.ktor.client.HttpClient
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -61,4 +63,6 @@ val sharedModule = module {
     //viewModelOf(::CoinsListViewModel)
     viewModel { CoinsListViewModel(get(), get())  }
     viewModel { PortfolioViewModel(get()) }
+    viewModel { BuyViewModel(get(), get(), get()) }
+    viewModel { SellViewModel(get(), get(), get()) }
 }
