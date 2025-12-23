@@ -1,11 +1,11 @@
-package com.example.cryptowallet.app.trade
+package com.example.cryptowallet.app.trade.domain
 
 import com.example.cryptowallet.app.core.domain.DataError
 import com.example.cryptowallet.app.core.domain.EmptyResult
-import com.example.cryptowallet.app.core.domain.coin.Coin
-import com.example.cryptowallet.app.portfolio.domain.PortfolioRepository
 import com.example.cryptowallet.app.core.domain.Result
+import com.example.cryptowallet.app.core.domain.coin.Coin
 import com.example.cryptowallet.app.portfolio.domain.PortfolioCoinModel
+import com.example.cryptowallet.app.portfolio.domain.PortfolioRepository
 import kotlinx.coroutines.flow.first
 
 class BuyCoinUseCase(

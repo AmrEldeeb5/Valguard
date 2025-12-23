@@ -12,7 +12,7 @@ import com.example.cryptowallet.app.core.network.HttpClientFactory
 import com.example.cryptowallet.app.portfolio.data.PortfolioRepositoryImpl
 import com.example.cryptowallet.app.portfolio.domain.PortfolioRepository
 import com.example.cryptowallet.app.portfolio.presentation.PortfolioViewModel
-import com.example.cryptowallet.app.trade.BuyCoinUseCase
+import com.example.cryptowallet.app.trade.domain.BuyCoinUseCase
 import io.ktor.client.HttpClient
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
