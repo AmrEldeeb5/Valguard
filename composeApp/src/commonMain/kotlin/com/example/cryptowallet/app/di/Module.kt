@@ -13,6 +13,7 @@ import com.example.cryptowallet.app.portfolio.data.PortfolioRepositoryImpl
 import com.example.cryptowallet.app.portfolio.domain.PortfolioRepository
 import com.example.cryptowallet.app.portfolio.presentation.PortfolioViewModel
 import com.example.cryptowallet.app.trade.domain.BuyCoinUseCase
+import com.example.cryptowallet.app.trade.domain.SellCoinUseCase
 import io.ktor.client.HttpClient
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -54,6 +55,7 @@ val sharedModule = module {
     single { GetCoinPriceHistoryUseCase(get()) }
     single { GetCoinDetailsUseCase(get()) }
     single { BuyCoinUseCase(get()) }
+    single { SellCoinUseCase(get()) }
 
     // view models
     //viewModelOf(::CoinsListViewModel)
