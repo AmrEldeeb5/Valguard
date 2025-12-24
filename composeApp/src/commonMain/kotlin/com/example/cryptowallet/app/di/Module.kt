@@ -12,6 +12,16 @@ import com.example.cryptowallet.app.core.network.HttpClientFactory
 import com.example.cryptowallet.app.portfolio.data.PortfolioRepositoryImpl
 import com.example.cryptowallet.app.portfolio.domain.PortfolioRepository
 import com.example.cryptowallet.app.portfolio.presentation.PortfolioViewModel
+import com.example.cryptowallet.app.realtime.data.ExponentialBackoffStrategy
+import com.example.cryptowallet.app.realtime.data.FallbackPoller
+import com.example.cryptowallet.app.realtime.data.CoinCapWebSocketClient
+import com.example.cryptowallet.app.realtime.data.PriceRepositoryImpl
+import com.example.cryptowallet.app.realtime.data.SubscriptionManagerImpl
+import com.example.cryptowallet.app.realtime.domain.ObservePriceUpdatesUseCase
+import com.example.cryptowallet.app.realtime.domain.PriceRepository
+import com.example.cryptowallet.app.realtime.domain.ReconnectionStrategy
+import com.example.cryptowallet.app.realtime.domain.SubscriptionManager
+import com.example.cryptowallet.app.realtime.domain.WebSocketClient
 import com.example.cryptowallet.app.trade.domain.BuyCoinUseCase
 import com.example.cryptowallet.app.trade.domain.SellCoinUseCase
 import com.example.cryptowallet.app.trade.presentation.buy.BuyViewModel
@@ -52,6 +62,14 @@ val sharedModule = module {
     single { get<PortfolioDatabase>().UserBalanceDao() }
     singleOf(::PortfolioRepositoryImpl).bind<PortfolioRepository>()
 
+    // real-time price updates (CoinCap WebSocket API)
+    single<ReconnectionStrategy> { ExponentialBackoffStrategy() }
+    single<SubscriptionManager> { SubscriptionManagerImpl() }
+    single<WebSocketClient> { CoinCapWebSocketClient(get(), get()) }
+    single { FallbackPoller(get()) }
+    single<PriceRepository> { PriceRepositoryImpl(get(), get()) }
+    single { ObservePriceUpdatesUseCase(get(), get()) }
+
     // use cases
     single { GetCoinsListUseCase(get()) }
     single { GetCoinPriceHistoryUseCase(get()) }
@@ -60,9 +78,8 @@ val sharedModule = module {
     single { SellCoinUseCase(get()) }
 
     // view models
-    //viewModelOf(::CoinsListViewModel)
-    viewModel { CoinsListViewModel(get(), get())  }
-    viewModel { PortfolioViewModel(get()) }
-    viewModel { BuyViewModel(get(), get(), get()) }
-    viewModel { SellViewModel(get(), get(), get()) }
+    viewModel { CoinsListViewModel(get(), get(), get()) }
+    viewModel { PortfolioViewModel(get(), get()) }
+    viewModel { BuyViewModel(get(), get(), get(), get()) }
+    viewModel { SellViewModel(get(), get(), get(), get()) }
 }

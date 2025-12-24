@@ -1,6 +1,8 @@
 package com.example.cryptowallet.app.coins.presentation
 
 import androidx.compose.runtime.Stable
+import com.example.cryptowallet.app.realtime.domain.ConnectionState
+import com.example.cryptowallet.app.realtime.domain.PriceDirection
 import org.jetbrains.compose.resources.StringResource
 
 
@@ -9,7 +11,8 @@ data class CoinsState(
     val isLoading: Boolean = true,
     val error: StringResource? = null,
     val coins: List<UiCoinListItem> = emptyList(),
-    val chartState: UiChartState? = null
+    val chartState: UiChartState? = null,
+    val connectionState: ConnectionState = ConnectionState.DISCONNECTED
 )
 
 @Stable

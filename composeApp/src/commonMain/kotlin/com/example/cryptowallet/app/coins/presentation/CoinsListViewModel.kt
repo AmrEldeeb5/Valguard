@@ -7,7 +7,9 @@ import com.example.cryptowallet.app.coins.domain.usecase.GetCoinsListUseCase
 import com.example.cryptowallet.app.core.domain.Result
 import com.example.cryptowallet.app.core.util.formatFiat
 import com.example.cryptowallet.app.core.util.toUiText
-import cryptowallet.composeapp.generated.resources.Res
+import com.example.cryptowallet.app.realtime.domain.ConnectionState
+import com.example.cryptowallet.app.realtime.domain.ObservePriceUpdatesUseCase
+import com.example.cryptowallet.app.realtime.domain.PriceDirection
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
@@ -15,9 +17,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+private const val SCREEN_ID = "coins_list_screen"
+
 class CoinsListViewModel(
     private val getCoinsListUseCase: GetCoinsListUseCase,
     private val getCoinPriceHistoryUseCase: GetCoinPriceHistoryUseCase,
+    private val observePriceUpdatesUseCase: ObservePriceUpdatesUseCase? = null
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CoinsState())
@@ -32,27 +37,64 @@ class CoinsListViewModel(
             initialValue = CoinsState()
         )
 
+    init {
+        // Observe connection state
+        observePriceUpdatesUseCase?.let { useCase ->
+            viewModelScope.launch {
+                useCase.connectionState.collect { connectionState ->
+                    _state.update { it.copy(connectionState = connectionState) }
+                }
+            }
+
+            // Observe price updates
+            viewModelScope.launch {
+                useCase.allPriceUpdates.collect { priceUpdate ->
+                    _state.update { currentState ->
+                        currentState.copy(
+                            coins = currentState.coins.map { coin ->
+                                if (coin.id == priceUpdate.coinId) {
+                                    coin.copy(
+                                        formattedPrice = formatFiat(priceUpdate.price),
+                                        priceDirection = priceUpdate.priceDirection
+                                    )
+                                } else {
+                                    coin
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     private suspend fun getAllCoins() {
         _state.update { it.copy(isLoading = true, error = null) }
 
         when (val coinsResponse = getCoinsListUseCase.execute()) {
             is Result.Success -> {
+                val coins = coinsResponse.data.map { coinItem ->
+                    UiCoinListItem(
+                        id = coinItem.coin.id,
+                        name = coinItem.coin.name,
+                        iconUrl = coinItem.coin.iconUrl,
+                        symbol = coinItem.coin.symbol,
+                        formattedPrice = formatFiat(coinItem.price),
+                        formattedChange = formatFiat(coinItem.change, showDecimal = false),
+                        isPositive = coinItem.change >= 0,
+                    )
+                }
+
                 _state.update {
                     CoinsState(
                         isLoading = false,
-                        coins = coinsResponse.data.map { coinItem ->
-                            UiCoinListItem(
-                                id = coinItem.coin.id,
-                                name = coinItem.coin.name,
-                                iconUrl = coinItem.coin.iconUrl,
-                                symbol = coinItem.coin.symbol,
-                                formattedPrice = formatFiat(coinItem.price),
-                                formattedChange = formatFiat(coinItem.change, showDecimal = false),
-                                isPositive = coinItem.change >= 0,
-                            )
-                        }
+                        coins = coins,
+                        connectionState = it.connectionState
                     )
                 }
+
+                // Subscribe to real-time updates for all coins
+                subscribeToRealTimeUpdates(coins.map { it.id })
             }
 
             is Result.Failure -> {
@@ -63,6 +105,25 @@ class CoinsListViewModel(
                         error = coinsResponse.error.toUiText()
                     )
                 }
+            }
+        }
+    }
+
+    private fun subscribeToRealTimeUpdates(coinIds: List<String>) {
+        observePriceUpdatesUseCase?.let { useCase ->
+            viewModelScope.launch {
+                useCase.start()
+                useCase.subscribeScreen(SCREEN_ID, coinIds)
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        // Unsubscribe when ViewModel is cleared
+        observePriceUpdatesUseCase?.let { useCase ->
+            viewModelScope.launch {
+                useCase.unsubscribeScreen(SCREEN_ID)
             }
         }
     }

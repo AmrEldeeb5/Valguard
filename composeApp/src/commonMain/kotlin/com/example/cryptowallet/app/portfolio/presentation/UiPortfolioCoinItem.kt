@@ -1,5 +1,7 @@
 package com.example.cryptowallet.app.portfolio.presentation
 
+import com.example.cryptowallet.app.realtime.domain.PriceDirection
+
 
 data class UiPortfolioCoinItem(
     val id: String,
@@ -9,4 +11,5 @@ data class UiPortfolioCoinItem(
     val amountInFiatText: String,
     val performancePercentText: String,
     val isPositive: Boolean,
+    val priceDirection: PriceDirection = PriceDirection.UNCHANGED
 )

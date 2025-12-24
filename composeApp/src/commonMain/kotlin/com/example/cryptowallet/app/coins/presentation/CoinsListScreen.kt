@@ -35,6 +35,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.example.cryptowallet.app.realtime.domain.ConnectionState
+import com.example.cryptowallet.app.realtime.domain.PriceDirection
 import com.example.cryptowallet.theme.LocalCoinRoutineColorsPalette
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -84,11 +86,16 @@ fun CoinsListContent(
                 )
             }
         } else {
-            CoinsList(
-                coins = state.coins,
-                onCoinLongPressed = onCoinLongPressed,
-                onCoinClicked = onCoinClicked
-            )
+            Column(modifier = Modifier.fillMaxSize()) {
+                // Connection status indicator
+                ConnectionStatusBar(connectionState = state.connectionState)
+
+                CoinsList(
+                    coins = state.coins,
+                    onCoinLongPressed = onCoinLongPressed,
+                    onCoinClicked = onCoinClicked
+                )
+            }
             
             if (state.chartState != null) {
                 CoinChartDialog(
@@ -96,6 +103,41 @@ fun CoinsListContent(
                     onDismiss = onDismissChart
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun ConnectionStatusBar(connectionState: ConnectionState) {
+    val (text, color) = when (connectionState) {
+        ConnectionState.CONNECTED -> "Live" to LocalCoinRoutineColorsPalette.current.profitGreen
+        ConnectionState.CONNECTING -> "Connecting..." to MaterialTheme.colorScheme.tertiary
+        ConnectionState.RECONNECTING -> "Reconnecting..." to MaterialTheme.colorScheme.tertiary
+        ConnectionState.FAILED -> "Offline - Using cached data" to MaterialTheme.colorScheme.error
+        ConnectionState.DISCONNECTED -> "Disconnected" to MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
+    if (connectionState != ConnectionState.CONNECTED && connectionState != ConnectionState.DISCONNECTED) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color.copy(alpha = 0.1f))
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .clip(CircleShape)
+                    .background(color)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = text,
+                color = color,
+                fontSize = MaterialTheme.typography.bodySmall.fontSize
+            )
         }
     }
 }
@@ -177,11 +219,16 @@ fun CoinListItem(
         Column(
             horizontalAlignment = Alignment.End,
         ) {
-            Text(
-                text = coin.formattedPrice,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = MaterialTheme.typography.titleMedium.fontSize,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // Price direction indicator
+                PriceDirectionIndicator(priceDirection = coin.priceDirection)
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = coin.formattedPrice,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                )
+            }
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = coin.formattedChange,
@@ -189,6 +236,23 @@ fun CoinListItem(
                 fontSize = MaterialTheme.typography.titleSmall.fontSize,
             )
         }
+    }
+}
+
+@Composable
+fun PriceDirectionIndicator(priceDirection: PriceDirection) {
+    val (symbol, color) = when (priceDirection) {
+        PriceDirection.UP -> "▲" to LocalCoinRoutineColorsPalette.current.profitGreen
+        PriceDirection.DOWN -> "▼" to LocalCoinRoutineColorsPalette.current.lossRed
+        PriceDirection.UNCHANGED -> "" to MaterialTheme.colorScheme.onBackground
+    }
+
+    if (symbol.isNotEmpty()) {
+        Text(
+            text = symbol,
+            color = color,
+            fontSize = MaterialTheme.typography.bodySmall.fontSize
+        )
     }
 }
 

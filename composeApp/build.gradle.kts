@@ -32,6 +32,10 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
 
+            // SQLite - Android (required for Room KMP)
+            implementation(libs.sqlite)
+            implementation(libs.sqlite.bundled)
+
             // Ktor - Android
             implementation(libs.ktor.client.okhttp)
 
@@ -56,11 +60,13 @@ kotlin {
 
             // Room
             implementation(libs.androidx.room.runtime)
+            implementation(libs.sqlite)
             implementation(libs.sqlite.bundled)
 
             // Ktor
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.websockets)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.ktor.client.logging)
 
@@ -85,6 +91,10 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.kotest.framework.engine)
+            implementation(libs.kotest.assertions.core)
+            implementation(libs.kotest.property)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

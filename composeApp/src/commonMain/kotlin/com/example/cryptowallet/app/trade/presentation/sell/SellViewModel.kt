@@ -7,6 +7,7 @@ import com.example.cryptowallet.app.core.domain.Result
 import com.example.cryptowallet.app.core.util.formatFiat
 import com.example.cryptowallet.app.core.util.toUiText
 import com.example.cryptowallet.app.portfolio.domain.PortfolioRepository
+import com.example.cryptowallet.app.realtime.domain.ObservePriceUpdatesUseCase
 import com.example.cryptowallet.app.trade.domain.SellCoinUseCase
 import com.example.cryptowallet.app.trade.presentation.common.TradeState
 import com.example.cryptowallet.app.trade.presentation.common.UiTradeCoinItem
@@ -19,11 +20,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+private const val SCREEN_ID = "sell_screen"
 
 class SellViewModel(
     private val getCoinDetailsUseCase: GetCoinDetailsUseCase,
     private val portfolioRepository: PortfolioRepository,
     private val sellCoinUseCase: SellCoinUseCase,
+    private val observePriceUpdatesUseCase: ObservePriceUpdatesUseCase? = null
 ): ViewModel() {
 
     private val tempCoinId = "1" // TODO: will be removed
@@ -42,6 +45,7 @@ class SellViewModel(
             is Result.Success -> {
                 portfolioCoinResponse.data?.ownedAmountInUnit?.let {
                     getCoinDetails(it)
+                    setupRealTimeUpdates()
                 }
             }
             is Result.Failure -> {
@@ -58,6 +62,51 @@ class SellViewModel(
         started = SharingStarted.WhileSubscribed(),
         initialValue = TradeState(isLoading = true)
     )
+
+    init {
+        // Observe connection state
+        observePriceUpdatesUseCase?.let { useCase ->
+            viewModelScope.launch {
+                useCase.connectionState.collect { connectionState ->
+                    _state.update { it.copy(connectionState = connectionState) }
+                }
+            }
+
+            // Observe price updates for the specific coin
+            viewModelScope.launch {
+                useCase.priceUpdatesFor(tempCoinId).collect { priceUpdate ->
+                    _state.update { currentState ->
+                        currentState.coin?.let { coin ->
+                            currentState.copy(
+                                coin = coin.copy(
+                                    price = priceUpdate.price,
+                                    priceDirection = priceUpdate.priceDirection
+                                )
+                            )
+                        } ?: currentState
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setupRealTimeUpdates() {
+        observePriceUpdatesUseCase?.let { useCase ->
+            viewModelScope.launch {
+                useCase.start()
+                useCase.subscribeScreen(SCREEN_ID, listOf(tempCoinId))
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        observePriceUpdatesUseCase?.let { useCase ->
+            viewModelScope.launch {
+                useCase.unsubscribeScreen(SCREEN_ID)
+            }
+        }
+    }
 
     fun onAmountChanged(amount: String) {
         _amount.value = amount

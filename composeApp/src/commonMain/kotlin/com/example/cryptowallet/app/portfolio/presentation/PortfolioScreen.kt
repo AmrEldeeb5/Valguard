@@ -33,6 +33,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.example.cryptowallet.app.realtime.domain.PriceDirection
 import com.example.cryptowallet.theme.LocalCoinRoutineColorsPalette
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -240,11 +241,15 @@ fun CoinListItem(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = coin.amountInFiatText,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = MaterialTheme.typography.titleMedium.fontSize,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                PriceDirectionIndicator(priceDirection = coin.priceDirection)
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = coin.amountInFiatText,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                )
+            }
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = coin.performancePercentText,
@@ -252,6 +257,23 @@ fun CoinListItem(
                 fontSize = MaterialTheme.typography.titleSmall.fontSize,
             )
         }
+    }
+}
+
+@Composable
+private fun PriceDirectionIndicator(priceDirection: PriceDirection) {
+    val (symbol, color) = when (priceDirection) {
+        PriceDirection.UP -> "▲" to LocalCoinRoutineColorsPalette.current.profitGreen
+        PriceDirection.DOWN -> "▼" to LocalCoinRoutineColorsPalette.current.lossRed
+        PriceDirection.UNCHANGED -> "" to MaterialTheme.colorScheme.onBackground
+    }
+
+    if (symbol.isNotEmpty()) {
+        Text(
+            text = symbol,
+            color = color,
+            fontSize = MaterialTheme.typography.bodySmall.fontSize
+        )
     }
 }
 
