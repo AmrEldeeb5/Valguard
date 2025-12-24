@@ -1,46 +1,39 @@
 package com.example.cryptowallet.app.trade.presentation.common
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
+import com.example.cryptowallet.app.components.CoinHeader
+import com.example.cryptowallet.app.components.TradeConfirmation
+import com.example.cryptowallet.app.components.TradeConfirmationDialog
+import com.example.cryptowallet.app.core.util.formatFiat
 import com.example.cryptowallet.app.trade.presentation.common.component.rememberCurrencyVisualTransformation
-import com.example.cryptowallet.theme.LocalCoinRoutineColorsPalette
+import com.example.cryptowallet.theme.LocalCryptoColors
+import com.example.cryptowallet.theme.LocalCryptoSpacing
+import com.example.cryptowallet.theme.LocalCryptoTypography
 import org.jetbrains.compose.resources.stringResource
 
 
@@ -50,95 +43,113 @@ fun TradeScreen(
     tradeType: TradeType,
     onAmountChange: (String) -> Unit,
     onSubmitClicked: () -> Unit,
+    onConfirmTrade: () -> Unit = {},
+    onCancelConfirmation: () -> Unit = {},
 ) {
+    val colors = LocalCryptoColors.current
+    val typography = LocalCryptoTypography.current
+    val spacing = LocalCryptoSpacing.current
+    
+    val actionColor = when (tradeType) {
+        TradeType.BUY -> colors.profit
+        TradeType.SELL -> colors.loss
+    }
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(colors.cardBackground)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        shape = RoundedCornerShape(32.dp)
-                    )
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
-            ) {
-                AsyncImage(
-                    model = state.coin?.iconUrl,
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.padding(4.dp).clip(CircleShape).size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = state.coin?.name ?: "",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(4.dp)
-                )
-            }
-            Spacer(modifier = Modifier.height(24.dp))
+            CoinHeader(
+                iconUrl = state.coin?.iconUrl ?: "",
+                name = state.coin?.name ?: ""
+            )
+            
+            Spacer(modifier = Modifier.height(spacing.lg))
+            
             Text(
                 text = when (tradeType) {
                     TradeType.BUY -> "Buy Amount"
                     TradeType.SELL -> "Sell Amount"
                 },
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground,
+                style = typography.bodyMedium,
+                color = colors.textSecondary
             )
+            
             CenteredDollarTextField(
                 amountText = state.amount,
                 onAmountChange = onAmountChange
             )
+            
             Text(
                 text = state.availableAmount,
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(4.dp)
+                style = typography.labelLarge,
+                color = colors.textSecondary,
+                modifier = Modifier.padding(spacing.xs)
             )
+            
+            // Validation error display
+            if (state.validationError != null) {
+                Text(
+                    text = stringResource(state.validationError),
+                    style = typography.labelLarge,
+                    color = colors.statusError,
+                    modifier = Modifier.padding(spacing.xs)
+                )
+            }
+            
+            // General error display
             if (state.error != null) {
                 Text(
                     text = stringResource(state.error),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = LocalCoinRoutineColorsPalette.current.lossRed,
-                    modifier = Modifier.padding(4.dp)
+                    style = typography.labelLarge,
+                    color = colors.statusError,
+                    modifier = Modifier.padding(spacing.xs)
                 )
             }
         }
+        
         Button(
             onClick = onSubmitClicked,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = when (tradeType) {
-                    TradeType.BUY -> LocalCoinRoutineColorsPalette.current.profitGreen
-                    TradeType.SELL -> LocalCoinRoutineColorsPalette.current.lossRed
-                }
-            ),
-            contentPadding = PaddingValues(horizontal = 64.dp),
-            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 32.dp)
+            enabled = state.isAmountValid && !state.isExecuting,
+            colors = ButtonDefaults.buttonColors(containerColor = actionColor),
+            contentPadding = PaddingValues(horizontal = 64.dp, vertical = 12.dp),
+            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = spacing.xl)
         ) {
             Text(
                 text = when (tradeType) {
                     TradeType.BUY -> "Buy Now"
                     TradeType.SELL -> "Sell Now"
                 },
-                style = MaterialTheme.typography.bodyLarge,
-                color = when (tradeType) {
-                    TradeType.BUY -> MaterialTheme.colorScheme.onPrimary
-                    TradeType.SELL -> MaterialTheme.colorScheme.onBackground
-                }
+                style = typography.labelLarge,
+                color = colors.cardBackground
             )
         }
     }
+    
+    // Confirmation dialog
+    if (state.showConfirmation && state.coin != null) {
+        val amountValue = state.amount.toDoubleOrNull() ?: 0.0
+        val totalValue = amountValue
+        
+        TradeConfirmationDialog(
+            confirmation = TradeConfirmation(
+                coinName = state.coin.name,
+                coinSymbol = state.coin.symbol,
+                amount = formatFiat(amountValue),
+                price = formatFiat(state.coin.price),
+                totalValue = formatFiat(totalValue),
+                isBuy = tradeType == TradeType.BUY
+            ),
+            onConfirm = onConfirmTrade,
+            onCancel = onCancelConfirmation
+        )
+    }
 }
-
 
 @Composable
 fun CenteredDollarTextField(
@@ -146,14 +157,15 @@ fun CenteredDollarTextField(
     amountText: String,
     onAmountChange: (String) -> Unit
 ) {
+    val colors = LocalCryptoColors.current
+    val typography = LocalCryptoTypography.current
+    val spacing = LocalCryptoSpacing.current
+    
     val focusRequester = remember { FocusRequester() }
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }
+    LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
     val currencyVisualTransformation = rememberCurrencyVisualTransformation()
-
-    val displayText = amountText.trimStart('$')
+    val displayText = amountText.trimStart('0')
 
     BasicTextField(
         value = displayText,
@@ -163,30 +175,22 @@ fun CenteredDollarTextField(
                 onAmountChange(trimmed)
             }
         },
-        modifier = modifier
-            .focusRequester(focusRequester)
-            .padding(16.dp),
+        modifier = modifier.focusRequester(focusRequester).padding(spacing.md),
         textStyle = TextStyle(
-            color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 24.sp,
+            color = colors.textPrimary,
+            fontSize = typography.displayMedium.fontSize,
             textAlign = TextAlign.Center
         ),
-        keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = KeyboardType.Number
-        ),
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
         decorationBox = { innerTextField ->
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.height(56.dp).wrapContentWidth()
-            ) {
-                innerTextField()
-            }
+            ) { innerTextField() }
         },
-        cursorBrush = SolidColor(Color.White),
+        cursorBrush = SolidColor(colors.textPrimary),
         visualTransformation = currencyVisualTransformation,
     )
 }
 
-enum class TradeType{
-    BUY, SELL
-}
+enum class TradeType { BUY, SELL }

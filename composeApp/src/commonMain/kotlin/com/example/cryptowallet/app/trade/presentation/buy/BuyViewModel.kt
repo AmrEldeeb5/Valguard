@@ -9,11 +9,18 @@ import com.example.cryptowallet.app.core.util.toUiText
 import com.example.cryptowallet.app.portfolio.domain.PortfolioRepository
 import com.example.cryptowallet.app.realtime.domain.ObservePriceUpdatesUseCase
 import com.example.cryptowallet.app.trade.domain.BuyCoinUseCase
+import com.example.cryptowallet.app.trade.presentation.common.TradeEvent
 import com.example.cryptowallet.app.trade.presentation.common.TradeState
 import com.example.cryptowallet.app.trade.presentation.common.UiTradeCoinItem
+import com.example.cryptowallet.app.trade.presentation.common.ValidationResult
 import com.example.cryptowallet.app.trade.presentation.mapper.toCoin
+import cryptowallet.composeapp.generated.resources.Res
+import cryptowallet.composeapp.generated.resources.error_insufficient_balance
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onStart
@@ -24,21 +31,30 @@ import kotlinx.coroutines.launch
 private const val SCREEN_ID = "buy_screen"
 
 class BuyViewModel(
+    private val coinId: String,
     private val getCoinDetailsUseCase: GetCoinDetailsUseCase,
     private val portfolioRepository: PortfolioRepository,
     private val buyCoinUseCase: BuyCoinUseCase,
     private val observePriceUpdatesUseCase: ObservePriceUpdatesUseCase? = null
 ) : ViewModel() {
 
-    private val tempCoinId = "1" // todo: will be removed later and replaced by parameter
+    private val _events = MutableSharedFlow<TradeEvent>()
+    val events: SharedFlow<TradeEvent> = _events.asSharedFlow()
+
     private val _amount = MutableStateFlow("")
     private val _state = MutableStateFlow(TradeState())
     val state = combine(
         _state,
         _amount,
     ) { state, amount ->
+        val validation = validateAmount(amount, state.availableAmountValue)
         state.copy(
-            amount = amount
+            amount = amount,
+            isAmountValid = validation is ValidationResult.Valid,
+            validationError = when (validation) {
+                is ValidationResult.InsufficientFunds -> Res.string.error_insufficient_balance
+                else -> null
+            }
         )
     }.onStart {
         val balance = portfolioRepository.cashBalanceFlow().first()
@@ -61,7 +77,7 @@ class BuyViewModel(
 
             // Observe price updates for the specific coin
             viewModelScope.launch {
-                useCase.priceUpdatesFor(tempCoinId).collect { priceUpdate ->
+                useCase.priceUpdatesFor(coinId).collect { priceUpdate ->
                     _state.update { currentState ->
                         currentState.coin?.let { coin ->
                             currentState.copy(
@@ -81,7 +97,7 @@ class BuyViewModel(
         observePriceUpdatesUseCase?.let { useCase ->
             viewModelScope.launch {
                 useCase.start()
-                useCase.subscribeScreen(SCREEN_ID, listOf(tempCoinId))
+                useCase.subscribeScreen(SCREEN_ID, listOf(coinId))
             }
         }
     }
@@ -96,7 +112,7 @@ class BuyViewModel(
     }
 
     private suspend fun getCoinDetails(balance: Double) {
-        when (val coinResponse = getCoinDetailsUseCase.execute(tempCoinId)) {
+        when (val coinResponse = getCoinDetailsUseCase.execute(coinId)) {
             is Result.Success -> {
                 _state.update {
                     it.copy(
@@ -107,7 +123,8 @@ class BuyViewModel(
                             iconUrl = coinResponse.data.coin.iconUrl,
                             price = coinResponse.data.price,
                         ),
-                        availableAmount = "Available: ${formatFiat(balance)}"
+                        availableAmount = "Available: ${formatFiat(balance)}",
+                        availableAmountValue = balance
                     )
                 }
             }
@@ -123,33 +140,60 @@ class BuyViewModel(
         }
     }
 
+    private fun validateAmount(amount: String, availableBalance: Double): ValidationResult {
+        if (amount.isBlank()) return ValidationResult.Empty
+        val amountValue = amount.toDoubleOrNull() ?: return ValidationResult.Empty
+        if (amountValue <= 0) return ValidationResult.Zero
+        if (amountValue > availableBalance) return ValidationResult.InsufficientFunds(availableBalance)
+        return ValidationResult.Valid
+    }
+
     fun onAmountChanged(amount: String) {
         _amount.value = amount
     }
 
-    fun onBuyClicked() {
+    fun onSubmitClicked() {
+        if (!state.value.isAmountValid) return
+        _state.update { it.copy(showConfirmation = true) }
+    }
+
+    fun onConfirmTrade() {
         val tradeCoin = state.value.coin ?: return
+        val amountValue = _amount.value.toDoubleOrNull() ?: return
+
+        _state.update { it.copy(isExecuting = true) }
+
         viewModelScope.launch {
             val buyCoinResponse = buyCoinUseCase.buyCoin(
                 coin = tradeCoin.toCoin(),
-                amountInFiat = _amount.value.toDouble(),
+                amountInFiat = amountValue,
                 price = tradeCoin.price,
             )
 
-            when(buyCoinResponse) {
+            when (buyCoinResponse) {
                 is Result.Success -> {
-                    // TODO: Navigate to next screen with event
+                    _state.update { it.copy(showConfirmation = false, isExecuting = false) }
+                    _events.emit(TradeEvent.NavigateToPortfolio)
                 }
                 is Result.Failure -> {
                     _state.update {
                         it.copy(
-                            isLoading = false,
+                            isExecuting = false,
+                            showConfirmation = false,
                             error = buyCoinResponse.error.toUiText(),
                         )
                     }
                 }
             }
         }
+    }
 
+    fun onCancelConfirmation() {
+        _state.update { it.copy(showConfirmation = false) }
+    }
+
+    @Deprecated("Use onSubmitClicked() instead", ReplaceWith("onSubmitClicked()"))
+    fun onBuyClicked() {
+        onSubmitClicked()
     }
 }

@@ -121,11 +121,24 @@ class PortfolioViewModel(
             is Result.Success -> formatFiat(totalBalanceResult.data)
             is Result.Failure -> formatFiat(0.0)
         }
+        
+        // Calculate overall portfolio performance from individual coin performances
+        val totalPerformance = if (portfolioCoins.isNotEmpty()) {
+            val weightedPerformance = portfolioCoins.sumOf { coin ->
+                coin.performancePercent * coin.ownedAmountInFiat
+            }
+            val totalValue = portfolioCoins.sumOf { it.ownedAmountInFiat }
+            if (totalValue > 0) weightedPerformance / totalValue else 0.0
+        } else {
+            0.0
+        }
 
         return currentState.copy(
             coins = portfolioCoins.map { it.toUiPortfolioCoinItem(priceDirections) },
             portfolioValue = portfolioValue,
             cashBalance = formatFiat(cashBalance),
+            performancePercent = formatPercentage(totalPerformance),
+            isPerformancePositive = totalPerformance >= 0,
             showBuyButton = portfolioCoins.isNotEmpty(),
             isLoading = false,
         )

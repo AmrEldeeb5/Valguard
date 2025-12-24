@@ -83,16 +83,34 @@ private val DarkColorScheme = darkColorScheme(
     surfaceContainerHighest = SurfaceContainerHighestDark,
 )
 
+/**
+ * Main theme composable for the CryptoWallet app.
+ * Provides Material3 theming along with custom design system tokens.
+ */
 @Composable
 internal fun CoinRoutineTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    
+    // Legacy color palette (for backward compatibility)
     val coinRoutineColorsPalette = if (darkTheme) DarkCoinRoutineColorsPalette else LightCoinRoutineColorsPalette
+    
+    // New design system tokens
+    val cryptoColors = if (darkTheme) DarkCryptoColors else LightCryptoColors
+    val cryptoTypography = DefaultCryptoTypography
+    val cryptoSpacing = DefaultCryptoSpacing
+    val cryptoShapes = DefaultCryptoShapes
 
     CompositionLocalProvider(
+        // Legacy
         LocalCoinRoutineColorsPalette provides coinRoutineColorsPalette,
+        // New design system
+        LocalCryptoColors provides cryptoColors,
+        LocalCryptoTypography provides cryptoTypography,
+        LocalCryptoSpacing provides cryptoSpacing,
+        LocalCryptoShapes provides cryptoShapes,
     ) {
         MaterialTheme(
             colorScheme = colorScheme,

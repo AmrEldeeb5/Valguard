@@ -1,12 +1,9 @@
 package com.example.cryptowallet.app.portfolio.presentation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,27 +11,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
+import com.example.cryptowallet.app.components.BalanceHeader
+import com.example.cryptowallet.app.components.CoinCard
+import com.example.cryptowallet.app.components.EmptyState
+import com.example.cryptowallet.app.components.UiCoinItem
 import com.example.cryptowallet.app.realtime.domain.PriceDirection
-import com.example.cryptowallet.theme.LocalCoinRoutineColorsPalette
+import com.example.cryptowallet.theme.LocalCryptoColors
+import com.example.cryptowallet.theme.LocalCryptoSpacing
+import com.example.cryptowallet.theme.LocalCryptoTypography
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -45,13 +41,15 @@ fun PortfolioScreen(
 ) {
     val portfolioViewModel = koinViewModel<PortfolioViewModel>()
     val state by portfolioViewModel.state.collectAsStateWithLifecycle()
+    val colors = LocalCryptoColors.current
+    
     if (state.isLoading) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()
         ) {
             CircularProgressIndicator(
-                color = LocalCoinRoutineColorsPalette.current.profitGreen,
+                color = colors.profit,
                 modifier = Modifier.size(32.dp)
             )
         }
@@ -70,17 +68,23 @@ fun PortfolioContent(
     onCoinItemClicked: (String) -> Unit,
     onDiscoverCoinsClicked: () -> Unit,
 ) {
+    val colors = LocalCryptoColors.current
+    
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.inversePrimary)
+            .background(colors.cardBackgroundElevated)
     ) {
-        PortfolioBalanceSection(
-            portfolioValue = state.portfolioValue,
+        BalanceHeader(
+            totalValue = state.portfolioValue,
             cashBalance = state.cashBalance,
+            performancePercent = state.performancePercent,
+            performanceLabel = "24h",
+            isPositive = state.isPerformancePositive,
             showBuyButton = state.showBuyButton,
-            onBuyButtonClicked = onDiscoverCoinsClicked
+            onBuyClick = onDiscoverCoinsClicked,
+            modifier = Modifier.fillMaxHeight(0.35f)
         )
         PortfolioCoinsList(
             coins = state.coins,
@@ -91,108 +95,52 @@ fun PortfolioContent(
 }
 
 @Composable
-private fun PortfolioBalanceSection(
-    portfolioValue: String,
-    cashBalance: String,
-    showBuyButton: Boolean,
-    onBuyButtonClicked: () -> Unit,
-) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .fillMaxHeight(0.3f)
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.inversePrimary)
-            .padding(32.dp)
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text = "Total Value:",
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = MaterialTheme.typography.titleSmall.fontSize,
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = portfolioValue,
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = MaterialTheme.typography.headlineLarge.fontSize,
-            )
-            Row {
-                Text(
-                    text = "Cash Balance: ",
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = MaterialTheme.typography.bodySmall.fontSize,
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = cashBalance,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = MaterialTheme.typography.bodySmall.fontSize,
-                )
-            }
-            if (showBuyButton) {
-                Spacer(modifier = Modifier.weight(1f))
-                Button(
-                    onClick = onBuyButtonClicked,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = LocalCoinRoutineColorsPalette.current.profitGreen
-                    ),
-                    contentPadding = PaddingValues(horizontal = 64.dp),
-                ) {
-                    Text(
-                        text = "Buy Coin",
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
 private fun PortfolioCoinsList(
     coins: List<UiPortfolioCoinItem>,
     onCoinItemClicked: (String) -> Unit,
     onDiscoverCoinsClicked: () -> Unit,
 ) {
+    val colors = LocalCryptoColors.current
+    val typography = LocalCryptoTypography.current
+    val spacing = LocalCryptoSpacing.current
+    
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxHeight()
             .fillMaxWidth()
-            .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
-            .background(MaterialTheme.colorScheme.background)
+            .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+            .background(colors.cardBackground)
     ) {
         if (coins.isEmpty()) {
-            PortfolioEmptySection(
-                onDiscoverCoinsClicked = onDiscoverCoinsClicked
+            EmptyState(
+                title = "No coins yet",
+                description = "Start building your portfolio by discovering and buying coins.",
+                actionLabel = "Discover Coins",
+                onAction = onDiscoverCoinsClicked
             )
-            return@Box
         } else {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
+                modifier = Modifier.fillMaxSize()
             ) {
                 Text(
-                    text = "💰 Owned Coins: ",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(16.dp)
+                    text = "Your Holdings",
+                    style = typography.titleLarge,
+                    color = colors.textPrimary,
+                    modifier = Modifier.padding(spacing.md)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                
+                Spacer(modifier = Modifier.height(spacing.xs))
+                
                 LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(spacing.xs),
+                    modifier = Modifier.padding(horizontal = spacing.md)
                 ) {
-                    items(coins) { coin ->
-                        CoinListItem(
-                            coin = coin,
-                            onCoinItemClicked = onCoinItemClicked
+                    items(coins, key = { it.id }) { coin ->
+                        CoinCard(
+                            coin = coin.toUiCoinItem(),
+                            onClick = { onCoinItemClicked(coin.id) },
+                            showHoldings = true
                         )
                     }
                 }
@@ -201,111 +149,20 @@ private fun PortfolioCoinsList(
     }
 }
 
-@Composable
-fun CoinListItem(
-    coin: UiPortfolioCoinItem,
-    onCoinItemClicked: (String) -> Unit,
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                onCoinItemClicked.invoke(coin.id)
-            }
-            .padding(16.dp)
-    ) {
-        AsyncImage(
-            model = coin.iconUrl,
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.padding(4.dp).clip(CircleShape).size(40.dp)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                text = coin.name,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = MaterialTheme.typography.titleMedium.fontSize,
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = coin.amountInUnitText,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = MaterialTheme.typography.titleSmall.fontSize,
-            )
-        }
-        Spacer(modifier = Modifier.width(16.dp))
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                PriceDirectionIndicator(priceDirection = coin.priceDirection)
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = coin.amountInFiatText,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                )
-            }
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = coin.performancePercentText,
-                color = if (coin.isPositive) LocalCoinRoutineColorsPalette.current.profitGreen else LocalCoinRoutineColorsPalette.current.lossRed,
-                fontSize = MaterialTheme.typography.titleSmall.fontSize,
-            )
-        }
-    }
-}
-
-@Composable
-private fun PriceDirectionIndicator(priceDirection: PriceDirection) {
-    val (symbol, color) = when (priceDirection) {
-        PriceDirection.UP -> "▲" to LocalCoinRoutineColorsPalette.current.profitGreen
-        PriceDirection.DOWN -> "▼" to LocalCoinRoutineColorsPalette.current.lossRed
-        PriceDirection.UNCHANGED -> "" to MaterialTheme.colorScheme.onBackground
-    }
-
-    if (symbol.isNotEmpty()) {
-        Text(
-            text = symbol,
-            color = color,
-            fontSize = MaterialTheme.typography.bodySmall.fontSize
-        )
-    }
-}
-
-@Composable
-fun PortfolioEmptySection(
-    onDiscoverCoinsClicked: () -> Unit,
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth()
-            .padding(32.dp)
-    ) {
-        Text(
-            text = "No coins in your portfolio yet.",
-            color = MaterialTheme.colorScheme.primary,
-            fontSize = MaterialTheme.typography.titleSmall.fontSize
-        )
-        Button(
-            onClick = onDiscoverCoinsClicked,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = LocalCoinRoutineColorsPalette.current.profitGreen
-            ),
-            contentPadding = PaddingValues(horizontal = 64.dp),
-        ) {
-            Text(
-                text = "Discover coins",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-        }
-    }
+/**
+ * Extension function to convert UiPortfolioCoinItem to UiCoinItem for CoinCard.
+ */
+private fun UiPortfolioCoinItem.toUiCoinItem(): UiCoinItem {
+    return UiCoinItem(
+        id = id,
+        name = name,
+        symbol = "", // Symbol not available in UiPortfolioCoinItem
+        iconUrl = iconUrl,
+        formattedPrice = amountInFiatText,
+        formattedChange = performancePercentText,
+        isPositive = isPositive,
+        priceDirection = priceDirection,
+        holdingsAmount = amountInUnitText,
+        holdingsValue = amountInFiatText
+    )
 }

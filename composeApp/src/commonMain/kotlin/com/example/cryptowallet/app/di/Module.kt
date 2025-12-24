@@ -80,6 +80,6 @@ val sharedModule = module {
     // view models
     viewModel { CoinsListViewModel(get(), get(), get()) }
     viewModel { PortfolioViewModel(get(), get()) }
-    viewModel { BuyViewModel(get(), get(), get(), get()) }
-    viewModel { SellViewModel(get(), get(), get(), get()) }
+    viewModel { (coinId: String) -> BuyViewModel(coinId, get(), get(), get(), get()) }
+    viewModel { (coinId: String) -> SellViewModel(coinId, get(), get(), get(), get()) }
 }
