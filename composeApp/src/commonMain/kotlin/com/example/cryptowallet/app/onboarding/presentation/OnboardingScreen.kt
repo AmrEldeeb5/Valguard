@@ -209,6 +209,20 @@ fun OnboardingScreen(
                         onClick = { viewModel.onEvent(OnboardingEvent.NextStep) },
                         modifier = Modifier.padding(24.dp)
                     )
+                    
+                    // Skip for now text (only on steps 0-2)
+                    if (state.currentStep < 3) {
+                        Text(
+                            text = "Skip for now",
+                            style = typography.bodyMedium,
+                            color = colors.textSecondary,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { viewModel.onEvent(OnboardingEvent.SkipToEnd) }
+                                .padding(bottom = 16.dp)
+                        )
+                    }
                 }
             }
             
