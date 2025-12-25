@@ -10,10 +10,10 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,7 +26,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -89,78 +88,29 @@ fun OnboardingScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            Spacer(modifier = Modifier.height(48.dp))
-            
-            // Top bar with back, progress, and skip
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Back button
-                AnimatedVisibility(
-                    visible = state.currentStep > 0,
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(colors.cardBackground.copy(alpha = 0.5f))
-                            .clickable { viewModel.onEvent(OnboardingEvent.PreviousStep) },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowLeft,
-                            contentDescription = "Go back",
-                            tint = colors.textPrimary
-                        )
-                    }
-                }
-                
-                if (state.currentStep == 0) {
-                    Spacer(modifier = Modifier.size(40.dp))
-                }
-                
-                Spacer(modifier = Modifier.weight(1f))
-                
-                // Skip button
-                AnimatedVisibility(
-                    visible = state.currentStep < 3,
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
-                    Text(
-                        text = "Skip",
-                        style = typography.labelLarge,
-                        color = colors.textSecondary,
-                        modifier = Modifier
-                            .clickable { viewModel.onEvent(OnboardingEvent.SkipToEnd) }
-                            .padding(8.dp)
-                    )
-                }
-            }
-            
             Spacer(modifier = Modifier.height(16.dp))
             
-            // Progress bar
+            // Progress bar at the very top (like React)
             OnboardingProgressBar(
                 currentStep = state.currentStep,
                 stepGradient = stepGradient
             )
             
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             
-            // Main content card
+            // Main content card - React: bg-slate-900/50 backdrop-blur-2xl border border-slate-700/50
+            val slateCardBackground = Color(0xFF0F172A).copy(alpha = 0.5f) // slate-900/50
+            val slateBorder = Color(0xFF334155).copy(alpha = 0.5f) // slate-700/50
+            val cardShape = RoundedCornerShape(24.dp)
+            
             Box(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(colors.cardBackground.copy(alpha = 0.9f))
+                    .clip(cardShape)
+                    .background(slateCardBackground)
+                    .border(1.dp, slateBorder, cardShape)
             ) {
                 Column(
                     modifier = Modifier
@@ -201,26 +151,46 @@ fun OnboardingScreen(
                         enabled = canProceed && !state.isTransitioning,
                         gradient = stepGradient,
                         onClick = { viewModel.onEvent(OnboardingEvent.NextStep) },
-                        modifier = Modifier.padding(24.dp)
+                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
                     )
                     
-                    // Skip for now text (only on steps 0-2)
-                    if (state.currentStep < 3) {
+                    // Back button (text) - only visible on steps > 0
+                    AnimatedVisibility(
+                        visible = state.currentStep > 0,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
                         Text(
-                            text = "Skip for now",
+                            text = "Back",
                             style = typography.bodyMedium,
                             color = colors.textSecondary,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { viewModel.onEvent(OnboardingEvent.SkipToEnd) }
-                                .padding(bottom = 16.dp)
+                                .clickable { viewModel.onEvent(OnboardingEvent.PreviousStep) }
+                                .padding(vertical = 12.dp)
                         )
                     }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
             
-            Spacer(modifier = Modifier.height(32.dp))
+            // Skip for now text - OUTSIDE the card (only on steps 0-2)
+            if (state.currentStep < 3) {
+                Text(
+                    text = "Skip for now",
+                    style = typography.bodyMedium,
+                    color = colors.textSecondary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { viewModel.onEvent(OnboardingEvent.SkipToEnd) }
+                        .padding(vertical = 16.dp)
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
         }
         
         // Skip confirmation dialog

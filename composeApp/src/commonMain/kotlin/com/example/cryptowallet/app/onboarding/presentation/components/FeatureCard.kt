@@ -34,10 +34,14 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoTypography
 import kotlinx.coroutines.delay
 
+// React color constants: slate-800 = #1E293B, slate-700 = #334155
+private val SlateBackground = Color(0xFF1E293B)
+private val SlateBorder = Color(0xFF334155)
+
 /**
  * Feature highlight card for welcome and features steps.
  * Displays icon, title, and description with staggered animation.
- * Uses glassmorphism effect with transparent background.
+ * Matches React: bg-slate-800/30 border border-slate-700/50
  * Respects reduce motion accessibility setting.
  * 
  * Requirements: 2.8, 3.5, 3.6, 13.6
@@ -77,18 +81,17 @@ fun FeatureCard(
             .fillMaxWidth()
             .alpha(alpha)
             .clip(cardShape)
-            // Glassmorphism: nearly invisible background - lets background show through
-            .background(Color.White.copy(alpha = 0.03f))
-            // Visible border so you can see the card outline
+            // React: bg-slate-800/30 border border-slate-700/50
+            .background(SlateBackground.copy(alpha = 0.3f))
             .border(
                 width = 1.dp,
-                color = Color.White.copy(alpha = 0.12f),
+                color = SlateBorder.copy(alpha = 0.5f),
                 shape = cardShape
             )
-            .padding(16.dp)
+            .padding(20.dp)
     ) {
         Column {
-            // Icon with rounded square background
+            // Icon with rounded square background (rounded-xl = 12dp)
             Box(
                 modifier = Modifier
                     .size(48.dp)
@@ -128,7 +131,7 @@ fun FeatureCard(
 
 /**
  * Compact feature card for welcome step highlights.
- * Uses glassmorphism effect with transparent background.
+ * Matches React: bg-slate-800/50 border border-slate-700/50
  * Respects reduce motion accessibility setting.
  */
 @Composable
@@ -166,12 +169,11 @@ fun CompactFeatureCard(
             .fillMaxWidth()
             .alpha(alpha)
             .clip(cardShape)
-            // Glassmorphism: nearly invisible background - lets background show through
-            .background(Color.White.copy(alpha = 0.03f))
-            // Visible border so you can see the card outline
+            // React: bg-slate-800/50 border border-slate-700/50
+            .background(SlateBackground.copy(alpha = 0.5f))
             .border(
                 width = 1.dp,
-                color = Color.White.copy(alpha = 0.12f),
+                color = SlateBorder.copy(alpha = 0.5f),
                 shape = cardShape
             )
             .padding(16.dp)

@@ -74,6 +74,9 @@ fun CoinSelectionCard(
     }
     
     val accessibilityDescription = "${coin.name}, ${if (isSelected) "selected" else "not selected"}"
+    // React: slate-800 = #1E293B, slate-700 = #334155
+    val slateBackground = Color(0xFF1E293B).copy(alpha = 0.3f)
+    val slateBorder = Color(0xFF334155).copy(alpha = 0.5f)
     
     Box(
         modifier = modifier
@@ -86,10 +89,10 @@ fun CoinSelectionCard(
                         Brush.linearGradient(coin.gradientColors)
                     )
                 } else {
-                    // Border with transparent background when not selected
+                    // React: border-slate-700/50 bg-slate-800/30
                     Modifier
-                        .background(colors.cardBackground.copy(alpha = 0.3f))
-                        .border(2.dp, colors.cardBorder.copy(alpha = 0.5f), RoundedCornerShape(16.dp))
+                        .background(slateBackground)
+                        .border(2.dp, slateBorder, RoundedCornerShape(16.dp))
                 }
             )
             .clickable {
