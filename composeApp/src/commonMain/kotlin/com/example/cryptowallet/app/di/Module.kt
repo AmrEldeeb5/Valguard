@@ -15,6 +15,8 @@ import com.example.cryptowallet.app.core.network.HttpClientFactory
 import com.example.cryptowallet.app.dca.data.DCARepository
 import com.example.cryptowallet.app.dca.presentation.DCAViewModel
 import com.example.cryptowallet.app.leaderboard.presentation.LeaderboardViewModel
+import com.example.cryptowallet.app.onboarding.data.OnboardingRepository
+import com.example.cryptowallet.app.onboarding.presentation.OnboardingViewModel
 import com.example.cryptowallet.app.portfolio.data.PortfolioRepositoryImpl
 import com.example.cryptowallet.app.portfolio.domain.PortfolioRepository
 import com.example.cryptowallet.app.portfolio.presentation.PortfolioViewModel
@@ -74,6 +76,9 @@ val sharedModule = module {
     single { get<PortfolioDatabase>().watchlistDao() }
     singleOf(::WatchlistRepositoryImpl).bind<WatchlistRepository>()
     
+    // onboarding
+    single { OnboardingRepository(get()) }
+    
     // DCA
     single { get<PortfolioDatabase>().dcaScheduleDao() }
     single { get<PortfolioDatabase>().dcaExecutionDao() }
@@ -107,4 +112,5 @@ val sharedModule = module {
     viewModel { DCAViewModel(get()) }
     viewModel { CompareViewModel(get()) }
     viewModel { LeaderboardViewModel() }
+    viewModel { OnboardingViewModel(get()) }
 }

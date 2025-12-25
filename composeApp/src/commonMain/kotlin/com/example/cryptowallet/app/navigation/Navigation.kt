@@ -7,6 +7,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,10 +23,13 @@ import com.example.cryptowallet.app.compare.presentation.CompareScreen
 import com.example.cryptowallet.app.dca.presentation.DCAScreen
 import com.example.cryptowallet.app.leaderboard.presentation.LeaderboardScreen
 import com.example.cryptowallet.app.main.presentation.MainScreen
+import com.example.cryptowallet.app.onboarding.data.OnboardingRepository
+import com.example.cryptowallet.app.onboarding.presentation.OnboardingScreen
 import com.example.cryptowallet.app.portfolio.presentation.PortfolioScreen
 import com.example.cryptowallet.app.referral.presentation.ReferralScreen
 import com.example.cryptowallet.app.trade.presentation.buy.BuyScreen
 import com.example.cryptowallet.app.trade.presentation.sell.SellScreen
+import org.koin.compose.koinInject
 
 private const val ANIMATION_DURATION = 300
 
@@ -29,10 +37,40 @@ private const val ANIMATION_DURATION = 300
 fun Navigation(
     navController: NavHostController = rememberNavController()
 ) {
+    val onboardingRepository: OnboardingRepository = koinInject()
+    var startDestination: Screens by remember { mutableStateOf(Screens.Main) }
+    var isLoading by remember { mutableStateOf(true) }
+    
+    // Check if onboarding is completed
+    LaunchedEffect(Unit) {
+        val isCompleted = onboardingRepository.isOnboardingCompleted()
+        startDestination = if (isCompleted) Screens.Main else Screens.Onboarding
+        isLoading = false
+    }
+    
+    if (isLoading) {
+        // Show nothing while loading
+        return
+    }
+    
     NavHost(
         navController = navController,
-        startDestination = Screens.Main
+        startDestination = startDestination
     ) {
+        // Onboarding Screen with fade transition
+        composable<Screens.Onboarding>(
+            enterTransition = { fadeIn(animationSpec = tween(ANIMATION_DURATION)) },
+            exitTransition = { fadeOut(animationSpec = tween(ANIMATION_DURATION)) }
+        ) {
+            OnboardingScreen(
+                onComplete = {
+                    navController.navigate(Screens.Main) {
+                        popUpTo(Screens.Onboarding) { inclusive = true }
+                    }
+                }
+            )
+        }
+        
         composable<Screens.Main> {
             MainScreen(
                 onBuyClick = { coinId ->
