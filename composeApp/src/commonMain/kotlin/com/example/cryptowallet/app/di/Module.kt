@@ -1,14 +1,20 @@
 package com.example.cryptowallet.app.di
 
+import com.example.cryptowallet.app.coindetail.presentation.CoinDetailViewModel
 import com.example.cryptowallet.app.coins.data.remote.impl.KtorCoinsRemoteDataSource
 import com.example.cryptowallet.app.coins.domain.usecase.GetCoinDetailsUseCase
 import com.example.cryptowallet.app.coins.domain.usecase.GetCoinPriceHistoryUseCase
 import com.example.cryptowallet.app.coins.domain.usecase.GetCoinsListUseCase
 import com.example.cryptowallet.app.coins.domain.api.CoinsRemoteDataSource
 import com.example.cryptowallet.app.coins.presentation.CoinsListViewModel
+import com.example.cryptowallet.app.compare.data.ComparisonRepository
+import com.example.cryptowallet.app.compare.presentation.CompareViewModel
 import com.example.cryptowallet.app.core.database.portfolio.PortfolioDatabase
 import com.example.cryptowallet.app.core.database.portfolio.getPortfolioDatabase
 import com.example.cryptowallet.app.core.network.HttpClientFactory
+import com.example.cryptowallet.app.dca.data.DCARepository
+import com.example.cryptowallet.app.dca.presentation.DCAViewModel
+import com.example.cryptowallet.app.leaderboard.presentation.LeaderboardViewModel
 import com.example.cryptowallet.app.portfolio.data.PortfolioRepositoryImpl
 import com.example.cryptowallet.app.portfolio.domain.PortfolioRepository
 import com.example.cryptowallet.app.portfolio.presentation.PortfolioViewModel
@@ -67,6 +73,15 @@ val sharedModule = module {
     // watchlist
     single { get<PortfolioDatabase>().watchlistDao() }
     singleOf(::WatchlistRepositoryImpl).bind<WatchlistRepository>()
+    
+    // DCA
+    single { get<PortfolioDatabase>().dcaScheduleDao() }
+    single { get<PortfolioDatabase>().dcaExecutionDao() }
+    single { DCARepository(get(), get()) }
+    
+    // Comparison
+    single { get<PortfolioDatabase>().savedComparisonDao() }
+    single { ComparisonRepository(get()) }
 
     // real-time price updates (CoinCap WebSocket API)
     single<ReconnectionStrategy> { ExponentialBackoffStrategy() }
@@ -88,4 +103,8 @@ val sharedModule = module {
     viewModel { PortfolioViewModel(get(), get()) }
     viewModel { (coinId: String) -> BuyViewModel(coinId, get(), get(), get(), get()) }
     viewModel { (coinId: String) -> SellViewModel(coinId, get(), get(), get(), get()) }
+    viewModel { CoinDetailViewModel(get(), get(), get()) }
+    viewModel { DCAViewModel(get()) }
+    viewModel { CompareViewModel(get()) }
+    viewModel { LeaderboardViewModel() }
 }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -60,6 +61,7 @@ fun TradeScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(colors.cardBackground)
+            .statusBarsPadding()
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally

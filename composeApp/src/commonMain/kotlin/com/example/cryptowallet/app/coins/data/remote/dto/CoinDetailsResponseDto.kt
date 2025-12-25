@@ -10,7 +10,7 @@ data class CoinDetailsResponseDto(
 
 @Serializable
 data class CoinDetailsDataDto(
-    val coin: List<CoinDetailsDto>
+    val coin: CoinDetailsDto  // Single object, not a list
 )
 
 @Serializable
@@ -19,8 +19,8 @@ data class CoinDetailsDto(
     val symbol: String,
     val name: String,
     val iconUrl: String,
-    val price: Double,
+    val price: String,  // API returns price as String
     val rank: Int,
-    val change: Double
+    val change: String  // API returns change as String
 )
 

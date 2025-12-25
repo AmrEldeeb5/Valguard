@@ -13,7 +13,7 @@ class GetCoinDetailsUseCase(
 
     suspend fun execute(coinId: String): Result<CoinModel, DataError.Remote> {
         return client.getCoinById(coinId).map { dto ->
-            dto.data.coin.first().toCoinModel()
+            dto.data.coin.toCoinModel()  // Single object, not .first()
         }
     }
 }

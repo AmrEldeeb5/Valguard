@@ -18,4 +18,19 @@ sealed interface Screens {
 
     @Serializable
     data class Buy(val coinId: String) : Screens
+    
+    @Serializable
+    data class CoinDetail(val coinId: String) : Screens
+    
+    @Serializable
+    data object DCA : Screens
+    
+    @Serializable
+    data object Compare : Screens
+    
+    @Serializable
+    data object Referral : Screens
+    
+    @Serializable
+    data object Leaderboard : Screens
 }

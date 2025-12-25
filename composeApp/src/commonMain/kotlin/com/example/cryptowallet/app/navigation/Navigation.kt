@@ -1,17 +1,29 @@
 package com.example.cryptowallet.app.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.example.cryptowallet.app.coindetail.presentation.CoinDetailScreen
 import com.example.cryptowallet.app.coins.presentation.CoinsListScreen
+import com.example.cryptowallet.app.compare.presentation.CompareScreen
+import com.example.cryptowallet.app.dca.presentation.DCAScreen
+import com.example.cryptowallet.app.leaderboard.presentation.LeaderboardScreen
 import com.example.cryptowallet.app.main.presentation.MainScreen
 import com.example.cryptowallet.app.portfolio.presentation.PortfolioScreen
+import com.example.cryptowallet.app.referral.presentation.ReferralScreen
 import com.example.cryptowallet.app.trade.presentation.buy.BuyScreen
 import com.example.cryptowallet.app.trade.presentation.sell.SellScreen
 
+private const val ANIMATION_DURATION = 300
 
 @Composable
 fun Navigation(
@@ -28,6 +40,21 @@ fun Navigation(
                 },
                 onSellClick = { coinId ->
                     navController.navigate(Screens.Sell(coinId))
+                },
+                onCoinClick = { coinId ->
+                    navController.navigate(Screens.CoinDetail(coinId))
+                },
+                onDCAClick = {
+                    navController.navigate(Screens.DCA)
+                },
+                onCompareClick = {
+                    navController.navigate(Screens.Compare)
+                },
+                onLeaderboardClick = {
+                    navController.navigate(Screens.Leaderboard)
+                },
+                onReferralClick = {
+                    navController.navigate(Screens.Referral)
                 }
             )
         }
@@ -68,6 +95,117 @@ fun Navigation(
                         popUpTo(Screens.Main) { inclusive = true }
                     }
                 }
+            )
+        }
+        
+        // Coin Detail Screen with slide-up animation
+        composable<Screens.CoinDetail>(
+            enterTransition = {
+                slideInVertically(
+                    initialOffsetY = { it },
+                    animationSpec = tween(ANIMATION_DURATION)
+                ) + fadeIn(animationSpec = tween(ANIMATION_DURATION))
+            },
+            exitTransition = {
+                slideOutVertically(
+                    targetOffsetY = { it },
+                    animationSpec = tween(ANIMATION_DURATION)
+                ) + fadeOut(animationSpec = tween(ANIMATION_DURATION))
+            }
+        ) { backStackEntry ->
+            val coinDetail: Screens.CoinDetail = backStackEntry.toRoute()
+            CoinDetailScreen(
+                coinId = coinDetail.coinId,
+                onDismiss = { navController.popBackStack() },
+                onBuyClick = { coinId ->
+                    navController.navigate(Screens.Buy(coinId))
+                },
+                onSellClick = { coinId ->
+                    navController.navigate(Screens.Sell(coinId))
+                }
+            )
+        }
+        
+        // DCA Screen with slide transition
+        composable<Screens.DCA>(
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(ANIMATION_DURATION)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(ANIMATION_DURATION)
+                )
+            }
+        ) {
+            DCAScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToBuy = { coinId ->
+                    navController.navigate(Screens.Buy(coinId))
+                }
+            )
+        }
+        
+        // Compare Screen with slide transition
+        composable<Screens.Compare>(
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(ANIMATION_DURATION)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(ANIMATION_DURATION)
+                )
+            }
+        ) {
+            CompareScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+        
+        // Referral Screen with slide transition
+        composable<Screens.Referral>(
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(ANIMATION_DURATION)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(ANIMATION_DURATION)
+                )
+            }
+        ) {
+            ReferralScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+        
+        // Leaderboard Screen with slide transition
+        composable<Screens.Leaderboard>(
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(ANIMATION_DURATION)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(ANIMATION_DURATION)
+                )
+            }
+        ) {
+            LeaderboardScreen(
+                onBack = { navController.popBackStack() }
             )
         }
     }

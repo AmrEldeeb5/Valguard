@@ -69,9 +69,10 @@ class PortfolioRepositoryImpl(
             }
             .onSuccess { coinDto ->
                 val portfolioCoinEntity = portfolioDao.getCoinById(coinId)
-                val coinDetails = coinDto.data.coin.find { it.uuid == coinId }
-                return if (portfolioCoinEntity != null && coinDetails != null) {
-                    Result.Success(portfolioCoinEntity.toPortfolioCoinModel(coinDetails.price))
+                val coinDetails = coinDto.data.coin
+                val price = coinDetails.price.toDoubleOrNull() ?: 0.0
+                return if (portfolioCoinEntity != null) {
+                    Result.Success(portfolioCoinEntity.toPortfolioCoinModel(price))
                 } else {
                     Result.Success(null)
                 }
