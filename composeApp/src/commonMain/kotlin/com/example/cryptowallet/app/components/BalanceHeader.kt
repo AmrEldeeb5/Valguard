@@ -25,18 +25,6 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoSpacing
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
-/**
- * A header component for displaying portfolio balance information.
- * 
- * @param totalValue The formatted total portfolio value (e.g., "$10,000.00")
- * @param cashBalance The formatted cash balance (e.g., "$5,000.00")
- * @param performancePercent The formatted performance percentage (e.g., "+2.3%")
- * @param performanceLabel The time context label (e.g., "24h")
- * @param isPositive Whether the performance is positive
- * @param showBuyButton Whether to show the buy button
- * @param onBuyClick Callback when the buy button is clicked
- * @param modifier Modifier for the component
- */
 @Composable
 fun BalanceHeader(
     totalValue: String,

@@ -23,10 +23,6 @@ import com.example.cryptowallet.theme.LocalCryptoSpacing
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
-/**
- * Main screen with CryptoVault design.
- * Integrates header, search, tabs, coin list, and bottom navigation.
- */
 @Composable
 fun MainScreen(
     onBuyClick: (String) -> Unit,

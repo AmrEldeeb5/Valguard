@@ -4,20 +4,8 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlin.test.assertFalse
 
-/**
- * Property tests for ErrorState component.
- * Feature: ui-ux-revamp
- */
 class ErrorStatePropertyTest {
 
-    /**
-     * Property 16: Error State Retry Functionality
-     * For any Error_State where onRetry callback is provided, the retry button
-     * SHALL be displayed; when the retry button is tapped, the onRetry callback
-     * SHALL be invoked.
-     * 
-     * Validates: Requirements 7.4, 7.5
-     */
     @Test
     fun `Property 16 - Retry button visibility depends on onRetry callback`() {
         // When onRetry is provided, button should be shown
@@ -67,9 +55,6 @@ class ErrorStatePropertyTest {
         }
     }
 
-    /**
-     * Helper class to test ErrorState logic without Compose runtime.
-     */
     private data class ErrorStateConfig(
         val message: String,
         val onRetry: (() -> Unit)?

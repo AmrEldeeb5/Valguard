@@ -16,22 +16,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cryptowallet.theme.LocalCryptoColors
 
-/**
- * Tab options for the main screen.
- */
 enum class Tab(val label: String) {
     MARKET("Market"),
     PORTFOLIO("Portfolio"),
     WATCHLIST("Watchlist")
 }
 
-/**
- * Tab navigation component with gradient active state.
- * 
- * @param activeTab Currently selected tab
- * @param onTabSelected Callback when a tab is selected
- * @param modifier Optional modifier
- */
 @Composable
 fun TabNavigation(
     activeTab: Tab,

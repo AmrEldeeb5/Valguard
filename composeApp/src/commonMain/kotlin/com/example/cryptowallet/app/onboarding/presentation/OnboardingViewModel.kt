@@ -14,10 +14,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel for the onboarding flow.
- * Manages state and handles events for the 4-step onboarding process.
- */
 class OnboardingViewModel(
     private val onboardingRepository: OnboardingRepository
 ) : ViewModel() {
@@ -25,10 +21,6 @@ class OnboardingViewModel(
     private val _state = MutableStateFlow(OnboardingState())
     val state: StateFlow<OnboardingState> = _state.asStateFlow()
     
-    /**
-     * Whether the user can proceed to the next step.
-     * Returns false on step 2 (Coin Selection) if no coins are selected.
-     */
     val canProceed: StateFlow<Boolean> = _state.map { state ->
         when (state.currentStep) {
             2 -> state.selectedCoins.isNotEmpty()
@@ -36,9 +28,6 @@ class OnboardingViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
     
-    /**
-     * The current step's gradient colors for UI styling.
-     */
     val currentStepColors: StateFlow<List<androidx.compose.ui.graphics.Color>> = _state.map { state ->
         OnboardingStep.fromIndex(state.currentStep).gradientColors
     }.stateIn(
@@ -54,16 +43,10 @@ class OnboardingViewModel(
         loadSavedState()
     }
     
-    /**
-     * Set the navigation callback for completing onboarding.
-     */
     fun setNavigationCallback(callback: () -> Unit) {
         onNavigateToMain = callback
     }
     
-    /**
-     * Load saved onboarding state from DataStore.
-     */
     private fun loadSavedState() {
         viewModelScope.launch {
             try {
@@ -76,9 +59,6 @@ class OnboardingViewModel(
         }
     }
     
-    /**
-     * Handle all onboarding events.
-     */
     fun onEvent(event: OnboardingEvent) {
         when (event) {
             is OnboardingEvent.NextStep -> handleNextStep()
@@ -93,9 +73,6 @@ class OnboardingViewModel(
         }
     }
     
-    /**
-     * Navigate to the next step with transition animation.
-     */
     private fun handleNextStep() {
         val currentState = _state.value
         if (currentState.currentStep < 3 && !currentState.isTransitioning) {
@@ -120,9 +97,6 @@ class OnboardingViewModel(
         }
     }
     
-    /**
-     * Navigate to the previous step with transition animation.
-     */
     private fun handlePreviousStep() {
         val currentState = _state.value
         if (currentState.currentStep > 0 && !currentState.isTransitioning) {
@@ -140,16 +114,10 @@ class OnboardingViewModel(
         }
     }
     
-    /**
-     * Show the skip confirmation dialog.
-     */
     private fun showSkipConfirmation() {
         _state.update { it.copy(showSkipDialog = true) }
     }
     
-    /**
-     * Confirm skipping to the final step.
-     */
     private fun confirmSkip() {
         _state.update { 
             it.copy(
@@ -169,16 +137,10 @@ class OnboardingViewModel(
         }
     }
     
-    /**
-     * Dismiss the skip confirmation dialog.
-     */
     private fun dismissSkipDialog() {
         _state.update { it.copy(showSkipDialog = false) }
     }
     
-    /**
-     * Toggle a coin's selection state.
-     */
     private fun toggleCoin(coinSymbol: String) {
         _state.update { state ->
             val newSelectedCoins = if (state.selectedCoins.contains(coinSymbol)) {
@@ -193,9 +155,6 @@ class OnboardingViewModel(
         }
     }
     
-    /**
-     * Toggle notification preference.
-     */
     private fun toggleNotifications() {
         _state.update { it.copy(notificationsEnabled = !it.notificationsEnabled) }
         viewModelScope.launch {
@@ -203,10 +162,6 @@ class OnboardingViewModel(
         }
     }
     
-    /**
-     * Complete the onboarding flow.
-     * Shows success animation, saves coins to watchlist, and marks onboarding complete.
-     */
     private fun completeOnboarding() {
         _state.update { it.copy(showSuccessAnimation = true) }
         viewModelScope.launch {
@@ -227,16 +182,10 @@ class OnboardingViewModel(
         }
     }
     
-    /**
-     * Navigate to the main screen.
-     */
     private fun navigateToMain() {
         onNavigateToMain?.invoke()
     }
     
-    /**
-     * Save current state to DataStore.
-     */
     private suspend fun saveState() {
         try {
             onboardingRepository.saveOnboardingState(_state.value)

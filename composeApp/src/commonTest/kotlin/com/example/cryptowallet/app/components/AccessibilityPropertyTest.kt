@@ -4,21 +4,8 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlin.test.assertFalse
 
-/**
- * Property tests for accessibility requirements.
- * 
- * Property 17: Accessibility Content Descriptions
- * For any interactive element (buttons, clickable cards, icons), the element SHALL have 
- * a non-empty contentDescription or semantics label for screen readers.
- * 
- * Validates: Requirements 9.1
- */
 class AccessibilityPropertyTest {
 
-    /**
-     * Property 17: Test that CoinCard generates non-empty accessibility descriptions
-     * for all coin data combinations.
-     */
     @Test
     fun `Property 17 - CoinCard accessibility description is non-empty for any coin data`() {
         // Test various coin data combinations
@@ -83,9 +70,6 @@ class AccessibilityPropertyTest {
         }
     }
 
-    /**
-     * Property 17: Test that BalanceHeader generates non-empty accessibility descriptions.
-     */
     @Test
     fun `Property 17 - BalanceHeader accessibility description is non-empty`() {
         val testCases = listOf(
@@ -109,9 +93,6 @@ class AccessibilityPropertyTest {
         }
     }
 
-    /**
-     * Property 17: Test that ErrorState generates non-empty accessibility descriptions.
-     */
     @Test
     fun `Property 17 - ErrorState accessibility description is non-empty`() {
         val errorMessages = listOf(
@@ -135,9 +116,6 @@ class AccessibilityPropertyTest {
         }
     }
 
-    /**
-     * Property 17: Test that EmptyState generates non-empty accessibility descriptions.
-     */
     @Test
     fun `Property 17 - EmptyState accessibility description is non-empty`() {
         val testCases = listOf(
@@ -160,9 +138,6 @@ class AccessibilityPropertyTest {
         }
     }
 
-    /**
-     * Property 17: Test that NavigationShell items have accessibility descriptions.
-     */
     @Test
     fun `Property 17 - Navigation items have accessibility descriptions`() {
         val navItems = listOf(
@@ -192,9 +167,6 @@ class AccessibilityPropertyTest {
         }
     }
 
-    /**
-     * Property 17: Test that ConnectionStatusIndicator has accessibility descriptions.
-     */
     @Test
     fun `Property 17 - ConnectionStatusIndicator has accessibility descriptions`() {
         val connectionStates = listOf(
@@ -218,9 +190,6 @@ class AccessibilityPropertyTest {
         }
     }
 
-    /**
-     * Property 17: Test that CoinHeader has accessibility descriptions.
-     */
     @Test
     fun `Property 17 - CoinHeader has accessibility descriptions`() {
         val testCases = listOf(
@@ -243,9 +212,6 @@ class AccessibilityPropertyTest {
         }
     }
 
-    /**
-     * Property 17: Test that TradeConfirmationDialog has accessibility descriptions.
-     */
     @Test
     fun `Property 17 - TradeConfirmationDialog has accessibility descriptions`() {
         val testCases = listOf(

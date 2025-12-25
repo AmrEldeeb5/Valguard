@@ -16,20 +16,9 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 
-/**
- * Property-based tests for WebSocketClient behavior.
- */
 @OptIn(ExperimentalCoroutinesApi::class)
 class WebSocketClientTest {
 
-    /**
-     * **Feature: realtime-price-updates, Property 7: Price updates flow through observable stream**
-     *
-     * For any price update received by the WebSocketClient, that update SHALL be emitted
-     * through the priceUpdates Flow.
-     *
-     * Validates: Requirements 4.3
-     */
     @Test
     fun `Property 7 - price updates flow through observable stream`() = runTest(UnconfinedTestDispatcher()) {
         val priceUpdateArb = Arb.list(
@@ -66,9 +55,6 @@ class WebSocketClientTest {
         }
     }
 
-    /**
-     * Test that connect changes state to CONNECTED.
-     */
     @Test
     fun `connect changes state to CONNECTED`() = runTest {
         val client = FakeWebSocketClient()
@@ -81,9 +67,6 @@ class WebSocketClientTest {
         client.connectCalled shouldBe true
     }
 
-    /**
-     * Test that disconnect changes state to DISCONNECTED.
-     */
     @Test
     fun `disconnect changes state to DISCONNECTED`() = runTest {
         val client = FakeWebSocketClient()
@@ -95,9 +78,6 @@ class WebSocketClientTest {
         client.disconnectCalled shouldBe true
     }
 
-    /**
-     * Test that subscribe adds coin IDs to subscribed set.
-     */
     @Test
     fun `subscribe adds coin IDs`() = runTest {
         checkAll(100, TestGenerators.coinIdListArb()) { coinIds ->
@@ -110,9 +90,6 @@ class WebSocketClientTest {
         }
     }
 
-    /**
-     * Test that unsubscribe removes coin IDs from subscribed set.
-     */
     @Test
     fun `unsubscribe removes coin IDs`() = runTest {
         checkAll(100, TestGenerators.coinIdListArb()) { coinIds ->
@@ -128,9 +105,6 @@ class WebSocketClientTest {
         }
     }
 
-    /**
-     * Test that single price update is received correctly.
-     */
     @Test
     fun `single price update is received`() = runTest(UnconfinedTestDispatcher()) {
         val client = FakeWebSocketClient()

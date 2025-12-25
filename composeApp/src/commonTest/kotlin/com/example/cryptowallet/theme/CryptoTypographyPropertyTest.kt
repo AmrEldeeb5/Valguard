@@ -4,19 +4,8 @@ import androidx.compose.ui.unit.TextUnit
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-/**
- * Property tests for CryptoTypography design system.
- * Feature: ui-ux-revamp
- */
 class CryptoTypographyPropertyTest {
 
-    /**
-     * Property 2: Typography Scale Completeness
-     * For any CryptoTypography implementation, all required text style properties
-     * SHALL be defined with valid TextStyle values containing appropriate font sizes.
-     * 
-     * Validates: Requirements 1.2
-     */
     @Test
     fun `Property 2 - All typography styles should have valid font sizes`() {
         val typography = DefaultCryptoTypography
@@ -44,13 +33,6 @@ class CryptoTypographyPropertyTest {
         assertTrue(typography.caption.fontSize.value > 0, "caption fontSize should be positive")
     }
 
-    /**
-     * Property 21: Scalable Typography
-     * For any text style in CryptoTypography, the font size SHALL use scalable units (sp)
-     * that respond to system accessibility text size settings.
-     * 
-     * Validates: Requirements 9.4
-     */
     @Test
     fun `Property 21 - All typography styles should use sp units for accessibility`() {
         val typography = DefaultCryptoTypography

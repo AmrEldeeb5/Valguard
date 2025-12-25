@@ -21,13 +21,6 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoSpacing
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
-/**
- * A component for displaying error states with optional retry functionality.
- * 
- * @param message The error message to display
- * @param onRetry Optional callback for retry action. If provided, a retry button is shown.
- * @param modifier Modifier for the component
- */
 @Composable
 fun ErrorState(
     message: String,

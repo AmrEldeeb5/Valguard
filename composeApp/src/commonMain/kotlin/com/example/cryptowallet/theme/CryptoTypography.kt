@@ -7,10 +7,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-/**
- * Typography tokens for the CryptoWallet design system.
- * All font sizes use scalable sp units for accessibility support.
- */
 @Immutable
 data class CryptoTypography(
     // Display styles - for large prominent text like portfolio value
@@ -36,10 +32,6 @@ data class CryptoTypography(
     val caption: TextStyle
 )
 
-/**
- * Default CryptoTypography implementation using system font.
- * Uses scalable sp units for all font sizes to support accessibility.
- */
 val DefaultCryptoTypography = CryptoTypography(
     displayLarge = TextStyle(
         fontFamily = FontFamily.Default,
@@ -127,7 +119,4 @@ val DefaultCryptoTypography = CryptoTypography(
     )
 )
 
-/**
- * CompositionLocal for accessing CryptoTypography throughout the app.
- */
 val LocalCryptoTypography = compositionLocalOf { DefaultCryptoTypography }

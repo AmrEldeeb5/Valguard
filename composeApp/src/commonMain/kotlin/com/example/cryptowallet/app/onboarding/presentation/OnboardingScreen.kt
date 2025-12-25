@@ -58,12 +58,6 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoTypography
 import org.koin.compose.viewmodel.koinViewModel
 
-/**
- * Main onboarding screen composable.
- * Manages the 4-step onboarding flow with animations and navigation.
- * 
- * Requirements: 1.1, 1.6, 1.7, 6.1, 6.4, 6.5, 11.1, 11.2, 11.3, 11.5
- */
 @Composable
 fun OnboardingScreen(
     onComplete: () -> Unit,
@@ -213,10 +207,6 @@ fun OnboardingScreen(
     }
 }
 
-/**
- * Skip confirmation dialog.
- * Requirements: 6.7, 6.8
- */
 @Composable
 private fun SkipConfirmationDialog(
     onConfirm: () -> Unit,
@@ -261,10 +251,6 @@ private fun SkipConfirmationDialog(
     )
 }
 
-/**
- * Success animation overlay shown after completing onboarding.
- * Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 9.6
- */
 @Composable
 private fun SuccessAnimationOverlay() {
     val colors = LocalCryptoColors.current

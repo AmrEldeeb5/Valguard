@@ -4,20 +4,8 @@ import kotlin.test.Test
 import kotlin.test.assertNotEquals
 import kotlin.test.assertEquals
 
-/**
- * Property tests for theme switching consistency.
- * Feature: ui-ux-revamp
- */
 class ThemeSwitchingPropertyTest {
 
-    /**
-     * Property 3: Theme Switching Consistency
-     * For any theme mode (light or dark), when the theme changes, the Theme_Engine
-     * SHALL provide the corresponding color palette where light and dark palettes
-     * have distinct values for primary surface and background colors.
-     * 
-     * Validates: Requirements 1.6, 10.2
-     */
     @Test
     fun `Property 3 - Light and dark themes should have distinct surface colors`() {
         // Card backgrounds should be distinct

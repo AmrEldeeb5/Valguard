@@ -13,21 +13,10 @@ import kotlinx.coroutines.test.runTest
 import kotlin.math.abs
 import kotlin.test.Test
 
-/**
- * Property-based tests for PortfolioValueCalculator.
- */
 class PortfolioValueCalculatorTest {
 
     private val randomSource = RandomSource.default()
 
-    /**
-     * **Feature: realtime-price-updates, Property 5: Portfolio value calculation on price update**
-     *
-     * For any portfolio with owned coins and a price update for one of those coins,
-     * the new portfolio value SHALL equal the sum of (amount owned × current price) for all coins.
-     *
-     * Validates: Requirements 2.2, 5.2
-     */
     @Test
     fun `Property 5 - portfolio value calculation on price update`() = runTest {
         val holdingsArb = Arb.list(
@@ -58,9 +47,6 @@ class PortfolioValueCalculatorTest {
         }
     }
 
-    /**
-     * Test that empty portfolio has zero value.
-     */
     @Test
     fun `empty portfolio has zero value`() = runTest {
         val prices = mapOf("bitcoin" to 50000.0, "ethereum" to 3000.0)
@@ -68,9 +54,6 @@ class PortfolioValueCalculatorTest {
         totalValue shouldBe 0.0
     }
 
-    /**
-     * Test that missing prices are treated as zero.
-     */
     @Test
     fun `missing prices are treated as zero`() = runTest {
         val holdings = listOf(
@@ -85,9 +68,6 @@ class PortfolioValueCalculatorTest {
         totalValue shouldBe 50000.0
     }
 
-    /**
-     * Test that portfolio value is always non-negative.
-     */
     @Test
     fun `portfolio value is always non-negative`() = runTest {
         val holdingsArb = Arb.list(
@@ -107,9 +87,6 @@ class PortfolioValueCalculatorTest {
         }
     }
 
-    /**
-     * Test incremental update calculation.
-     */
     @Test
     fun `updateValueOnPriceChange correctly updates portfolio value`() = runTest {
         checkAll(100, TestGenerators.priceArb, TestGenerators.priceArb, Arb.double(min = 0.001, max = 100.0)) { oldPrice, newPrice, amount ->
@@ -132,9 +109,6 @@ class PortfolioValueCalculatorTest {
         }
     }
 
-    /**
-     * Test that price update with same price doesn't change value.
-     */
     @Test
     fun `same price update doesn't change value`() = runTest {
         checkAll(100, TestGenerators.priceArb, Arb.double(min = 0.001, max = 100.0)) { price, amount ->

@@ -6,19 +6,8 @@ import kotlin.test.assertTrue
 import kotlin.test.assertFalse
 import kotlin.test.assertEquals
 
-/**
- * Property tests for CoinCard component.
- * Feature: ui-ux-revamp
- */
 class CoinCardPropertyTest {
 
-    /**
-     * Property 7: Coin Card Price Change Color Coding
-     * For any UiCoinItem, the Coin_Card SHALL display the price change percentage
-     * in profit color when isPositive is true, and loss color when isPositive is false.
-     * 
-     * Validates: Requirements 4.3
-     */
     @Test
     fun `Property 7 - Price change color depends on isPositive flag`() {
         // Test positive changes
@@ -50,14 +39,6 @@ class CoinCardPropertyTest {
         }
     }
 
-    /**
-     * Property 8: Coin Card Holdings Display
-     * For any Coin_Card with showHoldings set to true, the component SHALL render
-     * the holdingsAmount and holdingsValue fields; when showHoldings is false,
-     * these fields SHALL not be rendered.
-     * 
-     * Validates: Requirements 4.5
-     */
     @Test
     fun `Property 8 - Holdings display depends on showHoldings and data availability`() {
         // Coin with holdings data
@@ -90,14 +71,6 @@ class CoinCardPropertyTest {
         assertTrue(both.hasHoldings(), "Holdings should be true when both are present")
     }
 
-    /**
-     * Property 9: Coin Card Interaction Callbacks
-     * For any Coin_Card, when onClick is invoked, the callback SHALL be called
-     * with the coin's id; when onLongClick is provided and invoked, the callback
-     * SHALL be called.
-     * 
-     * Validates: Requirements 4.6, 4.7
-     */
     @Test
     fun `Property 9 - onClick callback is invoked correctly`() {
         var clickedCoinId: String? = null
@@ -131,9 +104,6 @@ class CoinCardPropertyTest {
         assertTrue(true, "Null onLongClick should be handled gracefully")
     }
 
-    /**
-     * Helper function to create test UiCoinItem instances.
-     */
     private fun createTestCoin(
         id: String = "test-coin",
         name: String = "Test Coin",

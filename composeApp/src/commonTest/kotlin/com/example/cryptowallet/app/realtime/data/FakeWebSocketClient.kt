@@ -10,10 +10,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-/**
- * Fake WebSocketClient for testing purposes.
- * Allows manual control over connection state and price updates.
- */
 class FakeWebSocketClient : WebSocketClient {
 
     private val _connectionState = MutableStateFlow(ConnectionState.DISCONNECTED)

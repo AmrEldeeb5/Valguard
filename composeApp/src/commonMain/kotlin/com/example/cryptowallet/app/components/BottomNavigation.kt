@@ -27,9 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cryptowallet.theme.LocalCryptoColors
 
-/**
- * Bottom navigation items.
- */
 enum class BottomNavItem(
     val label: String,
     val icon: ImageVector
@@ -42,13 +39,6 @@ enum class BottomNavItem(
     ALERTS("Alerts", Icons.Default.Notifications)
 }
 
-/**
- * Bottom navigation bar with gradient active state.
- * 
- * @param activeItem Currently selected item
- * @param onItemSelected Callback when an item is selected
- * @param modifier Optional modifier
- */
 @Composable
 fun CryptoBottomNavigation(
     activeItem: BottomNavItem,

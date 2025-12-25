@@ -8,12 +8,6 @@ import io.kotest.property.arbitrary.double
 import io.kotest.property.arbitrary.filter
 import io.kotest.property.checkAll
 
-/**
- * Property-based tests for PriceUpdate domain model.
- * 
- * **Feature: realtime-price-updates, Property 4: Price direction calculation**
- * **Validates: Requirements 1.4**
- */
 class PriceUpdateTest : FunSpec({
 
     test("Property 4: Price direction calculation - UP when current price is greater than previous") {

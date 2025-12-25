@@ -33,20 +33,8 @@ import com.example.cryptowallet.theme.LocalCryptoShapes
 import com.example.cryptowallet.theme.LocalCryptoSpacing
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
-/**
- * Minimum touch target size for accessibility (48dp as per Material guidelines).
- */
 val MinTouchTargetSize = 48.dp
 
-/**
- * A card component for displaying coin information.
- * 
- * @param coin The coin data to display
- * @param onClick Callback when the card is tapped
- * @param onLongClick Optional callback for long-press (e.g., to show chart)
- * @param showHoldings Whether to display user's holdings (for portfolio view)
- * @param modifier Modifier for the component
- */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CoinCard(

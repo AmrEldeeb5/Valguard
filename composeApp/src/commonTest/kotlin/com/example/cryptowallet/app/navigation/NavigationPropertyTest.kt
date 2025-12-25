@@ -5,20 +5,8 @@ import kotlin.test.assertTrue
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
-/**
- * Property tests for Navigation components.
- * Feature: ui-ux-revamp
- */
 class NavigationPropertyTest {
 
-    /**
-     * Property 4: Navigation State Consistency
-     * For any bottom navigation item tap, the navigation state's currentRoute
-     * SHALL match the tapped item's route, and the bottom navigation SHALL
-     * visually indicate the new active item.
-     * 
-     * Validates: Requirements 2.2, 2.3
-     */
     @Test
     fun `Property 4 - Bottom nav items have unique routes`() {
         val items = BottomNavItems.items

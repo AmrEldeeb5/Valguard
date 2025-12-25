@@ -5,20 +5,8 @@ import kotlin.test.assertTrue
 import kotlin.test.assertFalse
 import kotlin.test.assertEquals
 
-/**
- * Property tests for Trade Screen components.
- * Feature: ui-ux-revamp
- */
 class TradeScreenPropertyTest {
 
-    /**
-     * Property 13: Trade Available Balance Display
-     * For any Trade_Screen, when tradeType is BUY, the available balance SHALL
-     * show cash balance; when tradeType is SELL, the available balance SHALL
-     * show coin holdings.
-     * 
-     * Validates: Requirements 6.3
-     */
     @Test
     fun `Property 13 - Buy shows cash balance`() {
         val buyState = TradeDisplayState(
@@ -49,13 +37,6 @@ class TradeScreenPropertyTest {
         )
     }
 
-    /**
-     * Property 14: Trade Amount Validation
-     * For any Trade_Screen where the entered amount exceeds the available balance,
-     * the screen SHALL display an error message and the submit button SHALL be disabled.
-     * 
-     * Validates: Requirements 6.4
-     */
     @Test
     fun `Property 14 - Valid amount enables submit`() {
         val state = TradeValidationState(
@@ -98,13 +79,6 @@ class TradeScreenPropertyTest {
         assertFalse(state.isValid(), "Negative amount should be invalid")
     }
 
-    /**
-     * Property 15: Trade Button Color
-     * For any Trade_Screen, the action button SHALL be profit color (green)
-     * when tradeType is BUY, and loss color (red) when tradeType is SELL.
-     * 
-     * Validates: Requirements 6.5
-     */
     @Test
     fun `Property 15 - Buy button uses profit color`() {
         val buyConfig = TradeButtonConfig(tradeType = TradeTypeTest.BUY)

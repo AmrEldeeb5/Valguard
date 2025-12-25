@@ -3,9 +3,6 @@ package com.example.cryptowallet.app.realtime.domain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
-/**
- * Interface for WebSocket client that handles real-time price updates.
- */
 interface WebSocketClient {
 
     val connectionState: StateFlow<ConnectionState>

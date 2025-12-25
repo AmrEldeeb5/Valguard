@@ -25,14 +25,6 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoSpacing
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
-/**
- * A header component for displaying coin information in trade screens.
- * 
- * @param iconUrl URL for the coin's icon
- * @param name The coin's name
- * @param currentPrice The formatted current price (optional)
- * @param modifier Modifier for the component
- */
 @Composable
 fun CoinHeader(
     iconUrl: String,

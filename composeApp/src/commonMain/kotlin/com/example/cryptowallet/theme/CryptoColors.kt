@@ -4,10 +4,6 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-/**
- * Semantic color tokens for the CryptoVault design system.
- * Dark gradient theme with blue/purple accents.
- */
 @Immutable
 data class CryptoColors(
     // Background colors
@@ -170,8 +166,4 @@ val LightCryptoColors = CryptoColors(
     shimmerHighlight = Color(0xFFF1F5F9)      // slate-100
 )
 
-/**
- * CompositionLocal for accessing CryptoColors throughout the app.
- * Defaults to dark theme (CryptoVault primary theme).
- */
 val LocalCryptoColors = compositionLocalOf { DarkCryptoColors }

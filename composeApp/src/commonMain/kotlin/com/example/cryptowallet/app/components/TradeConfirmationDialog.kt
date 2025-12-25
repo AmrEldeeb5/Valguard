@@ -22,9 +22,6 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoSpacing
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
-/**
- * Data class for trade confirmation details.
- */
 data class TradeConfirmation(
     val coinName: String,
     val coinSymbol: String,
@@ -34,13 +31,6 @@ data class TradeConfirmation(
     val isBuy: Boolean
 )
 
-/**
- * A dialog for confirming trade actions before execution.
- * 
- * @param confirmation The trade confirmation details
- * @param onConfirm Callback when the user confirms the trade
- * @param onCancel Callback when the user cancels
- */
 @Composable
 fun TradeConfirmationDialog(
     confirmation: TradeConfirmation,

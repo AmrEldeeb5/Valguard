@@ -18,12 +18,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
-/**
- * Navigation shell that provides the bottom navigation bar and screen container.
- * 
- * @param navController The navigation controller for managing navigation state
- * @param content The screen content to display
- */
 @Composable
 fun NavigationShell(
     navController: NavHostController,

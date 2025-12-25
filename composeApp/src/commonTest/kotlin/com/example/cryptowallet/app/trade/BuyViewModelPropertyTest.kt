@@ -6,18 +6,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-/**
- * Property tests for BuyViewModel.
- * Feature: trade-flow-completion
- */
 class BuyViewModelPropertyTest {
 
-    /**
-     * Property 1: ViewModel Uses Provided CoinId
-     * For any valid coinId passed to BuyViewModel, the ViewModel SHALL use that exact coinId
-     * when calling GetCoinDetailsUseCase and when subscribing to real-time price updates.
-     * Validates: Requirements 1.1, 5.1
-     */
     @Test
     fun `Property 1 - ViewModel uses provided coinId for all operations`() {
         val testCoinIds = listOf(
@@ -32,14 +22,6 @@ class BuyViewModelPropertyTest {
         }
     }
 
-    /**
-     * Property 4: Amount Validation
-     * For any amount entered by the user:
-     * - If amount is empty or zero, isAmountValid SHALL be false
-     * - If amount exceeds availableAmountValue, validationError SHALL indicate insufficient funds
-     * - If amount is positive and within availableAmountValue, isAmountValid SHALL be true
-     * Validates: Requirements 3.1, 3.2, 3.3
-     */
     @Test
     fun `Property 4 - Empty amount returns Empty validation result`() {
         val emptyInputs = listOf("", "   ", "\t", "\n")
@@ -127,9 +109,6 @@ class BuyViewModelPropertyTest {
         }
     }
 
-    /**
-     * Helper function that mirrors the validation logic in BuyViewModel.
-     */
     private fun validateAmount(amount: String, availableBalance: Double): ValidationResult {
         if (amount.isBlank()) return ValidationResult.Empty
         val amountValue = amount.toDoubleOrNull() ?: return ValidationResult.Empty

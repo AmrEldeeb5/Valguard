@@ -33,12 +33,6 @@ import androidx.compose.ui.unit.dp
 import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
-/**
- * Primary action button for onboarding flow.
- * Shows "Continue" for steps 0-2, "Get Started" for step 3.
- * 
- * Requirements: 6.1, 6.2, 6.3, 6.10, 10.2
- */
 @Composable
 fun OnboardingButton(
     currentStep: Int,
@@ -103,10 +97,6 @@ fun OnboardingButton(
     }
 }
 
-/**
- * Get button text based on current step.
- * Returns "Get Started" on final step, "Continue" otherwise.
- */
 fun getButtonText(currentStep: Int): String {
     return if (currentStep == 3) "Get Started" else "Continue"
 }

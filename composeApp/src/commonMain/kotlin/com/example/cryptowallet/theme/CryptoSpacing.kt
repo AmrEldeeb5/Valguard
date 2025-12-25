@@ -5,10 +5,6 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-/**
- * Spacing tokens for the CryptoWallet design system.
- * Provides consistent spacing values for margins, padding, and gaps.
- */
 @Immutable
 data class CryptoSpacing(
     val xxs: Dp = 4.dp,
@@ -20,12 +16,6 @@ data class CryptoSpacing(
     val xxl: Dp = 48.dp
 )
 
-/**
- * Default spacing values following the design system specification.
- */
 val DefaultCryptoSpacing = CryptoSpacing()
 
-/**
- * CompositionLocal for accessing CryptoSpacing throughout the app.
- */
 val LocalCryptoSpacing = compositionLocalOf { DefaultCryptoSpacing }

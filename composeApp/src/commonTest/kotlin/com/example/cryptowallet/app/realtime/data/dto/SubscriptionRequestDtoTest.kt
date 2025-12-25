@@ -7,12 +7,6 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.arbitrary
 import io.kotest.property.checkAll
 
-/**
- * Property-based tests for SubscriptionRequestDto serialization.
- * 
- * **Feature: realtime-price-updates, Property 2: Subscription request round-trip**
- * **Validates: Requirements 4.2**
- */
 class SubscriptionRequestDtoTest : FunSpec({
 
     val subscriptionRequestArb: Arb<SubscriptionRequestDto> = arbitrary {

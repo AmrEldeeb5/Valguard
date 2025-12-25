@@ -4,20 +4,8 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlin.test.assertFalse
 
-/**
- * Property tests for BalanceHeader component.
- * Feature: ui-ux-revamp
- */
 class BalanceHeaderPropertyTest {
 
-    /**
-     * Property 5: Portfolio Performance Color Coding
-     * For any portfolio performance value, the Balance_Header SHALL display
-     * the value in profit color (green) when the value is positive, loss color
-     * (red) when negative, and neutral color when zero.
-     * 
-     * Validates: Requirements 3.4, 3.5
-     */
     @Test
     fun `Property 5 - Positive performance uses profit color`() {
         val testCases = listOf(
@@ -61,13 +49,6 @@ class BalanceHeaderPropertyTest {
         )
     }
 
-    /**
-     * Property 6: Empty Portfolio State
-     * For any portfolio state where the coins list is empty, the Portfolio_Screen
-     * SHALL display the Empty_State component instead of the coins list.
-     * 
-     * Validates: Requirements 3.7
-     */
     @Test
     fun `Property 6 - Empty portfolio shows empty state`() {
         val emptyPortfolio = PortfolioDisplayConfig(
@@ -96,9 +77,6 @@ class BalanceHeaderPropertyTest {
         )
     }
 
-    /**
-     * Helper class to test BalanceHeader logic without Compose runtime.
-     */
     private data class BalanceHeaderConfig(
         val totalValue: String = "$10,000.00",
         val cashBalance: String = "$5,000.00",
@@ -108,9 +86,6 @@ class BalanceHeaderPropertyTest {
         val showBuyButton: Boolean = true
     )
 
-    /**
-     * Helper class to test portfolio display logic.
-     */
     private data class PortfolioDisplayConfig(
         val coins: List<String>,
         val totalValue: String,

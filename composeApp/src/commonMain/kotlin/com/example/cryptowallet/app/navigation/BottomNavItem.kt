@@ -7,14 +7,6 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.ui.graphics.vector.ImageVector
 
-/**
- * Data class representing a bottom navigation item.
- * 
- * @param route The navigation route for this item
- * @param icon The icon to display when not selected
- * @param selectedIcon The icon to display when selected
- * @param label The text label for the item
- */
 data class BottomNavItem(
     val route: Screens,
     val icon: ImageVector,
@@ -22,9 +14,6 @@ data class BottomNavItem(
     val label: String
 )
 
-/**
- * Predefined bottom navigation items for the app.
- */
 object BottomNavItems {
     val Portfolio = BottomNavItem(
         route = Screens.Portfolio,

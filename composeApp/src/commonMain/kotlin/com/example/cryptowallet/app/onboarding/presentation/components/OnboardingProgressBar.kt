@@ -24,12 +24,6 @@ import androidx.compose.ui.unit.dp
 import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
-/**
- * Progress bar for the onboarding flow.
- * Displays 4 horizontal segments with the current step highlighted.
- * 
- * Requirements: 1.2, 1.3, 1.4, 1.5
- */
 @Composable
 fun OnboardingProgressBar(
     currentStep: Int,
@@ -99,9 +93,6 @@ fun OnboardingProgressBar(
     }
 }
 
-/**
- * Calculate progress percentage from step index.
- */
 fun calculateProgressPercentage(currentStep: Int, totalSteps: Int = 4): Int {
     return ((currentStep + 1).toFloat() / totalSteps * 100).toInt()
 }

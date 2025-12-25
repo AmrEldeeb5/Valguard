@@ -5,19 +5,8 @@ import kotlin.test.assertTrue
 import kotlin.test.assertFalse
 import kotlin.test.assertEquals
 
-/**
- * Property tests for Loading and Error state display.
- * Feature: ui-ux-revamp
- */
 class LoadingErrorStatePropertyTest {
 
-    /**
-     * Property 11: Loading State Display
-     * For any screen state where isLoading is true, the screen SHALL display
-     * the Loading_State component instead of content or error states.
-     * 
-     * Validates: Requirements 5.4
-     */
     @Test
     fun `Property 11 - Loading state takes precedence over content`() {
         val state = ScreenDisplayState(
@@ -63,13 +52,6 @@ class LoadingErrorStatePropertyTest {
         )
     }
 
-    /**
-     * Property 12: Error State Display
-     * For any screen state where error is not null and isLoading is false,
-     * the screen SHALL display the Error_State component with the error message.
-     * 
-     * Validates: Requirements 5.5
-     */
     @Test
     fun `Property 12 - Error state shown when error exists and not loading`() {
         val state = ScreenDisplayState(
@@ -131,9 +113,6 @@ class LoadingErrorStatePropertyTest {
         )
     }
 
-    /**
-     * Helper enum for display modes.
-     */
     private enum class DisplayMode {
         LOADING,
         ERROR,
@@ -141,9 +120,6 @@ class LoadingErrorStatePropertyTest {
         EMPTY
     }
 
-    /**
-     * Helper class to test screen display logic.
-     */
     private data class ScreenDisplayState(
         val isLoading: Boolean,
         val error: String?,

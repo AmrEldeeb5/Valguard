@@ -155,9 +155,6 @@ fun CoinsList(
     }
 }
 
-/**
- * Extension function to convert UiCoinListItem to UiCoinItem for CoinCard.
- */
 private fun UiCoinListItem.toUiCoinItem(): UiCoinItem {
     return UiCoinItem(
         id = id,

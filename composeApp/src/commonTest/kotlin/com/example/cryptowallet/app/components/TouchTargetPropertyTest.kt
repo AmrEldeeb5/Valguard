@@ -4,19 +4,8 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 import androidx.compose.ui.unit.dp
 
-/**
- * Property tests for minimum touch target size accessibility requirement.
- * Feature: ui-ux-revamp
- */
 class TouchTargetPropertyTest {
 
-    /**
-     * Property 18: Minimum Touch Target Size
-     * For any interactive element, the touch target size SHALL be at least
-     * 48dp in both width and height.
-     * 
-     * Validates: Requirements 9.2
-     */
     @Test
     fun `Property 18 - MinTouchTargetSize constant is at least 48dp`() {
         // The MinTouchTargetSize constant should be at least 48dp

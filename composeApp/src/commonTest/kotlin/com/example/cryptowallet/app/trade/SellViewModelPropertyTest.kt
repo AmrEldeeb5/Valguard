@@ -5,18 +5,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-/**
- * Property tests for SellViewModel.
- * Feature: trade-flow-completion
- */
 class SellViewModelPropertyTest {
 
-    /**
-     * Property 1: ViewModel Uses Provided CoinId
-     * For any valid coinId passed to SellViewModel, the ViewModel SHALL use that exact coinId
-     * when calling GetCoinDetailsUseCase and when subscribing to real-time price updates.
-     * Validates: Requirements 1.2, 5.1
-     */
     @Test
     fun `Property 1 - SellViewModel uses provided coinId for all operations`() {
         val testCoinIds = listOf(
@@ -34,10 +24,6 @@ class SellViewModelPropertyTest {
         }
     }
 
-    /**
-     * Property 4: Amount Validation for Sell
-     * Validates: Requirements 3.1, 3.2, 3.3
-     */
     @Test
     fun `Property 4 - Sell validation follows same rules as buy`() {
         // Test that sell validation is consistent with buy validation
@@ -87,9 +73,6 @@ class SellViewModelPropertyTest {
         }
     }
 
-    /**
-     * Helper function that mirrors the validation logic in SellViewModel.
-     */
     private fun validateAmount(amount: String, availableBalance: Double): ValidationResult {
         if (amount.isBlank()) return ValidationResult.Empty
         val amountValue = amount.toDoubleOrNull() ?: return ValidationResult.Empty

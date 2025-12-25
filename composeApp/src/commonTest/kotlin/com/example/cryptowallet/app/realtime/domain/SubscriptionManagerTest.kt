@@ -12,19 +12,8 @@ import io.kotest.property.checkAll
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 
-/**
- * Property-based tests for SubscriptionManager.
- */
 class SubscriptionManagerTest {
 
-    /**
-     * **Feature: realtime-price-updates, Property 3: Screen lifecycle subscription management**
-     *
-     * For any screen that subscribes to coin updates, when that screen is hidden,
-     * all its subscriptions SHALL be removed from the active subscription set.
-     *
-     * Validates: Requirements 1.3, 2.3, 5.3
-     */
     @Test
     fun `Property 3 - screen lifecycle subscription management`() = runTest {
         checkAll(100, TestGenerators.screenIdArb, TestGenerators.coinIdListArb()) { screenId, coinIds ->
@@ -45,14 +34,6 @@ class SubscriptionManagerTest {
         }
     }
 
-    /**
-     * **Feature: realtime-price-updates, Property 8: Subscription aggregation**
-     *
-     * For any set of screens with overlapping coin subscriptions, the active subscription set
-     * SHALL contain the union of all subscribed coins without duplicates.
-     *
-     * Validates: Requirements 1.1, 2.1, 5.1
-     */
     @Test
     fun `Property 8 - subscription aggregation`() = runTest {
         val screenSubscriptionsArb = Arb.list(
@@ -78,9 +59,6 @@ class SubscriptionManagerTest {
         }
     }
 
-    /**
-     * Test that subscribing the same screen twice replaces the previous subscription.
-     */
     @Test
     fun `subscribe replaces previous subscription for same screen`() = runTest {
         checkAll(100, TestGenerators.screenIdArb, TestGenerators.coinIdListArb(), TestGenerators.coinIdListArb()) { screenId, firstCoinIds, secondCoinIds ->
@@ -96,9 +74,6 @@ class SubscriptionManagerTest {
         }
     }
 
-    /**
-     * Test that unsubscribing one screen doesn't affect other screens.
-     */
     @Test
     fun `unsubscribe only affects the specified screen`() = runTest {
         checkAll(100, TestGenerators.screenIdArb, TestGenerators.screenIdArb, TestGenerators.coinIdListArb(), TestGenerators.coinIdListArb()) { screenId1, screenId2, coinIds1, coinIds2 ->
@@ -120,9 +95,6 @@ class SubscriptionManagerTest {
         }
     }
 
-    /**
-     * Test that unsubscribing a non-existent screen is a no-op.
-     */
     @Test
     fun `unsubscribe non-existent screen is no-op`() = runTest {
         checkAll(100, TestGenerators.screenIdArb) { screenId ->

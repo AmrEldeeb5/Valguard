@@ -13,19 +13,8 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.test.Test
 
-/**
- * Property-based tests for ReconnectionStrategy.
- */
 class ReconnectionStrategyTest {
 
-    /**
-     * **Feature: realtime-price-updates, Property 6: Exponential backoff delay calculation**
-     *
-     * For any sequence of reconnection attempts, the delay between attempts SHALL follow
-     * the exponential backoff formula: delay = initialDelay × (multiplier ^ attemptNumber).
-     *
-     * Validates: Requirements 3.1
-     */
     @Test
     fun `Property 6 - exponential backoff delay calculation`() = runTest {
         val initialDelayArb = Arb.long(min = 100L, max = 5000L)
@@ -52,9 +41,6 @@ class ReconnectionStrategyTest {
         }
     }
 
-    /**
-     * Test that delay is always at least the initial delay for attempt 0.
-     */
     @Test
     fun `first attempt delay equals initial delay`() = runTest {
         val initialDelayArb = Arb.long(min = 100L, max = 10000L)
@@ -65,9 +51,6 @@ class ReconnectionStrategyTest {
         }
     }
 
-    /**
-     * Test that delay increases with each attempt (until max).
-     */
     @Test
     fun `delay increases with each attempt until max`() = runTest {
         val initialDelayArb = Arb.long(min = 100L, max = 1000L)
@@ -89,9 +72,6 @@ class ReconnectionStrategyTest {
         }
     }
 
-    /**
-     * Test that shouldFallback returns true after maxAttempts.
-     */
     @Test
     fun `shouldFallback returns true after maxAttempts`() = runTest {
         val maxAttemptsArb = Arb.int(min = 1, max = 10)
@@ -110,9 +90,6 @@ class ReconnectionStrategyTest {
         }
     }
 
-    /**
-     * Test that delay is capped at maxDelayMs.
-     */
     @Test
     fun `delay is capped at maxDelayMs`() = runTest {
         val maxDelayArb = Arb.long(min = 1000L, max = 60000L)
@@ -130,9 +107,6 @@ class ReconnectionStrategyTest {
         }
     }
 
-    /**
-     * Test default configuration values.
-     */
     @Test
     fun `default configuration produces expected delays`() = runTest {
         val strategy = ExponentialBackoffStrategy()

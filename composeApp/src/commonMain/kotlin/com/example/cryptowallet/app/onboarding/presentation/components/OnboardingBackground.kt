@@ -28,13 +28,6 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import kotlin.math.sin
 import kotlin.random.Random
 
-/**
- * Animated background for the onboarding flow.
- * Features pulsing gradient orbs and floating crypto symbols.
- * Matches React design with blue, purple, and pink animated orbs.
- * 
- * Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7
- */
 @Composable
 fun OnboardingBackground(
     modifier: Modifier = Modifier
@@ -141,9 +134,6 @@ fun OnboardingBackground(
     }
 }
 
-/**
- * Draws an animated orb with radial gradient.
- */
 private fun DrawScope.drawAnimatedOrb(
     center: Offset,
     radius: Float,
@@ -164,9 +154,6 @@ private fun DrawScope.drawAnimatedOrb(
     )
 }
 
-/**
- * Data class for floating symbol configuration.
- */
 private data class SymbolData(
     val symbol: String,
     val x: Int,
@@ -180,10 +167,6 @@ private data class SymbolData(
     val delay: Int
 )
 
-/**
- * Floating crypto symbols scattered randomly across the screen.
- * Each symbol floats in a unique pattern.
- */
 @Composable
 private fun FloatingCryptoSymbols() {
     val symbols = listOf("₿", "Ξ", "◎", "₳", "Ł", "◈", "⟐", "✦", "⬡", "◇")
@@ -211,9 +194,6 @@ private fun FloatingCryptoSymbols() {
     }
 }
 
-/**
- * Individual floating symbol with smooth X and Y movement.
- */
 @Composable
 private fun FloatingSymbol(data: SymbolData) {
     val infiniteTransition = rememberInfiniteTransition(label = "symbol_${data.x}_${data.y}")

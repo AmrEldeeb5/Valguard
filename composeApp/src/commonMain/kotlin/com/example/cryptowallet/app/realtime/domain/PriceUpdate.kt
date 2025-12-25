@@ -1,8 +1,5 @@
 package com.example.cryptowallet.app.realtime.domain
 
-/**
- * Domain model representing a real-time price update for a cryptocurrency.
- */
 data class PriceUpdate(
     val coinId: String,
     val price: Double,

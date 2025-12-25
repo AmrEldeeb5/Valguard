@@ -28,15 +28,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
-/**
- * CoinCap WebSocket client for real-time cryptocurrency price updates.
- * 
- * CoinCap WebSocket API:
- * - URL: wss://ws.coincap.io/prices?assets=bitcoin,ethereum,dogecoin
- * - Message format: {"bitcoin":"43521.23","ethereum":"2341.56"}
- * - No subscription messages needed - assets are specified in URL
- * - Reconnection requires new connection with updated asset list
- */
 class CoinCapWebSocketClient(
     private val httpClient: HttpClient,
     private val reconnectionStrategy: ReconnectionStrategy
@@ -189,9 +180,6 @@ class CoinCapWebSocketClient(
         }
     }
 
-    /**
-     * Parses CoinCap message format: {"bitcoin":"43521.23","ethereum":"2341.56"}
-     */
     private suspend fun parseCoinCapMessage(text: String) {
         try {
             val jsonObject = json.decodeFromString<JsonObject>(text)

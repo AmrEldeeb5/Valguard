@@ -6,15 +6,6 @@ import kotlin.math.min
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-/**
- * Property tests for color contrast compliance.
- * 
- * Property 19: Color Contrast Compliance
- * For any text-background color pair in both light and dark themes, the contrast ratio 
- * SHALL meet WCAG AA standards (minimum 4.5:1 for normal text, 3:1 for large text).
- * 
- * Validates: Requirements 9.3, 10.4
- */
 class ColorContrastPropertyTest {
 
     companion object {
@@ -22,10 +13,6 @@ class ColorContrastPropertyTest {
         const val NORMAL_TEXT_MIN_CONTRAST = 4.5
         const val LARGE_TEXT_MIN_CONTRAST = 3.0
         
-        /**
-         * Calculate relative luminance of a color according to WCAG 2.1
-         * https://www.w3.org/WAI/GL/wiki/Relative_luminance
-         */
         fun relativeLuminance(color: Color): Double {
             fun adjustChannel(channel: Float): Double {
                 return if (channel <= 0.03928) {
@@ -42,10 +29,6 @@ class ColorContrastPropertyTest {
             return 0.2126 * r + 0.7152 * g + 0.0722 * b
         }
         
-        /**
-         * Calculate contrast ratio between two colors according to WCAG 2.1
-         * https://www.w3.org/WAI/GL/wiki/Contrast_ratio
-         */
         fun contrastRatio(foreground: Color, background: Color): Double {
             val l1 = relativeLuminance(foreground)
             val l2 = relativeLuminance(background)
@@ -57,9 +40,6 @@ class ColorContrastPropertyTest {
         }
     }
 
-    /**
-     * Property 19: Test that primary text on card background meets WCAG AA contrast.
-     */
     @Test
     fun `Property 19 - Light theme primary text on card background meets WCAG AA`() {
         val contrast = contrastRatio(
@@ -86,9 +66,6 @@ class ColorContrastPropertyTest {
         )
     }
 
-    /**
-     * Property 19: Test that secondary text on card background meets WCAG AA contrast.
-     */
     @Test
     fun `Property 19 - Light theme secondary text on card background meets WCAG AA`() {
         val contrast = contrastRatio(
@@ -115,9 +92,6 @@ class ColorContrastPropertyTest {
         )
     }
 
-    /**
-     * Property 19: Test that primary text on elevated card background meets WCAG AA contrast.
-     */
     @Test
     fun `Property 19 - Light theme primary text on elevated background meets WCAG AA`() {
         val contrast = contrastRatio(
@@ -144,10 +118,6 @@ class ColorContrastPropertyTest {
         )
     }
 
-    /**
-     * Property 19: Test that profit color (green) on card background meets large text contrast.
-     * Profit/loss colors are typically used for larger text (prices, percentages).
-     */
     @Test
     fun `Property 19 - Light theme profit color on card background meets large text contrast`() {
         val contrast = contrastRatio(
@@ -174,9 +144,6 @@ class ColorContrastPropertyTest {
         )
     }
 
-    /**
-     * Property 19: Test that loss color (red) on card background meets large text contrast.
-     */
     @Test
     fun `Property 19 - Light theme loss color on card background meets large text contrast`() {
         val contrast = contrastRatio(
@@ -203,9 +170,6 @@ class ColorContrastPropertyTest {
         )
     }
 
-    /**
-     * Property 19: Test that status error color on card background meets large text contrast.
-     */
     @Test
     fun `Property 19 - Light theme error color on card background meets large text contrast`() {
         val contrast = contrastRatio(
@@ -232,9 +196,6 @@ class ColorContrastPropertyTest {
         )
     }
 
-    /**
-     * Property 19: Test that button text (white) on button primary color meets WCAG AA contrast.
-     */
     @Test
     fun `Property 19 - Light theme white text on button primary meets WCAG AA`() {
         // Button text is typically white (textPrimary in dark contexts)
@@ -265,10 +226,6 @@ class ColorContrastPropertyTest {
         )
     }
 
-    /**
-     * Property 19: Test that tertiary text on elevated background meets minimum contrast.
-     * Tertiary text is used for less important information, so we use large text threshold.
-     */
     @Test
     fun `Property 19 - Light theme tertiary text on elevated background meets large text contrast`() {
         val contrast = contrastRatio(
@@ -295,9 +252,6 @@ class ColorContrastPropertyTest {
         )
     }
 
-    /**
-     * Property 19: Comprehensive test - all text colors on all backgrounds meet minimum contrast.
-     */
     @Test
     fun `Property 19 - All primary and secondary text colors meet WCAG AA on all backgrounds`() {
         val themes = listOf(

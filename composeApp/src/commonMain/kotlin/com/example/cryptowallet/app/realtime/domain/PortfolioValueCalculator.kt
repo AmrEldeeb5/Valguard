@@ -1,8 +1,5 @@
 package com.example.cryptowallet.app.realtime.domain
 
-/**
- * Calculates portfolio value based on owned coins and their current prices.
- */
 object PortfolioValueCalculator {
 
 

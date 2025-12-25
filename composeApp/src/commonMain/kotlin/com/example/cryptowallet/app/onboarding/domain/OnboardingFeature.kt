@@ -2,10 +2,6 @@ package com.example.cryptowallet.app.onboarding.domain
 
 import androidx.compose.ui.graphics.Color
 
-/**
- * Enum representing icon types for onboarding features.
- * Using enum instead of ImageVector for better cross-platform compatibility.
- */
 enum class OnboardingIcon(val emoji: String) {
     TRENDING_UP("📈"),
     NOTIFICATIONS("🔔"),
@@ -14,9 +10,6 @@ enum class OnboardingIcon(val emoji: String) {
     SPARKLES("✨")
 }
 
-/**
- * Represents a feature highlight shown during onboarding.
- */
 data class OnboardingFeature(
     val iconType: OnboardingIcon,
     val title: String,
@@ -24,10 +17,6 @@ data class OnboardingFeature(
     val gradientColors: List<Color>
 )
 
-/**
- * Features displayed on the Welcome step (Step 1).
- * Three vertical cards highlighting key app capabilities.
- */
 val welcomeFeatures = listOf(
     OnboardingFeature(
         iconType = OnboardingIcon.TRENDING_UP,
@@ -58,10 +47,6 @@ val welcomeFeatures = listOf(
     )
 )
 
-/**
- * Features displayed on the Features step (Step 2).
- * Four cards in a 2x2 grid showing app capabilities.
- */
 val gridFeatures = listOf(
     OnboardingFeature(
         iconType = OnboardingIcon.TRENDING_UP,
@@ -101,9 +86,6 @@ val gridFeatures = listOf(
     )
 )
 
-/**
- * Represents a notification type shown on the Notifications step (Step 4).
- */
 data class NotificationType(
     val iconType: OnboardingIcon,
     val title: String,
@@ -112,10 +94,6 @@ data class NotificationType(
     val gradientColors: List<Color>
 )
 
-/**
- * Notification types displayed on the Notifications step.
- * Three info cards describing different notification categories.
- */
 val notificationTypes = listOf(
     NotificationType(
         iconType = OnboardingIcon.TRENDING_UP,

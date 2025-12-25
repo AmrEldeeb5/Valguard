@@ -30,9 +30,6 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoShapes
 import com.example.cryptowallet.theme.LocalCryptoSpacing
 
-/**
- * A shimmer effect modifier for skeleton loading UI.
- */
 @Composable
 fun shimmerBrush(): Brush {
     val colors = LocalCryptoColors.current
@@ -59,10 +56,6 @@ fun shimmerBrush(): Brush {
     )
 }
 
-/**
- * A skeleton loading placeholder that matches the CoinCard layout.
- * Displays animated shimmer effect while content is loading.
- */
 @Composable
 fun CoinCardPlaceholder(
     modifier: Modifier = Modifier
@@ -133,9 +126,6 @@ fun CoinCardPlaceholder(
     }
 }
 
-/**
- * A list of skeleton placeholders for loading state.
- */
 @Composable
 fun LoadingPlaceholderList(
     itemCount: Int = 5,
@@ -153,9 +143,6 @@ fun LoadingPlaceholderList(
     }
 }
 
-/**
- * Alias for CoinCardPlaceholder for simpler usage.
- */
 @Composable
 fun LoadingPlaceholder(
     modifier: Modifier = Modifier

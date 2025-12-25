@@ -4,10 +4,6 @@ import com.example.cryptowallet.app.onboarding.presentation.OnboardingState
 import com.example.cryptowallet.app.watchlist.domain.WatchlistRepository
 import kotlinx.coroutines.flow.first
 
-/**
- * Repository for managing onboarding state persistence.
- * Uses in-memory storage for MVP (can be replaced with DataStore later).
- */
 class OnboardingRepository(
     private val watchlistRepository: WatchlistRepository
 ) {
@@ -18,9 +14,6 @@ class OnboardingRepository(
     private var savedNotificationsEnabled: Boolean = false
     private var onboardingCompleted: Boolean = false
     
-    /**
-     * Get the saved onboarding state.
-     */
     suspend fun getOnboardingState(): OnboardingState {
         return OnboardingState(
             currentStep = savedCurrentStep,
@@ -30,32 +23,20 @@ class OnboardingRepository(
         )
     }
     
-    /**
-     * Save the current onboarding state.
-     */
     suspend fun saveOnboardingState(state: OnboardingState) {
         savedCurrentStep = state.currentStep
         savedSelectedCoins = state.selectedCoins
         savedNotificationsEnabled = state.notificationsEnabled
     }
     
-    /**
-     * Set whether onboarding has been completed.
-     */
     suspend fun setOnboardingCompleted(completed: Boolean) {
         onboardingCompleted = completed
     }
     
-    /**
-     * Check if onboarding has been completed.
-     */
     suspend fun isOnboardingCompleted(): Boolean {
         return onboardingCompleted
     }
     
-    /**
-     * Save selected coins to the watchlist.
-     */
     suspend fun saveSelectedCoinsToWatchlist(coins: Set<String>) {
         // Map coin symbols to coin IDs (lowercase for API compatibility)
         val coinIdMap = mapOf(

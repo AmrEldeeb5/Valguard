@@ -42,13 +42,6 @@ import com.example.cryptowallet.theme.LocalCryptoAccessibility
 import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
-/**
- * Selectable coin card for the coin selection step.
- * When selected, shows full gradient background with checkmark.
- * Matches React design: rounded-2xl with border-2 transition.
- * 
- * Requirements: 4.7, 4.8, 10.1
- */
 @Composable
 fun CoinSelectionCard(
     coin: OnboardingCoin,

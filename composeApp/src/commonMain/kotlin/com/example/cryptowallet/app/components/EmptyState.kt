@@ -19,15 +19,6 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoSpacing
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
-/**
- * A component for displaying empty states with an optional call-to-action.
- * 
- * @param title The main title text
- * @param description A description explaining the empty state
- * @param actionLabel The label for the action button (null to hide button)
- * @param onAction Callback when the action button is clicked (null to hide button)
- * @param modifier Modifier for the component
- */
 @Composable
 fun EmptyState(
     title: String,

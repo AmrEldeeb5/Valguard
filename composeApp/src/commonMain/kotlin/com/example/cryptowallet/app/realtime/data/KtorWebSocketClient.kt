@@ -28,13 +28,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-/**
- * Ktor-based WebSocket client implementation for real-time price updates.
- *
- * @param httpClient Ktor HttpClient configured with WebSocket support
- * @param webSocketUrl URL of the WebSocket server
- * @param reconnectionStrategy Strategy for handling reconnection attempts
- */
 class KtorWebSocketClient(
     private val httpClient: HttpClient,
     private val webSocketUrl: String,

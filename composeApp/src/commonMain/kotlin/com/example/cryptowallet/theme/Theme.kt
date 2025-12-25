@@ -83,10 +83,6 @@ private val DarkColorScheme = darkColorScheme(
     surfaceContainerHighest = SurfaceContainerHighestDark,
 )
 
-/**
- * Main theme composable for the CryptoWallet app.
- * Provides Material3 theming along with custom design system tokens.
- */
 @Composable
 internal fun CoinRoutineTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

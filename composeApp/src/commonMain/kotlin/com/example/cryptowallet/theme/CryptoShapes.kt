@@ -6,10 +6,6 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 
-/**
- * Shape tokens for the CryptoWallet design system.
- * Provides consistent corner radius values for UI components.
- */
 @Immutable
 data class CryptoShapes(
     val card: Shape = RoundedCornerShape(12.dp),
@@ -20,12 +16,6 @@ data class CryptoShapes(
     val inputField: Shape = RoundedCornerShape(8.dp)
 )
 
-/**
- * Default shape values following the design system specification.
- */
 val DefaultCryptoShapes = CryptoShapes()
 
-/**
- * CompositionLocal for accessing CryptoShapes throughout the app.
- */
 val LocalCryptoShapes = compositionLocalOf { DefaultCryptoShapes }

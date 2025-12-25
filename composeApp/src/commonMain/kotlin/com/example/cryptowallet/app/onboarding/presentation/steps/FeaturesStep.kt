@@ -27,13 +27,6 @@ import com.example.cryptowallet.app.onboarding.presentation.components.FeatureCa
 import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
-/**
- * Features step (Step 2) of the onboarding flow.
- * Shows 2x2 grid of feature cards with staggered animation.
- * Matches React: "Everything You Need" title with Zap icon.
- * 
- * Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9
- */
 @Composable
 fun FeaturesStep(
     modifier: Modifier = Modifier

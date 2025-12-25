@@ -7,12 +7,6 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.arbitrary
 import io.kotest.property.checkAll
 
-/**
- * Property-based tests for PriceUpdateMessageDto serialization.
- * 
- * **Feature: realtime-price-updates, Property 1: Message serialization round-trip**
- * **Validates: Requirements 4.1, 4.2**
- */
 class PriceUpdateMessageDtoTest : FunSpec({
 
     val priceUpdateMessageArb: Arb<PriceUpdateMessageDto> = arbitrary {

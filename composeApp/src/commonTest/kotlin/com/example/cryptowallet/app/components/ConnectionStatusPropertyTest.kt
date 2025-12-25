@@ -5,20 +5,8 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlin.test.assertFalse
 
-/**
- * Property tests for ConnectionStatusIndicator component.
- * Feature: ui-ux-revamp
- */
 class ConnectionStatusPropertyTest {
 
-    /**
-     * Property 10: Connection Status Indicator Visibility
-     * For any ConnectionState that is not CONNECTED, the Coins_List_Screen
-     * SHALL display the connection status indicator; when CONNECTED, the
-     * indicator SHALL not be displayed.
-     * 
-     * Validates: Requirements 5.2
-     */
     @Test
     fun `Property 10 - Indicator hidden when connected`() {
         assertFalse(

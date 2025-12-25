@@ -2,11 +2,6 @@ package com.example.cryptowallet.app.realtime.data
 
 import com.example.cryptowallet.app.realtime.domain.SubscriptionManager
 
-/**
- * Thread-safe implementation of SubscriptionManager.
- * Uses a map to track subscriptions per screen and aggregates them
- * to provide the active subscription set.
- */
 class SubscriptionManagerImpl : SubscriptionManager {
 
     private val subscriptions = mutableMapOf<String, Set<String>>()

@@ -4,19 +4,8 @@ import com.example.cryptowallet.app.realtime.domain.PriceDirection
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-/**
- * Property tests for PriceIndicator component.
- * Feature: ui-ux-revamp
- */
 class PriceIndicatorPropertyTest {
 
-    /**
-     * Property 20: Price Direction Accessibility
-     * For any price change display, the information SHALL be conveyed through
-     * both color AND a non-color indicator (arrow icon or text direction indicator).
-     * 
-     * Validates: Requirements 9.5
-     */
     @Test
     fun `Property 20 - Each price direction should have a distinct visual symbol`() {
         // Each direction should map to a unique symbol

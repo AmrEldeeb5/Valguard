@@ -149,9 +149,6 @@ private fun PortfolioCoinsList(
     }
 }
 
-/**
- * Extension function to convert UiPortfolioCoinItem to UiCoinItem for CoinCard.
- */
 private fun UiPortfolioCoinItem.toUiCoinItem(): UiCoinItem {
     return UiCoinItem(
         id = id,

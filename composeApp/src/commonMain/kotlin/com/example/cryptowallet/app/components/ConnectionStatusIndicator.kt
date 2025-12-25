@@ -24,13 +24,6 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoSpacing
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
-/**
- * A component for displaying connection status.
- * Only visible when not connected.
- * 
- * @param connectionState The current connection state
- * @param modifier Modifier for the component
- */
 @Composable
 fun ConnectionStatusIndicator(
     connectionState: ConnectionState,
@@ -79,9 +72,6 @@ fun ConnectionStatusIndicator(
     }
 }
 
-/**
- * Returns true if the connection status indicator should be visible.
- */
 fun shouldShowConnectionIndicator(connectionState: ConnectionState): Boolean {
     return connectionState != ConnectionState.CONNECTED && 
            connectionState != ConnectionState.DISCONNECTED

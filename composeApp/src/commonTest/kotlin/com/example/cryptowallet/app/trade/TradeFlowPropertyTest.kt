@@ -9,18 +9,8 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-/**
- * Property tests for Trade Flow.
- * Feature: trade-flow-completion
- */
 class TradeFlowPropertyTest {
 
-    /**
-     * Property 5: Confirmation Dialog Trigger
-     * For any TradeState where isAmountValid is true, when onSubmitClicked is called,
-     * showConfirmation SHALL become true.
-     * Validates: Requirements 2.1
-     */
     @Test
     fun `Property 5 - Confirmation dialog shows when amount is valid`() {
         val validStates = listOf(
@@ -58,12 +48,6 @@ class TradeFlowPropertyTest {
         }
     }
 
-    /**
-     * Property 6: Confirmation Dialog Content
-     * For any TradeConfirmation displayed in the dialog, the dialog SHALL contain
-     * the coinName, coinSymbol, formatted amount, formatted price, and calculated totalValue.
-     * Validates: Requirements 2.2
-     */
     @Test
     fun `Property 6 - Confirmation dialog contains all required fields`() {
         val testCases = listOf(
@@ -121,12 +105,6 @@ class TradeFlowPropertyTest {
         }
     }
 
-    /**
-     * Property 7: Confirmation Cancel
-     * For any TradeState where showConfirmation is true, when onCancelConfirmation is called,
-     * showConfirmation SHALL become false and the trade SHALL NOT be executed.
-     * Validates: Requirements 2.4
-     */
     @Test
     fun `Property 7 - Cancel dismisses confirmation without executing trade`() {
         val stateWithConfirmation = createTradeState(
@@ -145,12 +123,6 @@ class TradeFlowPropertyTest {
         assertFalse(cancelledState.isExecuting, "Trade should not be executing")
     }
 
-    /**
-     * Property 8: Trade Execution on Confirm
-     * For any TradeState where showConfirmation is true, when onConfirmTrade is called,
-     * the system SHALL call the appropriate use case with the correct parameters.
-     * Validates: Requirements 2.3
-     */
     @Test
     fun `Property 8 - Confirm triggers trade execution`() {
         val stateWithConfirmation = createTradeState(
@@ -166,12 +138,6 @@ class TradeFlowPropertyTest {
         assertTrue(executingState.isExecuting, "Trade should be executing after confirm")
     }
 
-    /**
-     * Property 9: Executing State
-     * For any trade execution in progress, isExecuting SHALL be true,
-     * and the confirmation dialog buttons SHALL be disabled.
-     * Validates: Requirements 2.5
-     */
     @Test
     fun `Property 9 - Executing state disables actions`() {
         val executingState = createTradeState(
@@ -188,11 +154,6 @@ class TradeFlowPropertyTest {
         assertTrue(shouldDisableButtons, "Buttons should be disabled during execution")
     }
 
-    /**
-     * Property 10: Success Navigation
-     * For any successful trade execution, the ViewModel SHALL emit TradeEvent.NavigateToPortfolio.
-     * Validates: Requirements 4.1
-     */
     @Test
     fun `Property 10 - Successful trade leads to navigation state`() {
         // After successful trade, state should reset
@@ -208,12 +169,6 @@ class TradeFlowPropertyTest {
         assertFalse(successState.isExecuting, "Execution should be complete")
     }
 
-    /**
-     * Property 11: Failure Error Display
-     * For any failed trade execution, the ViewModel SHALL set error in TradeState
-     * and SHALL NOT emit navigation event.
-     * Validates: Requirements 4.2
-     */
     @Test
     fun `Property 11 - Failed trade shows error without navigation`() {
         // After failed trade, error should be set
@@ -238,12 +193,6 @@ class TradeFlowPropertyTest {
         // In real scenario, error would be non-null
     }
 
-    /**
-     * Property 12: Price Update Subscription
-     * For any ViewModel initialized with a coinId, the ViewModel SHALL subscribe to
-     * price updates for that specific coinId.
-     * Validates: Requirements 5.1, 5.2
-     */
     @Test
     fun `Property 12 - Price updates are reflected in state`() {
         val initialPrice = 50000.0
@@ -266,11 +215,6 @@ class TradeFlowPropertyTest {
         assertEquals(updatedPrice, updatedState.coin?.price, "Price should be updated")
     }
 
-    /**
-     * Property 13: Price Update Cleanup
-     * For any ViewModel that is cleared, the ViewModel SHALL unsubscribe from price updates.
-     * Validates: Requirements 5.3
-     */
     @Test
     fun `Property 13 - Subscription cleanup on ViewModel clear`() {
         // This property is verified by the ViewModel's onCleared implementation

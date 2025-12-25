@@ -2,9 +2,6 @@ package com.example.cryptowallet.app.onboarding.domain
 
 import androidx.compose.ui.graphics.Color
 
-/**
- * Represents a cryptocurrency option in the onboarding coin selection step.
- */
 data class OnboardingCoin(
     val symbol: String,
     val name: String,
@@ -12,10 +9,6 @@ data class OnboardingCoin(
     val gradientColors: List<Color>
 )
 
-/**
- * Popular coins available for selection during onboarding.
- * Each coin has a unique gradient for visual distinction.
- */
 val popularCoins = listOf(
     OnboardingCoin(
         symbol = "BTC",

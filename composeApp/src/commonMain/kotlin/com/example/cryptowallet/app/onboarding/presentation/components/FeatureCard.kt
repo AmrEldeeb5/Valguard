@@ -38,14 +38,7 @@ import kotlinx.coroutines.delay
 private val SlateBackground = Color(0xFF1E293B)
 private val SlateBorder = Color(0xFF334155)
 
-/**
- * Feature highlight card for welcome and features steps.
- * Displays icon, title, and description with staggered animation.
- * Matches React: bg-slate-800/30 border border-slate-700/50
- * Respects reduce motion accessibility setting.
- * 
- * Requirements: 2.8, 3.5, 3.6, 13.6
- */
+
 @Composable
 fun FeatureCard(
     feature: OnboardingFeature,
@@ -129,11 +122,6 @@ fun FeatureCard(
     }
 }
 
-/**
- * Compact feature card for welcome step highlights.
- * Matches React: bg-slate-800/50 border border-slate-700/50
- * Respects reduce motion accessibility setting.
- */
 @Composable
 fun CompactFeatureCard(
     feature: OnboardingFeature,

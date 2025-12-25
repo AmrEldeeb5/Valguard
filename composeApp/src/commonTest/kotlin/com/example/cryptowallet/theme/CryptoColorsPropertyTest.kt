@@ -4,19 +4,8 @@ import androidx.compose.ui.graphics.Color
 import kotlin.test.Test
 import kotlin.test.assertNotEquals
 
-/**
- * Property tests for CryptoColors design system.
- * Feature: ui-ux-revamp
- */
 class CryptoColorsPropertyTest {
 
-    /**
-     * Property 1: Design System Color Completeness
-     * For any CryptoColors implementation (light or dark), all required semantic color
-     * properties SHALL be defined with valid non-transparent Color values.
-     * 
-     * Validates: Requirements 1.1
-     */
     @Test
     fun `Property 1 - All semantic colors should be defined and non-transparent in light theme`() {
         val colors = LightCryptoColors

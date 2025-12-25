@@ -26,13 +26,6 @@ import com.example.cryptowallet.app.onboarding.presentation.components.CoinSelec
 import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
-/**
- * Coin selection step (Step 3) of the onboarding flow.
- * Shows 2x3 grid of selectable coins with selection badge.
- * Matches React: "Choose Your Favorites" title with BarChart3 icon.
- * 
- * Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9
- */
 @Composable
 fun CoinSelectionStep(
     selectedCoins: Set<String>,
@@ -144,9 +137,6 @@ fun CoinSelectionStep(
     }
 }
 
-/**
- * Get selection count display text.
- */
 fun getSelectionCountText(count: Int): String {
     return when {
         count == 0 -> "Select at least one coin to continue"

@@ -17,14 +17,6 @@ import com.example.cryptowallet.app.realtime.domain.PriceDirection
 import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
-/**
- * A visual indicator showing price direction with color coding and arrow symbol.
- * Provides both visual (color + icon) and accessible (content description) feedback.
- * 
- * @param direction The price direction (UP, DOWN, or UNCHANGED)
- * @param showText Whether to show the direction text alongside the arrow
- * @param modifier Modifier for the component
- */
 @Composable
 fun PriceIndicator(
     direction: PriceDirection,
