@@ -1,3 +1,20 @@
+/**
+ * ExpandableCoinCard.kt
+ *
+ * An expandable card component for displaying cryptocurrency details.
+ * Expands to show additional actions and information when tapped.
+ *
+ * Features:
+ * - Compact view with icon, name, price, and mini chart
+ * - Expanded view with timeframe selector and action buttons
+ * - Buy/Sell/Alert actions
+ * - Watchlist toggle
+ * - Holdings display for portfolio context
+ * - Animated expand/collapse transitions
+ *
+ * @see CoinCard for a simpler, non-expandable variant
+ * @see Timeframe for available chart timeframes
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.animation.AnimatedVisibility
@@ -26,14 +43,42 @@ import coil3.compose.AsyncImage
 import com.example.cryptowallet.theme.CryptoGradients
 import com.example.cryptowallet.theme.LocalCryptoColors
 
+/**
+ * Enum defining available chart timeframes.
+ *
+ * @property label Display label for the timeframe button
+ */
 enum class Timeframe(val label: String) {
+    /** 1 hour timeframe */
     H1("1H"),
+    /** 24 hours timeframe */
     H24("24H"),
+    /** 7 days timeframe */
     D7("7D"),
+    /** 1 month timeframe */
     M1("1M"),
+    /** 1 year timeframe */
     Y1("1Y")
 }
 
+/**
+ * Expandable card component for cryptocurrency display.
+ *
+ * Shows basic coin info in collapsed state, and reveals additional
+ * actions and details when expanded.
+ *
+ * @param coin The coin data to display
+ * @param isExpanded Whether the card is currently expanded
+ * @param selectedTimeframe Currently selected chart timeframe
+ * @param onCardClick Callback when the card is tapped (toggle expand)
+ * @param onTimeframeSelected Callback when a timeframe button is tapped
+ * @param onSetAlertClick Callback for "Set Alert" button
+ * @param onBuyClick Callback for "Buy" button
+ * @param onSellClick Callback for "Sell" button
+ * @param onWatchlistToggle Callback for watchlist star toggle
+ * @param showHoldings Whether to display holdings section
+ * @param modifier Optional modifier for the card
+ */
 @Composable
 fun ExpandableCoinCard(
     coin: UiCoinItem,
@@ -317,6 +362,15 @@ fun ExpandableCoinCard(
     }
 }
 
+/**
+ * Timeframe selection button for the expanded card.
+ *
+ * Shows a pill-shaped button with gradient background when selected.
+ *
+ * @param timeframe The timeframe this button represents
+ * @param isSelected Whether this timeframe is currently selected
+ * @param onClick Callback when the button is tapped
+ */
 @Composable
 private fun TimeframeButton(
     timeframe: Timeframe,

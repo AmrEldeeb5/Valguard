@@ -1,3 +1,16 @@
+/**
+ * PriceIndicator.kt
+ *
+ * Visual indicator showing price movement direction.
+ * Displays an arrow symbol with color animation for real-time updates.
+ *
+ * Directions:
+ * - UP: Green upward arrow (▲)
+ * - DOWN: Red downward arrow (▼)
+ * - UNCHANGED: Gray dash (—)
+ *
+ * @see PriceDirection for the direction enum
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.animation.animateColorAsState
@@ -17,6 +30,16 @@ import com.example.cryptowallet.app.realtime.domain.PriceDirection
 import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
+/**
+ * Animated price direction indicator.
+ *
+ * Shows an arrow or dash symbol indicating price movement,
+ * with smooth color transitions for real-time updates.
+ *
+ * @param direction The current price direction
+ * @param showText Whether to show text label alongside symbol
+ * @param modifier Optional modifier for the indicator
+ */
 @Composable
 fun PriceIndicator(
     direction: PriceDirection,

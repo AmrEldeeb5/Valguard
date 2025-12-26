@@ -1,3 +1,17 @@
+/**
+ * TradeConfirmationDialog.kt
+ *
+ * Confirmation dialog shown before executing a buy or sell trade.
+ * Displays trade details and requires user confirmation.
+ *
+ * Features:
+ * - Trade summary (coin, amount, price, total)
+ * - Color-coded confirm button (green for buy, red for sell)
+ * - Cancel option
+ * - Accessibility support
+ *
+ * @see TradeConfirmation for the trade data model
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +36,16 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoSpacing
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
+/**
+ * Data class containing trade confirmation details.
+ *
+ * @property coinName Full name of the cryptocurrency
+ * @property coinSymbol Symbol of the cryptocurrency (e.g., "BTC")
+ * @property amount Amount of coin being traded
+ * @property price Price per coin
+ * @property totalValue Total value of the trade
+ * @property isBuy True for buy orders, false for sell orders
+ */
 data class TradeConfirmation(
     val coinName: String,
     val coinSymbol: String,
@@ -31,6 +55,16 @@ data class TradeConfirmation(
     val isBuy: Boolean
 )
 
+/**
+ * Dialog for confirming a trade before execution.
+ *
+ * Shows a summary of the trade with confirm and cancel buttons.
+ * The confirm button is colored based on trade type (buy/sell).
+ *
+ * @param confirmation Trade details to display
+ * @param onConfirm Callback when user confirms the trade
+ * @param onCancel Callback when user cancels
+ */
 @Composable
 fun TradeConfirmationDialog(
     confirmation: TradeConfirmation,
@@ -109,6 +143,13 @@ fun TradeConfirmationDialog(
     )
 }
 
+/**
+ * Row displaying a label-value pair in the trade summary.
+ *
+ * @param label Description of the value (e.g., "Amount", "Price")
+ * @param value The value to display
+ * @param isHighlighted Whether to use emphasized styling (for totals)
+ */
 @Composable
 private fun TradeSummaryRow(
     label: String,

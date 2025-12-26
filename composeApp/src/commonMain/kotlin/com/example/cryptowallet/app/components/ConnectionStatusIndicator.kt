@@ -1,3 +1,19 @@
+/**
+ * ConnectionStatusIndicator.kt
+ *
+ * Displays the current WebSocket connection status for real-time price updates.
+ * Shows a banner when the connection is not in a healthy state.
+ *
+ * States displayed:
+ * - Connecting: Blue indicator, "Connecting..." message
+ * - Reconnecting: Blue indicator, "Reconnecting..." message
+ * - Failed: Red indicator, "Offline - Using cached data" message
+ * - Disconnected: Gray indicator, "Disconnected" message
+ * - Connected: Hidden (no indicator shown)
+ *
+ * @see ConnectionState for all possible connection states
+ * @see OfflineBanner for a simpler offline indicator
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.foundation.background
@@ -24,6 +40,16 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoSpacing
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
+/**
+ * Banner indicator showing WebSocket connection status.
+ *
+ * Displays a colored dot and status message when the connection
+ * is not in a healthy (connected) state. Automatically hides
+ * when connected.
+ *
+ * @param connectionState Current connection state from the real-time service
+ * @param modifier Optional modifier for the indicator
+ */
 @Composable
 fun ConnectionStatusIndicator(
     connectionState: ConnectionState,
@@ -72,6 +98,16 @@ fun ConnectionStatusIndicator(
     }
 }
 
+/**
+ * Determines whether the connection indicator should be visible.
+ *
+ * The indicator is shown during connecting/reconnecting states and
+ * when the connection has failed. It's hidden when connected or
+ * intentionally disconnected.
+ *
+ * @param connectionState Current connection state
+ * @return True if the indicator should be displayed
+ */
 fun shouldShowConnectionIndicator(connectionState: ConnectionState): Boolean {
     return connectionState != ConnectionState.CONNECTED && 
            connectionState != ConnectionState.DISCONNECTED

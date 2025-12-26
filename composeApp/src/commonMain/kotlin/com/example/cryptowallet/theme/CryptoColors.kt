@@ -1,9 +1,67 @@
+/**
+ * CryptoColors.kt
+ *
+ * Defines the custom color system for the CryptoVault application.
+ * This file contains semantic color tokens that provide consistent theming
+ * across the entire app, supporting both dark and light themes.
+ *
+ * The color system is organized into categories:
+ * - Background colors: Primary and secondary backgrounds
+ * - Semantic colors: Profit (green), Loss (red), Neutral
+ * - Card/Surface colors: For elevated UI elements
+ * - Text colors: Primary, secondary, and tertiary text
+ * - Accent colors: Blue, Purple, and Pink gradients
+ * - Status colors: Connected, Connecting, Error states
+ * - Interactive colors: Buttons and interactive elements
+ * - Utility colors: Dividers, borders, shimmer effects
+ *
+ * @see DarkCryptoColors for the dark theme implementation
+ * @see LightCryptoColors for the light theme implementation
+ * @see LocalCryptoColors for accessing colors via CompositionLocal
+ */
 package com.example.cryptowallet.theme
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 
+/**
+ * Data class containing all color tokens for the CryptoVault design system.
+ *
+ * This immutable class holds semantic color values that adapt based on the
+ * current theme (dark/light). Use [LocalCryptoColors] to access these colors
+ * in Composable functions.
+ *
+ * @property backgroundPrimary Main background color for screens
+ * @property backgroundSecondary Secondary background for sections/containers
+ * @property profit Color indicating positive price changes or gains (green)
+ * @property loss Color indicating negative price changes or losses (red)
+ * @property neutral Color for unchanged/neutral states
+ * @property cardBackground Background color for card components
+ * @property cardBackgroundElevated Background for elevated/highlighted cards
+ * @property cardBorder Border color for card components
+ * @property textPrimary Primary text color for headings and important content
+ * @property textSecondary Secondary text color for supporting content
+ * @property textTertiary Tertiary text color for hints and less important text
+ * @property accentBlue400 Light blue accent (400 weight)
+ * @property accentBlue500 Medium blue accent (500 weight)
+ * @property accentBlue600 Dark blue accent (600 weight)
+ * @property accentPurple400 Light purple accent (400 weight)
+ * @property accentPurple500 Medium purple accent (500 weight)
+ * @property accentPurple600 Dark purple accent (600 weight)
+ * @property accentPink400 Light pink accent (400 weight)
+ * @property accentPink500 Medium pink accent (500 weight)
+ * @property statusConnected Color for connected/online status
+ * @property statusConnecting Color for connecting/loading status
+ * @property statusError Color for error/offline status
+ * @property buttonPrimary Primary button background color
+ * @property buttonSecondary Secondary button background color
+ * @property buttonDisabled Disabled button background color
+ * @property divider Color for divider lines
+ * @property border Color for borders and outlines
+ * @property shimmerBase Base color for shimmer/skeleton loading effect
+ * @property shimmerHighlight Highlight color for shimmer animation
+ */
 @Immutable
 data class CryptoColors(
     // Background colors
@@ -58,7 +116,20 @@ data class CryptoColors(
     val shimmerHighlight: Color
 )
 
-// CryptoVault Dark Theme - Primary theme
+/**
+ * Dark theme color palette for CryptoVault.
+ *
+ * This is the primary theme of the application, using a slate-based
+ * color scheme with emerald for profit and rose for loss indicators.
+ * Colors are based on Tailwind CSS color palette for consistency.
+ *
+ * Color references:
+ * - Backgrounds: Slate 950/900
+ * - Cards: Slate 800/700
+ * - Text: White, Slate 300, Slate 400
+ * - Accents: Blue, Purple, Pink (400-600 weights)
+ * - Semantic: Emerald (profit), Rose (loss)
+ */
 val DarkCryptoColors = CryptoColors(
     // Backgrounds - Slate 950/900
     backgroundPrimary = Color(0xFF020617),    // slate-950
@@ -112,7 +183,20 @@ val DarkCryptoColors = CryptoColors(
     shimmerHighlight = Color(0xFF334155)      // slate-700
 )
 
-// Light theme - kept for compatibility but styled similarly
+/**
+ * Light theme color palette for CryptoVault.
+ *
+ * Alternative theme using lighter slate tones for backgrounds
+ * with darker text colors for proper contrast. Maintains the
+ * same accent color system as the dark theme.
+ *
+ * Color references:
+ * - Backgrounds: Slate 50/100
+ * - Cards: White, Slate 100
+ * - Text: Slate 900, Slate 600, Slate 500
+ * - Accents: Same as dark theme
+ * - Semantic: Emerald 600 (profit), Rose 600 (loss)
+ */
 val LightCryptoColors = CryptoColors(
     // Backgrounds - Using lighter slate tones
     backgroundPrimary = Color(0xFFF8FAFC),    // slate-50
@@ -166,4 +250,15 @@ val LightCryptoColors = CryptoColors(
     shimmerHighlight = Color(0xFFF1F5F9)      // slate-100
 )
 
+/**
+ * CompositionLocal for accessing [CryptoColors] throughout the app.
+ *
+ * Usage in Composable functions:
+ * ```kotlin
+ * val colors = LocalCryptoColors.current
+ * Text(color = colors.textPrimary)
+ * ```
+ *
+ * The value is provided by [CoinRoutineTheme] and defaults to [DarkCryptoColors].
+ */
 val LocalCryptoColors = compositionLocalOf { DarkCryptoColors }

@@ -1,3 +1,18 @@
+/**
+ * ErrorState.kt
+ *
+ * Displays an error message with optional retry functionality.
+ * Used when data loading fails or an operation encounters an error.
+ *
+ * Features:
+ * - Warning emoji icon
+ * - Error message in error color
+ * - Optional "Try Again" button
+ * - Accessibility support
+ *
+ * @see EmptyState for empty content display
+ * @see LoadingPlaceholder for loading states
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +36,16 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoSpacing
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
+/**
+ * Error state component for displaying error messages.
+ *
+ * Shows an error icon and message with an optional retry button
+ * for recoverable errors.
+ *
+ * @param message The error message to display
+ * @param onRetry Optional callback for retry button (null hides button)
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun ErrorState(
     message: String,

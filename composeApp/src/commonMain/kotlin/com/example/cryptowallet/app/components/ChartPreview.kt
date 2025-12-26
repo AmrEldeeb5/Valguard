@@ -1,3 +1,17 @@
+/**
+ * ChartPreview.kt
+ *
+ * Provides a compact sparkline chart preview for displaying price trends.
+ * Used in coin cards and list items to show at-a-glance price movement.
+ *
+ * Features:
+ * - Deterministic data generation based on seed for consistency
+ * - Color-coded line and fill based on trend direction
+ * - Smooth line rendering with gradient fill
+ * - Lightweight Canvas-based implementation
+ *
+ * @see SimplePriceChart for a more detailed chart component
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.foundation.Canvas
@@ -13,6 +27,17 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import com.example.cryptowallet.theme.LocalCryptoColors
 import kotlin.random.Random
 
+/**
+ * Compact sparkline chart showing price trend direction.
+ *
+ * Renders a small line chart with gradient fill, suitable for
+ * embedding in cards and list items. Data is generated deterministically
+ * based on the seed parameter for consistent display.
+ *
+ * @param isPositive Whether the trend is positive (green) or negative (red)
+ * @param modifier Optional modifier for the chart canvas
+ * @param seed Random seed for consistent data generation (same seed = same chart)
+ */
 @Composable
 fun ChartPreview(
     isPositive: Boolean,
@@ -90,6 +115,16 @@ fun ChartPreview(
     }
 }
 
+/**
+ * Generates chart data points based on a seed value.
+ *
+ * Creates a series of values that trend in the specified direction
+ * while maintaining some randomness for visual interest.
+ *
+ * @param seed Random seed for reproducible results
+ * @param isPositive Whether the overall trend should be upward
+ * @return List of float values representing chart data points
+ */
 private fun generateChartData(seed: Int, isPositive: Boolean): List<Float> {
     val random = Random(seed)
     val points = mutableListOf<Float>()

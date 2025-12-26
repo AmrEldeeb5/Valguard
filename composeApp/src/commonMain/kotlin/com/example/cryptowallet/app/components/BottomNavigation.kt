@@ -1,3 +1,19 @@
+/**
+ * BottomNavigation.kt
+ *
+ * Provides the main bottom navigation bar for the CryptoVault app.
+ * Allows users to switch between major app sections.
+ *
+ * Navigation items:
+ * - Market: Browse all cryptocurrencies
+ * - Portfolio: View owned coins and performance
+ * - DCA: Dollar-cost averaging calculator
+ * - Compare: Compare multiple coins
+ * - Leaderboard: Top performing coins ranking
+ * - Alerts: Price alert management
+ *
+ * @see BottomNavItem for available navigation destinations
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.foundation.background
@@ -27,18 +43,42 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cryptowallet.theme.LocalCryptoColors
 
+/**
+ * Enum defining the available bottom navigation destinations.
+ *
+ * Each item has a display label and associated icon.
+ *
+ * @property label Human-readable label shown below the icon
+ * @property icon Material icon representing the destination
+ */
 enum class BottomNavItem(
     val label: String,
     val icon: ImageVector
 ) {
+    /** Market overview showing all cryptocurrencies */
     MARKET("Market", Icons.Default.Home),
+    /** User's portfolio with owned coins */
     PORTFOLIO("Portfolio", Icons.Default.Star),
+    /** Dollar-cost averaging calculator */
     DCA("DCA", Icons.Default.Refresh),
+    /** Coin comparison tool */
     COMPARE("Compare", Icons.Default.List),
+    /** Top coins leaderboard */
     LEADERBOARD("Rank", Icons.Default.ThumbUp),
+    /** Price alerts management */
     ALERTS("Alerts", Icons.Default.Notifications)
 }
 
+/**
+ * Main bottom navigation bar component.
+ *
+ * Displays all navigation items horizontally with the active item
+ * highlighted using a gradient background.
+ *
+ * @param activeItem Currently selected navigation item
+ * @param onItemSelected Callback when a navigation item is tapped
+ * @param modifier Optional modifier for the navigation bar
+ */
 @Composable
 fun CryptoBottomNavigation(
     activeItem: BottomNavItem,
@@ -66,6 +106,17 @@ fun CryptoBottomNavigation(
     }
 }
 
+/**
+ * Individual navigation item view.
+ *
+ * Displays an icon and label vertically, with visual feedback
+ * for the active state (gradient background, highlighted colors).
+ *
+ * @param item The navigation item to display
+ * @param isActive Whether this item is currently selected
+ * @param onClick Callback when the item is tapped
+ * @param modifier Optional modifier for the item
+ */
 @Composable
 private fun BottomNavItemView(
     item: BottomNavItem,

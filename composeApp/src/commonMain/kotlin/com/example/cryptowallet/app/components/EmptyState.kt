@@ -1,3 +1,17 @@
+/**
+ * EmptyState.kt
+ *
+ * Displays a friendly empty state message when no content is available.
+ * Used throughout the app when lists are empty or no data matches filters.
+ *
+ * Features:
+ * - Emoji icon for visual appeal
+ * - Customizable title and description
+ * - Optional action button for user guidance
+ * - Accessibility support
+ *
+ * @see ErrorState for error message display
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +33,18 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoSpacing
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
+/**
+ * Empty state component for when no content is available.
+ *
+ * Displays a centered message with optional action button to guide
+ * users on what to do next.
+ *
+ * @param title Main heading text (e.g., "No coins found")
+ * @param description Supporting text explaining the empty state
+ * @param actionLabel Optional button label (null hides button)
+ * @param onAction Optional callback for button click (null hides button)
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun EmptyState(
     title: String,

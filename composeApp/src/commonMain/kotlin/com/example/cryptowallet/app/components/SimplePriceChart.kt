@@ -1,3 +1,18 @@
+/**
+ * SimplePriceChart.kt
+ *
+ * Canvas-based line chart for displaying price history.
+ * Used in coin detail screens to show price trends over time.
+ *
+ * Features:
+ * - Smooth line rendering with rounded caps
+ * - Gradient fill under the line
+ * - Optional animation on data load
+ * - Automatic scaling to fit data
+ * - Empty state handling
+ *
+ * @see ChartPreview for a compact sparkline variant
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.animation.core.Animatable
@@ -18,6 +33,18 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import com.example.cryptowallet.theme.LocalCryptoColors
 
+/**
+ * Line chart component for displaying price history.
+ *
+ * Renders a smooth line chart with gradient fill, suitable for
+ * showing price trends in detail views.
+ *
+ * @param prices List of price values to plot
+ * @param modifier Optional modifier for the chart canvas
+ * @param lineColor Custom line color (defaults to accent blue)
+ * @param isPositive Whether the trend is positive (affects fill color)
+ * @param animate Whether to animate the chart drawing
+ */
 @Composable
 fun SimplePriceChart(
     prices: List<Float>,

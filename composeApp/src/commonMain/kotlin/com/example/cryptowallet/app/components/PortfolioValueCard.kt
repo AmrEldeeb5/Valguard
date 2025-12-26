@@ -1,3 +1,17 @@
+/**
+ * PortfolioValueCard.kt
+ *
+ * Displays the total portfolio value with 24-hour change.
+ * Used as a prominent header card in portfolio views.
+ *
+ * Features:
+ * - Large portfolio value display
+ * - 24-hour change percentage with color coding
+ * - Gradient background for visual appeal
+ * - Up/down arrow indicator
+ *
+ * @see BalanceHeader for an alternative portfolio display
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.foundation.background
@@ -22,6 +36,16 @@ import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.pow
 
+/**
+ * Card displaying total portfolio value and 24h change.
+ *
+ * Shows the portfolio value prominently with a gradient background
+ * and color-coded change indicator.
+ *
+ * @param totalValue Total portfolio value in USD
+ * @param change24h 24-hour percentage change (positive or negative)
+ * @param modifier Optional modifier for the card
+ */
 @Composable
 fun PortfolioValueCard(
     totalValue: Double,
@@ -97,16 +121,35 @@ fun PortfolioValueCard(
     }
 }
 
+/**
+ * Formats a number as US currency.
+ *
+ * @param value The numeric value to format
+ * @return Formatted currency string (e.g., "$1,234.56")
+ */
 private fun formatCurrency(value: Double): String {
     val formatter = NumberFormat.getCurrencyInstance(Locale.US)
     return formatter.format(value)
 }
 
+/**
+ * Formats a number as a percentage with sign.
+ *
+ * @param value The percentage value
+ * @return Formatted percentage string (e.g., "+5.23%")
+ */
 private fun formatPercentage(value: Double): String {
     val sign = if (value >= 0) "+" else ""
     return "$sign${formatDecimal(value, 2)}%"
 }
 
+/**
+ * Formats a decimal number to specified precision.
+ *
+ * @param value The number to format
+ * @param decimals Number of decimal places
+ * @return Formatted decimal string
+ */
 private fun formatDecimal(value: Double, decimals: Int): String {
     val factor = 10.0.pow(decimals)
     val rounded = kotlin.math.round(value * factor) / factor

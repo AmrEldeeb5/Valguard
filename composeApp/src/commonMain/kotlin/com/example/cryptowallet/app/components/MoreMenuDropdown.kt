@@ -1,3 +1,14 @@
+/**
+ * MoreMenuDropdown.kt
+ *
+ * Dropdown menu component for additional app actions.
+ * Appears as a popup from the header's "more" button.
+ *
+ * Current menu items:
+ * - Referral Program: Opens the referral/invite screen
+ *
+ * @see CryptoVaultHeader for the trigger button
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.foundation.background
@@ -22,6 +33,16 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import com.example.cryptowallet.theme.LocalCryptoColors
 
+/**
+ * Dropdown menu popup with additional app actions.
+ *
+ * Displays a card with menu items that appears below the header.
+ * Dismisses when tapping outside the menu.
+ *
+ * @param onDismiss Callback when the menu should close
+ * @param onReferralClick Callback when "Referral Program" is tapped
+ * @param modifier Optional modifier for the menu card
+ */
 @Composable
 fun MoreMenuDropdown(
     onDismiss: () -> Unit,

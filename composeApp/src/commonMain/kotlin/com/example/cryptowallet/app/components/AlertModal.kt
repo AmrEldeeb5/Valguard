@@ -1,3 +1,19 @@
+/**
+ * AlertModal.kt
+ *
+ * Provides a modal dialog for managing cryptocurrency price alerts.
+ * Users can view, create, toggle, and delete price alerts for various coins.
+ *
+ * Features:
+ * - Display list of existing price alerts
+ * - Toggle alerts on/off
+ * - Delete individual alerts
+ * - Create new alerts via callback
+ * - Empty state when no alerts exist
+ *
+ * @see PriceAlert for the alert data model
+ * @see AlertCondition for alert trigger conditions
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.foundation.background
@@ -25,11 +41,28 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.cryptowallet.theme.LocalCryptoColors
 import kotlin.math.pow
 
+/**
+ * Defines the condition that triggers a price alert.
+ *
+ * @property label Human-readable label for the condition
+ */
 enum class AlertCondition(val label: String) {
+    /** Alert triggers when price goes above target */
     ABOVE("Above"),
+    /** Alert triggers when price goes below target */
     BELOW("Below")
 }
 
+/**
+ * Data class representing a price alert configuration.
+ *
+ * @property id Unique identifier for the alert
+ * @property coinId The cryptocurrency ID this alert is for
+ * @property coinSymbol The symbol of the cryptocurrency (e.g., "BTC")
+ * @property condition Whether to alert when price is above or below target
+ * @property targetPrice The price threshold that triggers the alert
+ * @property isActive Whether the alert is currently enabled
+ */
 data class PriceAlert(
     val id: String,
     val coinId: String,
@@ -39,6 +72,20 @@ data class PriceAlert(
     val isActive: Boolean
 )
 
+/**
+ * Modal dialog for managing price alerts.
+ *
+ * Displays a list of existing alerts with toggle and delete options,
+ * plus a button to create new alerts. Shows an empty state message
+ * when no alerts exist.
+ *
+ * @param alerts List of existing price alerts to display
+ * @param onDismiss Callback when the modal is dismissed
+ * @param onCreateAlert Callback when user wants to create a new alert
+ * @param onToggleAlert Callback when user toggles an alert's active state
+ * @param onDeleteAlert Callback when user deletes an alert
+ * @param modifier Optional modifier for the dialog content
+ */
 @Composable
 fun AlertModal(
     alerts: List<PriceAlert>,
@@ -165,6 +212,16 @@ fun AlertModal(
     }
 }
 
+/**
+ * Individual alert item displayed in the alert list.
+ *
+ * Shows the coin symbol, alert condition, target price, active status,
+ * and a toggle switch to enable/disable the alert.
+ *
+ * @param alert The price alert to display
+ * @param onToggle Callback when the toggle switch is changed
+ * @param onDelete Callback when the delete action is triggered
+ */
 @Composable
 private fun AlertItem(
     alert: PriceAlert,
@@ -248,8 +305,20 @@ private fun AlertItem(
     }
 }
 
+/**
+ * Extension function to count active alerts in a list.
+ *
+ * @return The number of alerts with [PriceAlert.isActive] set to true
+ */
 fun List<PriceAlert>.activeCount(): Int = count { it.isActive }
 
+/**
+ * Formats a decimal number to a specified number of decimal places.
+ *
+ * @param value The number to format
+ * @param decimals The number of decimal places
+ * @return Formatted string representation of the number
+ */
 private fun formatDecimal(value: Double, decimals: Int): String {
     val factor = 10.0.pow(decimals)
     val rounded = kotlin.math.round(value * factor) / factor

@@ -1,3 +1,23 @@
+/**
+ * CryptoTypography.kt
+ *
+ * Defines the typography system for the CryptoVault application.
+ * This file contains text styles organized by their semantic purpose,
+ * following Material Design 3 typography guidelines.
+ *
+ * Typography categories:
+ * - Display: Large prominent text (portfolio values, hero sections)
+ * - Title: Section headers and coin names
+ * - Body: Primary content and descriptions
+ * - Label: Buttons, chips, and interactive elements
+ * - Caption: Small annotations and timestamps
+ *
+ * All styles use the system default font family but can be customized
+ * by modifying [DefaultCryptoTypography] or providing custom fonts.
+ *
+ * @see DefaultCryptoTypography for the default typography configuration
+ * @see LocalCryptoTypography for accessing typography via CompositionLocal
+ */
 package com.example.cryptowallet.theme
 
 import androidx.compose.runtime.Immutable
@@ -7,6 +27,25 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
+/**
+ * Data class containing all typography styles for the CryptoVault design system.
+ *
+ * This immutable class provides consistent text styling across the app.
+ * Use [LocalCryptoTypography] to access these styles in Composable functions.
+ *
+ * @property displayLarge Largest display text (36sp) - for main portfolio values
+ * @property displayMedium Medium display text (28sp) - for section highlights
+ * @property titleLarge Large title (22sp) - for screen titles
+ * @property titleMedium Medium title (18sp) - for card headers
+ * @property titleSmall Small title (14sp) - for list item titles
+ * @property bodyLarge Large body text (16sp) - for primary content
+ * @property bodyMedium Medium body text (14sp) - for standard content
+ * @property bodySmall Small body text (12sp) - for secondary content
+ * @property labelLarge Large label (14sp) - for primary buttons
+ * @property labelMedium Medium label (12sp) - for chips and tags
+ * @property labelSmall Small label (11sp) - for small buttons
+ * @property caption Caption text (10sp) - for timestamps and annotations
+ */
 @Immutable
 data class CryptoTypography(
     // Display styles - for large prominent text like portfolio value
@@ -32,6 +71,13 @@ data class CryptoTypography(
     val caption: TextStyle
 )
 
+/**
+ * Default typography configuration for CryptoVault.
+ *
+ * Uses the system default font family with carefully tuned font sizes,
+ * weights, line heights, and letter spacing for optimal readability
+ * in a financial/crypto application context.
+ */
 val DefaultCryptoTypography = CryptoTypography(
     displayLarge = TextStyle(
         fontFamily = FontFamily.Default,
@@ -119,4 +165,15 @@ val DefaultCryptoTypography = CryptoTypography(
     )
 )
 
+/**
+ * CompositionLocal for accessing [CryptoTypography] throughout the app.
+ *
+ * Usage in Composable functions:
+ * ```kotlin
+ * val typography = LocalCryptoTypography.current
+ * Text(style = typography.titleMedium)
+ * ```
+ *
+ * The value is provided by [CoinRoutineTheme] and defaults to [DefaultCryptoTypography].
+ */
 val LocalCryptoTypography = compositionLocalOf { DefaultCryptoTypography }

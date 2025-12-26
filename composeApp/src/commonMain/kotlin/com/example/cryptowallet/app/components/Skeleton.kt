@@ -1,3 +1,19 @@
+/**
+ * Skeleton.kt
+ *
+ * Skeleton loading components for various UI elements.
+ * Provides shimmer-animated placeholders while content loads.
+ *
+ * Components:
+ * - SkeletonBox: Generic rectangular skeleton
+ * - SkeletonText: Text-sized skeleton
+ * - SkeletonCircle: Circular skeleton (for avatars/icons)
+ * - SkeletonCard: Full card skeleton matching CoinCard layout
+ * - SkeletonCoinDetailHeader: Header skeleton for coin detail screen
+ *
+ * @see LoadingPlaceholder for additional loading components
+ * @see shimmerBrush for the animation brush
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.foundation.background
@@ -13,21 +29,47 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.cryptowallet.theme.LocalCryptoColors
 
+/**
+ * Generic skeleton box with shimmer animation.
+ *
+ * @param modifier Modifier for sizing and positioning
+ * @param shape Shape of the skeleton (default: 8dp rounded corners)
+ */
 @Composable
 fun SkeletonBox(modifier: Modifier = Modifier, shape: Shape = RoundedCornerShape(8.dp)) {
     Box(modifier = modifier.clip(shape).background(shimmerBrush()))
 }
 
+/**
+ * Text-sized skeleton placeholder.
+ *
+ * @param width Width of the skeleton
+ * @param modifier Optional modifier
+ * @param height Height of the skeleton (default: 16dp)
+ */
 @Composable
 fun SkeletonText(width: Dp, modifier: Modifier = Modifier, height: Dp = 16.dp) {
     SkeletonBox(modifier = modifier.width(width).height(height), shape = RoundedCornerShape(4.dp))
 }
 
+/**
+ * Circular skeleton for avatars and icons.
+ *
+ * @param size Diameter of the circle
+ * @param modifier Optional modifier
+ */
 @Composable
 fun SkeletonCircle(size: Dp, modifier: Modifier = Modifier) {
     SkeletonBox(modifier = modifier.size(size), shape = CircleShape)
 }
 
+/**
+ * Full card skeleton matching CoinCard layout.
+ *
+ * Shows placeholders for icon, name, symbol, price, and change.
+ *
+ * @param modifier Optional modifier for the card
+ */
 @Composable
 fun SkeletonCard(modifier: Modifier = Modifier) {
     val colors = LocalCryptoColors.current
@@ -46,6 +88,13 @@ fun SkeletonCard(modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * Header skeleton for coin detail screen.
+ *
+ * Shows placeholders for coin icon, name, symbol, and action button.
+ *
+ * @param modifier Optional modifier for the header
+ */
 @Composable
 fun SkeletonCoinDetailHeader(modifier: Modifier = Modifier) {
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {

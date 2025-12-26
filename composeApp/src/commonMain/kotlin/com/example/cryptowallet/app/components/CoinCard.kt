@@ -1,3 +1,20 @@
+/**
+ * CoinCard.kt
+ *
+ * Displays a cryptocurrency in a card format with price and change information.
+ * Used in lists throughout the app to show coin details at a glance.
+ *
+ * Features:
+ * - Coin icon, name, and symbol display
+ * - Current price with real-time direction indicator
+ * - Percentage change with color coding
+ * - Optional holdings display for portfolio views
+ * - Long-press support for additional actions
+ * - Full accessibility support
+ *
+ * @see UiCoinItem for the data model
+ * @see ExpandableCoinCard for an expandable variant
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -33,8 +50,21 @@ import com.example.cryptowallet.theme.LocalCryptoShapes
 import com.example.cryptowallet.theme.LocalCryptoSpacing
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
+/** Minimum touch target size for accessibility compliance (48dp) */
 val MinTouchTargetSize = 48.dp
 
+/**
+ * Card component displaying cryptocurrency information.
+ *
+ * Shows coin icon, name, symbol, current price, and percentage change.
+ * Optionally displays user's holdings when in portfolio context.
+ *
+ * @param coin The coin data to display
+ * @param onClick Callback when the card is tapped
+ * @param onLongClick Optional callback for long-press action
+ * @param showHoldings Whether to display holdings information
+ * @param modifier Optional modifier for the card
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CoinCard(

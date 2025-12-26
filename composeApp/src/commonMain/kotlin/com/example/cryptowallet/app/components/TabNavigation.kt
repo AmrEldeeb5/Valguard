@@ -1,3 +1,17 @@
+/**
+ * TabNavigation.kt
+ *
+ * Horizontal tab navigation component for switching between views.
+ * Used to toggle between Market, Portfolio, and Watchlist views.
+ *
+ * Features:
+ * - Three tabs: Market, Portfolio, Watchlist
+ * - Gradient background for active tab
+ * - Smooth visual transitions
+ *
+ * @see Tab for available tab options
+ * @see BottomNavigation for the main navigation bar
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.foundation.background
@@ -16,12 +30,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cryptowallet.theme.LocalCryptoColors
 
+/**
+ * Enum defining available tabs in the tab navigation.
+ *
+ * @property label Display label for the tab
+ */
 enum class Tab(val label: String) {
+    /** Market view showing all cryptocurrencies */
     MARKET("Market"),
+    /** Portfolio view showing owned coins */
     PORTFOLIO("Portfolio"),
+    /** Watchlist view showing favorited coins */
     WATCHLIST("Watchlist")
 }
 
+/**
+ * Horizontal tab navigation component.
+ *
+ * Displays tabs in a row with the active tab highlighted
+ * using a gradient background.
+ *
+ * @param activeTab Currently selected tab
+ * @param onTabSelected Callback when a tab is tapped
+ * @param modifier Optional modifier for the navigation
+ */
 @Composable
 fun TabNavigation(
     activeTab: Tab,
@@ -49,6 +81,16 @@ fun TabNavigation(
     }
 }
 
+/**
+ * Individual tab item in the navigation.
+ *
+ * Shows the tab label with gradient background when active.
+ *
+ * @param tab The tab to display
+ * @param isActive Whether this tab is currently selected
+ * @param onClick Callback when the tab is tapped
+ * @param modifier Optional modifier for the tab
+ */
 @Composable
 private fun TabItem(
     tab: Tab,

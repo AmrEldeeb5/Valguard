@@ -1,3 +1,18 @@
+/**
+ * ScreenHeader.kt
+ *
+ * Standard header component for secondary screens with back navigation.
+ * Provides consistent navigation and title display across the app.
+ *
+ * Features:
+ * - Back arrow button
+ * - Screen title
+ * - Optional subtitle
+ * - Status bar padding
+ * - Accessibility support
+ *
+ * @see CryptoVaultHeader for the main app header
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.foundation.layout.*
@@ -16,6 +31,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cryptowallet.theme.LocalCryptoColors
 
+/**
+ * Header with back navigation for secondary screens.
+ *
+ * Displays a back button, title, and optional subtitle.
+ * Includes proper status bar padding.
+ *
+ * @param title Main screen title
+ * @param subtitle Optional subtitle text
+ * @param onBackClick Callback when back button is pressed
+ * @param modifier Optional modifier for the header
+ */
 @Composable
 fun ScreenHeader(
     title: String,

@@ -1,3 +1,17 @@
+/**
+ * LoadingPlaceholder.kt
+ *
+ * Provides shimmer loading placeholders for content that is being loaded.
+ * Creates a polished loading experience with animated gradient effects.
+ *
+ * Components:
+ * - shimmerBrush(): Creates the animated shimmer gradient
+ * - CoinCardPlaceholder: Placeholder matching CoinCard layout
+ * - LoadingPlaceholderList: Multiple placeholders for lists
+ * - LoadingPlaceholder: Single placeholder alias
+ *
+ * @see Skeleton for additional skeleton components
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.animation.core.LinearEasing
@@ -30,6 +44,14 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoShapes
 import com.example.cryptowallet.theme.LocalCryptoSpacing
 
+/**
+ * Creates an animated shimmer brush for loading placeholders.
+ *
+ * The brush animates diagonally across the component, creating
+ * a shimmering effect that indicates loading state.
+ *
+ * @return An animated [Brush] for use with background modifiers
+ */
 @Composable
 fun shimmerBrush(): Brush {
     val colors = LocalCryptoColors.current
@@ -56,6 +78,14 @@ fun shimmerBrush(): Brush {
     )
 }
 
+/**
+ * Placeholder component matching the CoinCard layout.
+ *
+ * Shows shimmer boxes in place of coin icon, name, symbol,
+ * price, and change percentage.
+ *
+ * @param modifier Optional modifier for the placeholder
+ */
 @Composable
 fun CoinCardPlaceholder(
     modifier: Modifier = Modifier
@@ -126,6 +156,14 @@ fun CoinCardPlaceholder(
     }
 }
 
+/**
+ * Displays multiple coin card placeholders in a vertical list.
+ *
+ * Useful for showing loading state when fetching a list of coins.
+ *
+ * @param itemCount Number of placeholder items to display (default: 5)
+ * @param modifier Optional modifier for the list
+ */
 @Composable
 fun LoadingPlaceholderList(
     itemCount: Int = 5,
@@ -143,6 +181,13 @@ fun LoadingPlaceholderList(
     }
 }
 
+/**
+ * Single loading placeholder component.
+ *
+ * Alias for [CoinCardPlaceholder] for simpler usage.
+ *
+ * @param modifier Optional modifier for the placeholder
+ */
 @Composable
 fun LoadingPlaceholder(
     modifier: Modifier = Modifier

@@ -1,3 +1,17 @@
+/**
+ * SearchBar.kt
+ *
+ * Text input component for searching cryptocurrencies.
+ * Provides a styled search field with icon and clear button.
+ *
+ * Features:
+ * - Search icon
+ * - Placeholder text
+ * - Clear button when text is entered
+ * - Styled to match app theme
+ *
+ * @see TabNavigation for filter tabs that complement search
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.foundation.background
@@ -20,6 +34,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cryptowallet.theme.LocalCryptoColors
 
+/**
+ * Search input field for filtering cryptocurrencies.
+ *
+ * Displays a text field with search icon and optional clear button.
+ * Styled with rounded corners and theme colors.
+ *
+ * @param query Current search query text
+ * @param onQueryChange Callback when query text changes
+ * @param placeholder Placeholder text when empty (default: "Search cryptocurrencies...")
+ * @param modifier Optional modifier for the search bar
+ */
 @Composable
 fun SearchBar(
     query: String,

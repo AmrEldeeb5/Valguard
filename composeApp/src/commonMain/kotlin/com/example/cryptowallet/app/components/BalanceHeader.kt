@@ -1,3 +1,18 @@
+/**
+ * BalanceHeader.kt
+ *
+ * Displays the portfolio balance header with total value, cash balance,
+ * and performance metrics. Used at the top of portfolio-related screens.
+ *
+ * Features:
+ * - Large display of total portfolio value
+ * - Performance percentage with color coding (green/red)
+ * - Cash balance display
+ * - Optional "Buy Coin" action button
+ * - Full accessibility support with content descriptions
+ *
+ * @see PortfolioValueCard for an alternative portfolio display component
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.foundation.background
@@ -25,6 +40,21 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoSpacing
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
+/**
+ * Header component displaying portfolio balance information.
+ *
+ * Shows the total portfolio value prominently, along with performance
+ * metrics and cash balance. Optionally displays a buy button.
+ *
+ * @param totalValue Formatted string of total portfolio value (e.g., "$12,345.67")
+ * @param cashBalance Formatted string of available cash (e.g., "$1,000.00")
+ * @param performancePercent Formatted performance percentage (e.g., "+5.23%")
+ * @param performanceLabel Label for the performance period (default: "24h")
+ * @param isPositive Whether the performance is positive (affects color)
+ * @param showBuyButton Whether to show the "Buy Coin" button
+ * @param onBuyClick Callback when the buy button is clicked
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun BalanceHeader(
     totalValue: String,

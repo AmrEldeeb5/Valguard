@@ -1,3 +1,18 @@
+/**
+ * CryptoVaultHeader.kt
+ *
+ * Main app header component displaying the CryptoVault branding,
+ * alert notifications, and optional menu access.
+ *
+ * Features:
+ * - Gradient "CryptoVault" title text
+ * - Subtitle with app description
+ * - Alert bell icon with notification badge
+ * - Optional "more" menu button
+ * - Accessibility support for all interactive elements
+ *
+ * @see ScreenHeader for a simpler screen-level header
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.foundation.background
@@ -22,6 +37,17 @@ import androidx.compose.ui.unit.sp
 import com.example.cryptowallet.theme.CryptoGradients
 import com.example.cryptowallet.theme.LocalCryptoColors
 
+/**
+ * Main application header with branding and actions.
+ *
+ * Displays the CryptoVault logo/title with gradient styling,
+ * along with alert notifications and optional menu access.
+ *
+ * @param alertCount Number of active alerts to show in badge (0 hides badge)
+ * @param onAlertClick Callback when the alert bell is tapped
+ * @param onMoreClick Optional callback for the more menu button (null hides button)
+ * @param modifier Optional modifier for the header
+ */
 @Composable
 fun CryptoVaultHeader(
     alertCount: Int,

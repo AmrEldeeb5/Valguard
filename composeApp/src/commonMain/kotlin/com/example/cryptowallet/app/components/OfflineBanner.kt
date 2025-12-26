@@ -1,3 +1,17 @@
+/**
+ * OfflineBanner.kt
+ *
+ * Displays a warning banner when the app is offline.
+ * Informs users that they're viewing cached data.
+ *
+ * Features:
+ * - Warning icon
+ * - "Offline - Showing cached data" message
+ * - Error-colored background
+ * - Accessibility support
+ *
+ * @see ConnectionStatusIndicator for more detailed connection states
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.foundation.background
@@ -18,6 +32,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cryptowallet.theme.LocalCryptoColors
 
+/**
+ * Banner component indicating offline status.
+ *
+ * Shows a warning message that cached data is being displayed
+ * because the device is offline.
+ *
+ * @param modifier Optional modifier for the banner
+ */
 @Composable
 fun OfflineBanner(
     modifier: Modifier = Modifier

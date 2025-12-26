@@ -1,3 +1,18 @@
+/**
+ * CoinHeader.kt
+ *
+ * Displays a compact coin identifier with icon, name, and optional price.
+ * Used in headers and trading screens to show which coin is being viewed.
+ *
+ * Features:
+ * - Circular coin icon
+ * - Coin name display
+ * - Optional current price
+ * - Pill-shaped border styling
+ * - Accessibility support
+ *
+ * @see CoinCard for a full card display
+ */
 package com.example.cryptowallet.app.components
 
 import androidx.compose.foundation.background
@@ -25,6 +40,17 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoSpacing
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
+/**
+ * Compact header showing coin icon, name, and optional price.
+ *
+ * Displays in a pill-shaped container, suitable for use in
+ * trading screens and detail headers.
+ *
+ * @param iconUrl URL of the coin's icon image
+ * @param name Display name of the cryptocurrency
+ * @param currentPrice Optional formatted price string
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun CoinHeader(
     iconUrl: String,
