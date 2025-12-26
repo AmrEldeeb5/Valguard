@@ -1,3 +1,18 @@
+/**
+ * NotificationsStep.kt
+ *
+ * Final step of the onboarding flow for configuring notification preferences.
+ * Displays notification type cards and a toggle to enable/disable notifications.
+ *
+ * Features:
+ * - Bouncing bell icon animation
+ * - Notification type info cards with pulsing status dots
+ * - Toggle button for enabling notifications
+ * - Respects reduce motion accessibility
+ *
+ * @see OnboardingScreen for the parent container
+ * @see notificationTypes for the displayed notification options
+ */
 package com.example.cryptowallet.app.onboarding.presentation.steps
 
 import androidx.compose.animation.core.RepeatMode
@@ -42,6 +57,16 @@ import com.example.cryptowallet.theme.LocalCryptoAccessibility
 import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
+/**
+ * Notifications step content for onboarding.
+ *
+ * Displays header, notification type cards with pulsing status dots,
+ * and a toggle for enabling notifications.
+ *
+ * @param notificationsEnabled Current notification preference state
+ * @param onToggleNotifications Callback when toggle is tapped
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun NotificationsStep(
     notificationsEnabled: Boolean,
@@ -136,6 +161,14 @@ fun NotificationsStep(
     }
 }
 
+/**
+ * Header section with bouncing bell icon and title text.
+ *
+ * The bell icon has a bounce animation that is disabled when
+ * reduce motion accessibility is enabled.
+ *
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun NotificationsHeader(
     modifier: Modifier = Modifier
@@ -203,6 +236,16 @@ fun NotificationsHeader(
     }
 }
 
+/**
+ * Toggle button for enabling/disabling notifications.
+ *
+ * Shows gradient background when enabled, with checkmark indicator.
+ * Includes haptic feedback on interaction.
+ *
+ * @param enabled Current enabled state
+ * @param onToggle Callback when toggle is tapped
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun EnableNotificationsToggle(
     enabled: Boolean,
@@ -293,6 +336,20 @@ fun EnableNotificationsToggle(
     }
 }
 
+/**
+ * Info card displaying a notification type option.
+ *
+ * Shows icon, title, description, and pulsing status indicator.
+ *
+ * @param icon Emoji icon to display
+ * @param iconGradient Gradient colors for icon background
+ * @param title Notification type title
+ * @param description Explanation of the notification
+ * @param statusText Timing/frequency text
+ * @param statusDotColor Color for the pulsing status dot
+ * @param pulseAlpha Current alpha value for pulse animation
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 private fun NotificationInfoCard(
     icon: String,

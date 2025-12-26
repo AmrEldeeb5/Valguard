@@ -1,3 +1,18 @@
+/**
+ * OnboardingBackground.kt
+ *
+ * Animated background component for the onboarding screens.
+ * Creates an immersive visual experience with pulsing gradient orbs
+ * and floating cryptocurrency symbols.
+ *
+ * Features:
+ * - Gradient background (slate-950 to slate-900)
+ * - Animated pulsing orbs (blue, purple, pink)
+ * - Floating crypto symbols with drift animations
+ * - Respects reduce motion accessibility setting
+ *
+ * @see OnboardingScreen for usage context
+ */
 package com.example.cryptowallet.app.onboarding.presentation.components
 
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -31,6 +46,14 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import kotlin.math.sin
 import kotlin.random.Random
 
+/**
+ * Animated background with gradient orbs and floating symbols.
+ *
+ * Creates an immersive visual backdrop for onboarding screens.
+ * Animations are disabled when reduce motion accessibility is enabled.
+ *
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun OnboardingBackground(
     modifier: Modifier = Modifier
@@ -137,6 +160,14 @@ fun OnboardingBackground(
     }
 }
 
+/**
+ * Draws an animated gradient orb on the canvas.
+ *
+ * @param center Center position of the orb
+ * @param radius Radius of the orb
+ * @param color Base color for the orb
+ * @param alpha Current alpha value (animated)
+ */
 private fun DrawScope.drawAnimatedOrb(
     center: Offset,
     radius: Float,
@@ -157,6 +188,20 @@ private fun DrawScope.drawAnimatedOrb(
     )
 }
 
+/**
+ * Data class holding properties for a floating symbol animation.
+ *
+ * @property symbol The crypto symbol character to display
+ * @property x Initial X position
+ * @property y Initial Y position
+ * @property size Font size in sp
+ * @property alpha Base alpha value
+ * @property durationY Vertical animation duration in ms
+ * @property durationX Horizontal animation duration in ms
+ * @property amplitudeY Vertical movement range
+ * @property amplitudeX Horizontal movement range
+ * @property delay Animation start delay in ms
+ */
 private data class SymbolData(
     val symbol: String,
     val x: Int,
@@ -170,6 +215,10 @@ private data class SymbolData(
     val delay: Int
 )
 
+/**
+ * Renders floating cryptocurrency symbols across the background.
+ * Generates 20 symbols with randomized positions and animation properties.
+ */
 @Composable
 private fun FloatingCryptoSymbols() {
     val symbols = listOf("₿", "Ξ", "◎", "₳", "Ł", "◈", "⟐", "✦", "⬡", "◇")
@@ -197,6 +246,11 @@ private fun FloatingCryptoSymbols() {
     }
 }
 
+/**
+ * Individual floating symbol with drift and pulse animations.
+ *
+ * @param data Animation properties for this symbol
+ */
 @Composable
 private fun FloatingSymbol(data: SymbolData) {
     val infiniteTransition = rememberInfiniteTransition(label = "symbol_${data.x}_${data.y}")

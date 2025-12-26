@@ -1,3 +1,21 @@
+/**
+ * OnboardingViewModel.kt
+ *
+ * ViewModel managing the onboarding flow state and business logic.
+ * Handles step navigation, coin selection, notification preferences,
+ * and completion with watchlist integration.
+ *
+ * Features:
+ * - Step-by-step navigation with validation
+ * - Coin selection with persistence
+ * - Skip functionality with confirmation
+ * - Success animation on completion
+ * - Automatic state persistence
+ *
+ * @see OnboardingScreen for the UI consumer
+ * @see OnboardingState for the state model
+ * @see OnboardingEvent for user interactions
+ */
 package com.example.cryptowallet.app.onboarding.presentation
 
 import androidx.lifecycle.ViewModel
@@ -14,13 +32,28 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for the onboarding flow.
+ *
+ * Manages the complete onboarding experience including navigation between
+ * steps, user selections, and completion logic. Persists state through
+ * [OnboardingRepository] and transfers selected coins to watchlist on completion.
+ *
+ * @property onboardingRepository Repository for state persistence and watchlist integration
+ */
 class OnboardingViewModel(
     private val onboardingRepository: OnboardingRepository
 ) : ViewModel() {
     
     private val _state = MutableStateFlow(OnboardingState())
+    
+    /** Current onboarding state as an observable flow */
     val state: StateFlow<OnboardingState> = _state.asStateFlow()
     
+    /**
+     * Whether the user can proceed to the next step.
+     * On coin selection step, requires at least one coin selected.
+     */
     val canProceed: StateFlow<Boolean> = _state.map { state ->
         when (state.currentStep) {
             2 -> state.selectedCoins.isNotEmpty()
@@ -28,6 +61,10 @@ class OnboardingViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
     
+    /**
+     * Gradient colors for the current step's theme.
+     * Updates automatically when step changes.
+     */
     val currentStepColors: StateFlow<List<androidx.compose.ui.graphics.Color>> = _state.map { state ->
         OnboardingStep.fromIndex(state.currentStep).gradientColors
     }.stateIn(
@@ -43,6 +80,12 @@ class OnboardingViewModel(
         loadSavedState()
     }
     
+    /**
+     * Sets the callback for navigating to the main screen.
+     * Called by [OnboardingScreen] to provide navigation capability.
+     *
+     * @param callback Function to invoke when navigation is needed
+     */
     fun setNavigationCallback(callback: () -> Unit) {
         onNavigateToMain = callback
     }
@@ -59,6 +102,13 @@ class OnboardingViewModel(
         }
     }
     
+    /**
+     * Handles user interaction events.
+     *
+     * Dispatches events to appropriate handler methods based on event type.
+     *
+     * @param event The [OnboardingEvent] to process
+     */
     fun onEvent(event: OnboardingEvent) {
         when (event) {
             is OnboardingEvent.NextStep -> handleNextStep()
@@ -195,7 +245,9 @@ class OnboardingViewModel(
     }
     
     companion object {
+        /** Duration of step transition animations in milliseconds */
         private const val TRANSITION_DURATION_MS = 300L
+        /** Duration of success animation before navigation in milliseconds */
         private const val SUCCESS_ANIMATION_DURATION_MS = 1500L
     }
 }

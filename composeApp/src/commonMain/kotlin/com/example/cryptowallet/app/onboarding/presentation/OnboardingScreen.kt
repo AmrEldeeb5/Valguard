@@ -1,3 +1,21 @@
+/**
+ * OnboardingScreen.kt
+ *
+ * Main screen composable for the onboarding flow. Orchestrates the
+ * multi-step onboarding experience with animated transitions between
+ * steps, progress tracking, and completion handling.
+ *
+ * Features:
+ * - Animated background with floating crypto symbols
+ * - Step-by-step navigation with progress bar
+ * - Animated content transitions between steps
+ * - Skip confirmation dialog
+ * - Success animation on completion
+ *
+ * @see OnboardingViewModel for state management
+ * @see OnboardingState for the state model
+ * @see WelcomeStep, FeaturesStep, CoinSelectionStep, NotificationsStep for step content
+ */
 package com.example.cryptowallet.app.onboarding.presentation
 
 import androidx.compose.animation.AnimatedContent
@@ -58,6 +76,16 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoTypography
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * Main onboarding screen composable.
+ *
+ * Displays the complete onboarding flow with animated transitions,
+ * progress tracking, and navigation controls. Manages the visual
+ * presentation while delegating state management to [OnboardingViewModel].
+ *
+ * @param onComplete Callback invoked when onboarding is completed
+ * @param viewModel The ViewModel managing onboarding state (injected via Koin)
+ */
 @Composable
 fun OnboardingScreen(
     onComplete: () -> Unit,
@@ -207,6 +235,15 @@ fun OnboardingScreen(
     }
 }
 
+/**
+ * Dialog for confirming skip action.
+ *
+ * Displays when user taps "Skip for now", asking for confirmation
+ * before jumping to the end of onboarding.
+ *
+ * @param onConfirm Callback when user confirms skipping
+ * @param onDismiss Callback when user cancels or dismisses dialog
+ */
 @Composable
 private fun SkipConfirmationDialog(
     onConfirm: () -> Unit,
@@ -251,6 +288,12 @@ private fun SkipConfirmationDialog(
     )
 }
 
+/**
+ * Full-screen success animation overlay.
+ *
+ * Displays after completing onboarding with an animated checkmark
+ * and welcome message before navigating to the main app.
+ */
 @Composable
 private fun SuccessAnimationOverlay() {
     val colors = LocalCryptoColors.current
@@ -325,6 +368,12 @@ private fun SuccessAnimationOverlay() {
 
 
 // Preview functions
+
+/**
+ * Preview helper composable for displaying onboarding at a specific step.
+ *
+ * @param step The step index to preview (0-3)
+ */
 @Composable
 private fun OnboardingScreenPreviewContent(step: Int) {
     val stepGradients = listOf(

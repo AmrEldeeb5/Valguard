@@ -1,3 +1,18 @@
+/**
+ * WelcomeStep.kt
+ *
+ * First step of the onboarding flow introducing users to CryptoVault.
+ * Displays the app logo, welcome message, and key feature highlights.
+ *
+ * Features:
+ * - Animated sparkle icon with pulse effect
+ * - Gradient text for app name
+ * - Staggered feature card animations
+ * - Respects reduce motion accessibility
+ *
+ * @see OnboardingScreen for the parent container
+ * @see welcomeFeatures for the displayed features
+ */
 package com.example.cryptowallet.app.onboarding.presentation.steps
 
 import androidx.compose.animation.core.RepeatMode
@@ -44,6 +59,14 @@ import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoTypography
 import kotlinx.coroutines.delay
 
+/**
+ * Welcome step content for onboarding.
+ *
+ * Displays the app introduction with animated header and
+ * feature highlight cards.
+ *
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun WelcomeStep(
     modifier: Modifier = Modifier
@@ -79,6 +102,14 @@ fun WelcomeStep(
     }
 }
 
+/**
+ * Header section with animated icon and welcome text.
+ *
+ * Displays the sparkle icon with pulse animation, gradient app name,
+ * and tagline. Animations are disabled when reduce motion is enabled.
+ *
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun WelcomeHeader(
     modifier: Modifier = Modifier
@@ -186,6 +217,17 @@ fun WelcomeHeader(
     }
 }
 
+/**
+ * Feature card for the welcome step.
+ *
+ * Compact horizontal card showing feature icon, title, and description.
+ * Supports staggered entrance animation.
+ *
+ * @param feature The feature to display
+ * @param index Position for staggered animation (default 0)
+ * @param animateIn Whether to animate entrance (default true)
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun WelcomeFeatureCard(
     feature: OnboardingFeature,

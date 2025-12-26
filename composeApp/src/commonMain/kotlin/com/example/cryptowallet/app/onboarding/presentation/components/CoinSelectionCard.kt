@@ -1,3 +1,19 @@
+/**
+ * CoinSelectionCard.kt
+ *
+ * Selectable card component for cryptocurrency selection during onboarding.
+ * Displays coin information with animated selection state and gradient theming.
+ *
+ * Features:
+ * - Scale animation on selection
+ * - Gradient background when selected
+ * - Checkmark indicator for selected state
+ * - Haptic feedback on interaction
+ * - Accessibility support with content descriptions
+ *
+ * @see CoinSelectionStep for usage context
+ * @see OnboardingCoin for the data model
+ */
 package com.example.cryptowallet.app.onboarding.presentation.components
 
 import androidx.compose.animation.core.animateFloatAsState
@@ -42,6 +58,18 @@ import com.example.cryptowallet.theme.LocalCryptoAccessibility
 import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
+/**
+ * Selectable card for cryptocurrency selection.
+ *
+ * Displays a coin with its icon, symbol, and name. When selected,
+ * shows a gradient background with checkmark. Includes scale animation
+ * and haptic feedback for better user experience.
+ *
+ * @param coin The cryptocurrency to display
+ * @param isSelected Whether this coin is currently selected
+ * @param onToggle Callback when the card is tapped
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun CoinSelectionCard(
     coin: OnboardingCoin,

@@ -1,3 +1,19 @@
+/**
+ * FeatureCard.kt
+ *
+ * Card components for displaying app features during onboarding.
+ * Provides both full-size and compact variants with staggered
+ * entrance animations.
+ *
+ * Features:
+ * - Gradient icon backgrounds
+ * - Staggered fade-in animations
+ * - Slate-themed card styling
+ * - Respects reduce motion accessibility
+ *
+ * @see FeaturesStep for usage context
+ * @see OnboardingFeature for the data model
+ */
 package com.example.cryptowallet.app.onboarding.presentation.components
 
 import androidx.compose.animation.core.animateFloatAsState
@@ -38,7 +54,17 @@ import kotlinx.coroutines.delay
 private val SlateBackground = Color(0xFF1E293B)
 private val SlateBorder = Color(0xFF334155)
 
-
+/**
+ * Full-size feature card with vertical layout.
+ *
+ * Displays feature icon, title, and description in a card format.
+ * Supports staggered entrance animation based on index.
+ *
+ * @param feature The feature to display
+ * @param index Position in list for staggered animation (default 0)
+ * @param animateIn Whether to animate entrance (default true)
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun FeatureCard(
     feature: OnboardingFeature,
@@ -124,6 +150,17 @@ fun FeatureCard(
     }
 }
 
+/**
+ * Compact feature card with horizontal layout.
+ *
+ * Displays feature icon, title, and description in a row format.
+ * Suitable for tighter layouts or lists.
+ *
+ * @param feature The feature to display
+ * @param index Position in list for staggered animation (default 0)
+ * @param animateIn Whether to animate entrance (default true)
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun CompactFeatureCard(
     feature: OnboardingFeature,

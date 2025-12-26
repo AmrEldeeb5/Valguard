@@ -1,15 +1,46 @@
+/**
+ * OnboardingFeature.kt
+ *
+ * Defines the features and notification types displayed during onboarding.
+ * Contains data classes and predefined lists for the welcome step features,
+ * features grid, and notification configuration options.
+ *
+ * @see WelcomeStep for the welcome screen feature cards
+ * @see FeaturesStep for the features grid display
+ * @see NotificationsStep for notification type cards
+ */
 package com.example.cryptowallet.app.onboarding.domain
 
 import androidx.compose.ui.graphics.Color
 
+/**
+ * Enum representing icon types used in onboarding feature cards.
+ *
+ * Each icon type maps to an emoji for cross-platform display.
+ *
+ * @property emoji The emoji character representing this icon
+ */
 enum class OnboardingIcon(val emoji: String) {
+    /** Trending/chart icon for price-related features */
     TRENDING_UP("📈"),
+    /** Bell icon for notification features */
     NOTIFICATIONS("🔔"),
+    /** Wallet icon for portfolio features */
     WALLET("💰"),
+    /** Shield icon for security features */
     SHIELD("🛡️"),
+    /** Sparkles icon for special/premium features */
     SPARKLES("✨")
 }
 
+/**
+ * Data class representing a feature displayed during onboarding.
+ *
+ * @property iconType The type of icon to display
+ * @property title The feature title text
+ * @property description Brief description of the feature
+ * @property gradientColors Colors for the icon's gradient background
+ */
 data class OnboardingFeature(
     val iconType: OnboardingIcon,
     val title: String,
@@ -17,6 +48,12 @@ data class OnboardingFeature(
     val gradientColors: List<Color>
 )
 
+/**
+ * Features displayed on the welcome step.
+ *
+ * These are the main value propositions shown when users first
+ * open the onboarding flow, highlighting key app capabilities.
+ */
 val welcomeFeatures = listOf(
     OnboardingFeature(
         iconType = OnboardingIcon.TRENDING_UP,
@@ -47,6 +84,12 @@ val welcomeFeatures = listOf(
     )
 )
 
+/**
+ * Features displayed in the 2x2 grid on the features step.
+ *
+ * These provide more detailed information about app capabilities
+ * with consistent blue-purple gradient theming.
+ */
 val gridFeatures = listOf(
     OnboardingFeature(
         iconType = OnboardingIcon.TRENDING_UP,
@@ -86,6 +129,18 @@ val gridFeatures = listOf(
     )
 )
 
+/**
+ * Data class representing a notification type option.
+ *
+ * Used in the notifications step to show different notification
+ * categories users can enable.
+ *
+ * @property iconType The type of icon to display
+ * @property title The notification type title
+ * @property description Explanation of what this notification does
+ * @property statusText Text showing notification frequency/timing
+ * @property gradientColors Colors for the icon's gradient background
+ */
 data class NotificationType(
     val iconType: OnboardingIcon,
     val title: String,
@@ -94,6 +149,12 @@ data class NotificationType(
     val gradientColors: List<Color>
 )
 
+/**
+ * Notification types displayed on the notifications step.
+ *
+ * Shows the different categories of notifications users can
+ * receive, each with timing/frequency information.
+ */
 val notificationTypes = listOf(
     NotificationType(
         iconType = OnboardingIcon.TRENDING_UP,

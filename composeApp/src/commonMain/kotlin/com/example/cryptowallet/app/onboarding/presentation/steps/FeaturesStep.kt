@@ -1,3 +1,17 @@
+/**
+ * FeaturesStep.kt
+ *
+ * Second step of the onboarding flow showcasing app capabilities.
+ * Displays a 2x2 grid of feature cards and a "free forever" banner.
+ *
+ * Features:
+ * - Animated zap icon header
+ * - 2x2 feature grid with staggered animations
+ * - "100% Free Forever" promotional banner
+ *
+ * @see OnboardingScreen for the parent container
+ * @see gridFeatures for the displayed features
+ */
 package com.example.cryptowallet.app.onboarding.presentation.steps
 
 import androidx.compose.foundation.background
@@ -28,6 +42,14 @@ import com.example.cryptowallet.app.onboarding.presentation.components.FeatureCa
 import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
+/**
+ * Features step content for onboarding.
+ *
+ * Displays the feature showcase with header, 2x2 feature grid,
+ * and promotional banner.
+ *
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun FeaturesStep(
     modifier: Modifier = Modifier
@@ -84,6 +106,11 @@ fun FeaturesStep(
     }
 }
 
+/**
+ * Header section with zap icon and title text.
+ *
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun FeaturesHeader(
     modifier: Modifier = Modifier
@@ -131,6 +158,11 @@ fun FeaturesHeader(
     }
 }
 
+/**
+ * Promotional banner highlighting free features.
+ *
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun FreeForeverBanner(
     modifier: Modifier = Modifier

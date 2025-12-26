@@ -1,3 +1,12 @@
+/**
+ * OnboardingButton.kt
+ *
+ * Primary action button for the onboarding flow.
+ * Displays "Continue" or "Get Started" based on current step,
+ * with gradient background and disabled state support.
+ *
+ * @see OnboardingScreen for usage context
+ */
 package com.example.cryptowallet.app.onboarding.presentation.components
 
 import androidx.compose.animation.animateColorAsState
@@ -33,6 +42,19 @@ import androidx.compose.ui.unit.dp
 import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
+/**
+ * Primary action button for onboarding navigation.
+ *
+ * Displays step-appropriate text ("Continue" or "Get Started")
+ * with animated gradient background when enabled, or disabled
+ * styling when not actionable.
+ *
+ * @param currentStep The current step index (affects button text)
+ * @param enabled Whether the button is interactive
+ * @param gradient Gradient brush for enabled state background
+ * @param onClick Callback when button is tapped
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun OnboardingButton(
     currentStep: Int,
@@ -97,6 +119,12 @@ fun OnboardingButton(
     }
 }
 
+/**
+ * Returns the appropriate button text for the given step.
+ *
+ * @param currentStep The current step index
+ * @return "Get Started" for final step, "Continue" otherwise
+ */
 fun getButtonText(currentStep: Int): String {
     return if (currentStep == 3) "Get Started" else "Continue"
 }

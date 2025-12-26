@@ -1,3 +1,17 @@
+/**
+ * NotificationTypeCard.kt
+ *
+ * Card component for displaying notification type options during onboarding.
+ * Shows notification category with icon, description, and pulsing status indicator.
+ *
+ * Features:
+ * - Gradient icon background
+ * - Pulsing status dot animation
+ * - Slate-themed card styling
+ *
+ * @see NotificationsStep for usage context
+ * @see NotificationType for the data model
+ */
 package com.example.cryptowallet.app.onboarding.presentation.components
 
 import androidx.compose.animation.core.RepeatMode
@@ -33,6 +47,15 @@ import com.example.cryptowallet.app.onboarding.domain.NotificationType
 import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
+/**
+ * Card displaying a notification type option.
+ *
+ * Shows the notification category with icon, title, description,
+ * and a pulsing status dot indicating active status.
+ *
+ * @param notificationType The notification type to display
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun NotificationTypeCard(
     notificationType: NotificationType,

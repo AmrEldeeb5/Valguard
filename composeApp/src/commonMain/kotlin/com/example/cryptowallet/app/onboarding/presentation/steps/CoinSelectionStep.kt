@@ -1,3 +1,19 @@
+/**
+ * CoinSelectionStep.kt
+ *
+ * Third step of the onboarding flow for selecting favorite cryptocurrencies.
+ * Displays a 2x3 grid of popular coins that users can select to add
+ * to their watchlist.
+ *
+ * Features:
+ * - 2x3 grid of selectable coin cards
+ * - Selection count badge
+ * - Validation requiring at least one selection
+ *
+ * @see OnboardingScreen for the parent container
+ * @see popularCoins for the available coins
+ * @see CoinSelectionCard for individual coin cards
+ */
 package com.example.cryptowallet.app.onboarding.presentation.steps
 
 import androidx.compose.foundation.background
@@ -27,6 +43,16 @@ import com.example.cryptowallet.app.onboarding.presentation.components.CoinSelec
 import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
+/**
+ * Coin selection step content for onboarding.
+ *
+ * Displays header, 2x3 grid of coin cards, and selection badge.
+ * Users must select at least one coin to proceed.
+ *
+ * @param selectedCoins Set of currently selected coin symbols
+ * @param onToggleCoin Callback when a coin is tapped
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun CoinSelectionStep(
     selectedCoins: Set<String>,
@@ -75,6 +101,11 @@ fun CoinSelectionStep(
     }
 }
 
+/**
+ * Header section with chart icon and instruction text.
+ *
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun CoinSelectionHeader(
     modifier: Modifier = Modifier
@@ -131,6 +162,14 @@ fun CoinSelectionHeader(
     }
 }
 
+/**
+ * Badge showing the number of selected coins.
+ *
+ * Only visible when at least one coin is selected.
+ *
+ * @param selectedCount Number of coins currently selected
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun SelectionBadge(
     selectedCount: Int,
@@ -156,6 +195,12 @@ fun SelectionBadge(
     }
 }
 
+/**
+ * Returns human-readable text for the selection count.
+ *
+ * @param count Number of coins selected
+ * @return Descriptive text (e.g., "1 coin selected", "3 coins selected")
+ */
 fun getSelectionCountText(count: Int): String {
     return when {
         count == 0 -> "Select at least one coin to continue"

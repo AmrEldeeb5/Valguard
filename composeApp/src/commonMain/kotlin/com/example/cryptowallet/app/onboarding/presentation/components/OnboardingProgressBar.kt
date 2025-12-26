@@ -1,3 +1,14 @@
+/**
+ * OnboardingProgressBar.kt
+ *
+ * Progress indicator component for the onboarding flow.
+ * Displays step count, segmented progress bar, and percentage completion.
+ *
+ * Layout: "Step X of 4" | [progress segments] | "XX%"
+ *
+ * @see OnboardingScreen for usage context
+ * @see OnboardingStep for step definitions
+ */
 package com.example.cryptowallet.app.onboarding.presentation.components
 
 import androidx.compose.animation.core.animateFloatAsState
@@ -25,6 +36,18 @@ import androidx.compose.ui.unit.dp
 import com.example.cryptowallet.theme.LocalCryptoColors
 import com.example.cryptowallet.theme.LocalCryptoTypography
 
+/**
+ * Segmented progress bar showing onboarding completion status.
+ *
+ * Displays the current step indicator, animated progress segments,
+ * and percentage completion. Each segment fills with the step's
+ * gradient color when active.
+ *
+ * @param currentStep The current step index (0-3)
+ * @param totalSteps Total number of steps (default 4)
+ * @param stepGradient Gradient brush for active segments
+ * @param modifier Optional modifier for the component
+ */
 @Composable
 fun OnboardingProgressBar(
     currentStep: Int,
@@ -101,6 +124,13 @@ fun OnboardingProgressBar(
     }
 }
 
+/**
+ * Calculates the progress percentage for a given step.
+ *
+ * @param currentStep The current step index (0-3)
+ * @param totalSteps Total number of steps (default 4)
+ * @return Progress percentage (25, 50, 75, or 100)
+ */
 fun calculateProgressPercentage(currentStep: Int, totalSteps: Int = 4): Int {
     return ((currentStep + 1).toFloat() / totalSteps * 100).toInt()
 }

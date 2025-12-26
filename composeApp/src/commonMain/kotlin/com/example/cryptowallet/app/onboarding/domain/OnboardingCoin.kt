@@ -1,7 +1,25 @@
+/**
+ * OnboardingCoin.kt
+ *
+ * Defines the cryptocurrency options available during the onboarding
+ * coin selection step. Each coin has visual properties for display
+ * in the selection grid.
+ *
+ * @see CoinSelectionStep for the UI that displays these coins
+ * @see CoinSelectionCard for the individual coin card component
+ */
 package com.example.cryptowallet.app.onboarding.domain
 
 import androidx.compose.ui.graphics.Color
 
+/**
+ * Data class representing a cryptocurrency option in the onboarding flow.
+ *
+ * @property symbol The ticker symbol (e.g., "BTC", "ETH")
+ * @property name The full name of the cryptocurrency
+ * @property icon The emoji or character icon representing the coin
+ * @property gradientColors List of colors for the coin's gradient background
+ */
 data class OnboardingCoin(
     val symbol: String,
     val name: String,
@@ -9,6 +27,13 @@ data class OnboardingCoin(
     val gradientColors: List<Color>
 )
 
+/**
+ * List of popular cryptocurrencies displayed during onboarding.
+ *
+ * These coins are shown in the coin selection step, allowing users
+ * to quickly add popular cryptocurrencies to their watchlist.
+ * Each coin has unique gradient colors for visual distinction.
+ */
 val popularCoins = listOf(
     OnboardingCoin(
         symbol = "BTC",
