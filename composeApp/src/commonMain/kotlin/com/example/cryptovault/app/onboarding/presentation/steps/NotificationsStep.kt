@@ -205,8 +205,8 @@ fun NotificationsHeader(
         // Bouncing bell icon section
         Box(
             modifier = Modifier
-                .padding(top = (-bellBounce).dp)
                 .size(dimensions.appIconSize + 16.dp)
+                .offset(y = bellBounce.dp)
                 .clip(RoundedCornerShape(dimensions.cardCornerRadius))
                 .background(
                     Brush.linearGradient(

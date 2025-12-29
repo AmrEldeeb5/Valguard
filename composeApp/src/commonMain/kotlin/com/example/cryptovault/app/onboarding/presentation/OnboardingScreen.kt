@@ -132,84 +132,90 @@ fun OnboardingScreen(
             val slateBorder = Color(0xFF334155).copy(alpha = 0.5f) // slate-700/50
             val cardShape = RoundedCornerShape(dimensions.cardCornerRadius)
             
-            Column(
+            Box(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
                     .padding(horizontal = dimensions.screenPadding)
+                    .clip(cardShape)
+                    .background(slateCardBackground)
+                    .border(1.dp, slateBorder, cardShape)
             ) {
-                // Scrollable content area
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .clip(cardShape)
-                        .background(slateCardBackground)
-                        .border(1.dp, slateBorder, cardShape)
+                Column(
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    Column(
+                    // Scrollable content area
+                    Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
+                            .weight(1f)
+                            .fillMaxWidth()
                     ) {
-                        // Step content with animated transitions
-                        AnimatedContent(
-                            targetState = state.currentStep,
-                            transitionSpec = {
-                                if (targetState > initialState) {
-                                    slideInHorizontally { it } + fadeIn() togetherWith
-                                        slideOutHorizontally { -it } + fadeOut()
-                                } else {
-                                    slideInHorizontally { -it } + fadeIn() togetherWith
-                                        slideOutHorizontally { it } + fadeOut()
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            // Step content with animated transitions
+                            AnimatedContent(
+                                targetState = state.currentStep,
+                                transitionSpec = {
+                                    if (targetState > initialState) {
+                                        slideInHorizontally { it } + fadeIn() togetherWith
+                                            slideOutHorizontally { -it } + fadeOut()
+                                    } else {
+                                        slideInHorizontally { -it } + fadeIn() togetherWith
+                                            slideOutHorizontally { it } + fadeOut()
+                                    }
+                                }
+                            ) { step ->
+                                when (step) {
+                                    0 -> WelcomeStep()
+                                    1 -> FeaturesStep()
+                                    2 -> CoinSelectionStep(
+                                        selectedCoins = state.selectedCoins,
+                                        onToggleCoin = { viewModel.onEvent(OnboardingEvent.ToggleCoin(it)) }
+                                    )
+                                    3 -> NotificationsStep(
+                                        notificationsEnabled = state.notificationsEnabled,
+                                        onToggleNotifications = { viewModel.onEvent(OnboardingEvent.ToggleNotifications) }
+                                    )
                                 }
                             }
-                        ) { step ->
-                            when (step) {
-                                0 -> WelcomeStep()
-                                1 -> FeaturesStep()
-                                2 -> CoinSelectionStep(
-                                    selectedCoins = state.selectedCoins,
-                                    onToggleCoin = { viewModel.onEvent(OnboardingEvent.ToggleCoin(it)) }
-                                )
-                                3 -> NotificationsStep(
-                                    notificationsEnabled = state.notificationsEnabled,
-                                    onToggleNotifications = { viewModel.onEvent(OnboardingEvent.ToggleNotifications) }
-                                )
-                            }
+                            
+                            Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
                         }
-                        
-                        Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
                     }
-                }
-                
-                Spacer(modifier = Modifier.height(dimensions.itemSpacing))
-                
-                // Fixed Continue button at bottom
-                OnboardingButton(
-                    currentStep = state.currentStep,
-                    enabled = canProceed && !state.isTransitioning,
-                    gradient = stepGradient,
-                    onClick = { viewModel.onEvent(OnboardingEvent.NextStep) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                
-                // Back button (text) - only visible on steps > 0
-                AnimatedVisibility(
-                    visible = state.currentStep > 0,
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
-                    Text(
-                        text = "Back",
-                        style = typography.bodyMedium,
-                        color = colors.textSecondary,
-                        textAlign = TextAlign.Center,
+                    
+                    // Fixed Continue button at bottom of card
+                    OnboardingButton(
+                        currentStep = state.currentStep,
+                        enabled = canProceed && !state.isTransitioning,
+                        gradient = stepGradient,
+                        onClick = { viewModel.onEvent(OnboardingEvent.NextStep) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { viewModel.onEvent(OnboardingEvent.PreviousStep) }
-                            .padding(vertical = dimensions.smallSpacing)
+                            .padding(horizontal = dimensions.cardPadding)
                     )
+                    
+                    // Back button (text) - only visible on steps > 0
+                    AnimatedVisibility(
+                        visible = state.currentStep > 0,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        Text(
+                            text = "Back",
+                            style = typography.bodyMedium,
+                            color = colors.textSecondary,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { viewModel.onEvent(OnboardingEvent.PreviousStep) }
+                                .padding(vertical = dimensions.smallSpacing)
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(dimensions.smallSpacing))
                 }
             }
             
