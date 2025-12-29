@@ -285,7 +285,7 @@ fun EnableNotificationsToggle(
                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                 onToggle()
             }
-            .padding(dimensions.cardPadding + 8.dp)
+            .padding(dimensions.cardPadding)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -386,7 +386,7 @@ private fun NotificationInfoCard(
             .clip(cardShape)
             .background(slateBackground)
             .border(1.dp, slateBorder, cardShape)
-            .padding(dimensions.cardPadding + 8.dp)
+            .padding(dimensions.cardPadding)
     ) {
         Column {
             Row(
@@ -407,8 +407,8 @@ private fun NotificationInfoCard(
                         fontSize = (dimensions.coinIconSize.value * 0.5f).sp
                     )
                 }
-                
-                Spacer(modifier = Modifier.width(dimensions.verticalSpacing))
+
+                Spacer(modifier = Modifier.width(dimensions.itemSpacing))
                 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
@@ -430,7 +430,7 @@ private fun NotificationInfoCard(
             
             // Status row with pulsing dot
             Row(
-                modifier = Modifier.padding(start = dimensions.coinIconSize + dimensions.verticalSpacing),
+                modifier = Modifier.padding(start = dimensions.coinIconSize + dimensions.itemSpacing),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Pulsing status dot

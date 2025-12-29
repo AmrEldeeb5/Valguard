@@ -83,7 +83,7 @@ fun CoinCard(
     val dimensions = AppTheme.dimensions
 
     val changeColor = if (coin.isPositive) colors.profit else colors.loss
-    
+
     // Build accessibility description
     val accessibilityDescription = buildString {
         append("${coin.name}, ${coin.symbol}. ")
@@ -93,7 +93,7 @@ fun CoinCard(
             append("Holdings: ${coin.holdingsAmount}, worth ${coin.holdingsValue}.")
         }
     }
-    
+
     Card(
         shape = RoundedCornerShape(dimensions.cardCornerRadius),
         colors = CardDefaults.cardColors(
@@ -131,9 +131,9 @@ fun CoinCard(
                     modifier = Modifier.size(dimensions.coinIconSize)
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(dimensions.itemSpacing))
-            
+
             // Coin name and symbol
             Column(
                 modifier = Modifier.weight(1f)
@@ -149,7 +149,7 @@ fun CoinCard(
                     color = colors.textSecondary
                 )
             }
-            
+
             // Price and change section
             Column(
                 horizontalAlignment = Alignment.End
@@ -166,13 +166,13 @@ fun CoinCard(
                     Spacer(modifier = Modifier.width(dimensions.smallSpacing))
                     PriceIndicator(direction = coin.priceDirection)
                 }
-                
+
                 Text(
                     text = coin.formattedChange,
                     style = typography.bodyMedium,
                     color = changeColor
                 )
-                
+
                 // Holdings section (only shown when showHoldings is true and holdings exist)
                 if (showHoldings && coin.hasHoldings()) {
                     Spacer(modifier = Modifier.height(dimensions.smallSpacing))

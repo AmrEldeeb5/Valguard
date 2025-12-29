@@ -60,7 +60,7 @@ fun CoinsListContent(
     onCoinClicked: (String) -> Unit,
 ) {
     val colors = LocalCryptoColors.current
-    
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -91,7 +91,7 @@ fun CoinsListContent(
                 }
             }
         }
-        
+
         if (state.chartState != null) {
             CoinChartDialog(
                 uiChartState = state.chartState,
@@ -104,7 +104,7 @@ fun CoinsListContent(
 @Composable
 private fun LoadingContent() {
     val spacing = LocalCryptoSpacing.current
-    
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -127,7 +127,7 @@ fun CoinsList(
     val colors = LocalCryptoColors.current
     val typography = LocalCryptoTypography.current
     val spacing = LocalCryptoSpacing.current
-    
+
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(spacing.xs),
         modifier = Modifier
@@ -174,7 +174,7 @@ fun CoinChartDialog(
     onDismiss: () -> Unit,
 ) {
     val colors = LocalCryptoColors.current
-    
+
     AlertDialog(
         modifier = Modifier.fillMaxWidth(),
         onDismissRequest = onDismiss,

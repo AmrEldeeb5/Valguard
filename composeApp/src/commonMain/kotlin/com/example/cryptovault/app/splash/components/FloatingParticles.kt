@@ -76,7 +76,7 @@ fun FloatingParticles(
         List(particleCount) { index ->
             Triple(
                 Random.nextFloat(), // baseY (vertical position)
-                Random.nextFloat() * 3f + 3f, // size (3-6px) - bigger and varied
+                Random.nextFloat() * 6f + 4f, // size (4-10px) - bigger and varied
                 Random.nextInt(0, 4000) // delay
             )
         }
@@ -84,7 +84,7 @@ fun FloatingParticles(
     
     // Create animated states for all particles
     val particleStates = particleConfigs.mapIndexed { index, (baseY, size, delay) ->
-        val duration = 700 // 0.7 seconds to cross screen (ultra fast)
+        val duration = 500 // 0.5 seconds to cross screen (even faster)
         
         // Horizontal streaming animation (left → right, continuous)
         val animatedX by infiniteTransition.animateFloat(
