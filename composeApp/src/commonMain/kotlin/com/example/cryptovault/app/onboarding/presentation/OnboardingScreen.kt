@@ -72,6 +72,7 @@ import com.example.cryptovault.app.onboarding.presentation.steps.CoinSelectionSt
 import com.example.cryptovault.app.onboarding.presentation.steps.FeaturesStep
 import com.example.cryptovault.app.onboarding.presentation.steps.NotificationsStep
 import com.example.cryptovault.app.onboarding.presentation.steps.WelcomeStep
+import com.example.cryptovault.theme.AppTheme
 import com.example.cryptovault.theme.LocalCryptoColors
 import com.example.cryptovault.theme.LocalCryptoTypography
 import org.koin.compose.viewmodel.koinViewModel
@@ -97,6 +98,7 @@ fun OnboardingScreen(
     
     val colors = LocalCryptoColors.current
     val typography = LocalCryptoTypography.current
+    val dimensions = AppTheme.dimensions
     
     // Set navigation callback
     LaunchedEffect(Unit) {
@@ -115,7 +117,7 @@ fun OnboardingScreen(
                 .fillMaxSize()
                 .windowInsetsPadding(WindowInsets.statusBars)
         ) {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(dimensions.smallSpacing))
             
             // Progress bar at the very top (like React)
             OnboardingProgressBar(
@@ -123,85 +125,95 @@ fun OnboardingScreen(
                 stepGradient = stepGradient
             )
             
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
             
             // Main content card - React: bg-slate-900/50 - more transparent/darker
             val slateCardBackground = Color(0xFF0F172A).copy(alpha = 0.35f) // slate-900 with more transparency
             val slateBorder = Color(0xFF334155).copy(alpha = 0.5f) // slate-700/50
-            val cardShape = RoundedCornerShape(24.dp)
+            val cardShape = RoundedCornerShape(dimensions.cardCornerRadius)
             
-            Box(
+            Column(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .clip(cardShape)
-                    .background(slateCardBackground)
-                    .border(1.dp, slateBorder, cardShape)
+                    .padding(horizontal = dimensions.screenPadding)
             ) {
-                Column(
+                // Scrollable content area
+                Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .clip(cardShape)
+                        .background(slateCardBackground)
+                        .border(1.dp, slateBorder, cardShape)
                 ) {
-                    // Step content with animated transitions
-                    AnimatedContent(
-                        targetState = state.currentStep,
-                        transitionSpec = {
-                            if (targetState > initialState) {
-                                slideInHorizontally { it } + fadeIn() togetherWith
-                                    slideOutHorizontally { -it } + fadeOut()
-                            } else {
-                                slideInHorizontally { -it } + fadeIn() togetherWith
-                                    slideOutHorizontally { it } + fadeOut()
-                            }
-                        },
-                        modifier = Modifier.weight(1f)
-                    ) { step ->
-                        when (step) {
-                            0 -> WelcomeStep()
-                            1 -> FeaturesStep()
-                            2 -> CoinSelectionStep(
-                                selectedCoins = state.selectedCoins,
-                                onToggleCoin = { viewModel.onEvent(OnboardingEvent.ToggleCoin(it)) }
-                            )
-                            3 -> NotificationsStep(
-                                notificationsEnabled = state.notificationsEnabled,
-                                onToggleNotifications = { viewModel.onEvent(OnboardingEvent.ToggleNotifications) }
-                            )
-                        }
-                    }
-                    
-                    // Continue button
-                    OnboardingButton(
-                        currentStep = state.currentStep,
-                        enabled = canProceed && !state.isTransitioning,
-                        gradient = stepGradient,
-                        onClick = { viewModel.onEvent(OnboardingEvent.NextStep) },
-                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
-                    )
-                    
-                    // Back button (text) - only visible on steps > 0
-                    AnimatedVisibility(
-                        visible = state.currentStep > 0,
-                        enter = fadeIn(),
-                        exit = fadeOut()
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
                     ) {
-                        Text(
-                            text = "Back",
-                            style = typography.bodyMedium,
-                            color = colors.textSecondary,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { viewModel.onEvent(OnboardingEvent.PreviousStep) }
-                                .padding(vertical = 12.dp)
-                        )
+                        // Step content with animated transitions
+                        AnimatedContent(
+                            targetState = state.currentStep,
+                            transitionSpec = {
+                                if (targetState > initialState) {
+                                    slideInHorizontally { it } + fadeIn() togetherWith
+                                        slideOutHorizontally { -it } + fadeOut()
+                                } else {
+                                    slideInHorizontally { -it } + fadeIn() togetherWith
+                                        slideOutHorizontally { it } + fadeOut()
+                                }
+                            }
+                        ) { step ->
+                            when (step) {
+                                0 -> WelcomeStep()
+                                1 -> FeaturesStep()
+                                2 -> CoinSelectionStep(
+                                    selectedCoins = state.selectedCoins,
+                                    onToggleCoin = { viewModel.onEvent(OnboardingEvent.ToggleCoin(it)) }
+                                )
+                                3 -> NotificationsStep(
+                                    notificationsEnabled = state.notificationsEnabled,
+                                    onToggleNotifications = { viewModel.onEvent(OnboardingEvent.ToggleNotifications) }
+                                )
+                            }
+                        }
+                        
+                        Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
                     }
-                    
-                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                
+                Spacer(modifier = Modifier.height(dimensions.itemSpacing))
+                
+                // Fixed Continue button at bottom
+                OnboardingButton(
+                    currentStep = state.currentStep,
+                    enabled = canProceed && !state.isTransitioning,
+                    gradient = stepGradient,
+                    onClick = { viewModel.onEvent(OnboardingEvent.NextStep) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                
+                // Back button (text) - only visible on steps > 0
+                AnimatedVisibility(
+                    visible = state.currentStep > 0,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    Text(
+                        text = "Back",
+                        style = typography.bodyMedium,
+                        color = colors.textSecondary,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { viewModel.onEvent(OnboardingEvent.PreviousStep) }
+                            .padding(vertical = dimensions.smallSpacing)
+                    )
                 }
             }
+            
+            Spacer(modifier = Modifier.height(dimensions.smallSpacing))
             
             // Skip for now text - OUTSIDE the card (only on steps 0-2)
             if (state.currentStep < 3) {
@@ -213,11 +225,11 @@ fun OnboardingScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { viewModel.onEvent(OnboardingEvent.SkipToEnd) }
-                        .padding(vertical = 16.dp)
+                        .padding(vertical = dimensions.smallSpacing)
                 )
             }
             
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(dimensions.smallSpacing))
         }
         
         // Skip confirmation dialog
@@ -251,6 +263,7 @@ private fun SkipConfirmationDialog(
 ) {
     val colors = LocalCryptoColors.current
     val typography = LocalCryptoTypography.current
+    val dimensions = AppTheme.dimensions
     
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -298,6 +311,7 @@ private fun SkipConfirmationDialog(
 private fun SuccessAnimationOverlay() {
     val colors = LocalCryptoColors.current
     val typography = LocalCryptoTypography.current
+    val dimensions = AppTheme.dimensions
     
     val scale by animateFloatAsState(
         targetValue = 1f,
@@ -329,7 +343,7 @@ private fun SuccessAnimationOverlay() {
             // Animated checkmark
             Box(
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(dimensions.appIconSize + 36.dp)
                     .scale(scale)
                     .clip(CircleShape)
                     .background(Color.White),
@@ -339,11 +353,11 @@ private fun SuccessAnimationOverlay() {
                     imageVector = Icons.Default.Check,
                     contentDescription = "Success",
                     tint = colors.profit,
-                    modifier = Modifier.size(60.dp)
+                    modifier = Modifier.size(dimensions.appIconSize * 0.6f)
                 )
             }
             
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
             
             // Welcome text
             Text(
@@ -354,7 +368,7 @@ private fun SuccessAnimationOverlay() {
                 textAlign = TextAlign.Center
             )
             
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(dimensions.smallSpacing))
             
             Text(
                 text = "Your crypto journey begins now",

@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cryptovault.app.onboarding.domain.gridFeatures
 import com.example.cryptovault.app.onboarding.presentation.components.FeatureCard
+import com.example.cryptovault.theme.AppTheme
 import com.example.cryptovault.theme.LocalCryptoColors
 import com.example.cryptovault.theme.LocalCryptoTypography
 
@@ -54,24 +55,24 @@ import com.example.cryptovault.theme.LocalCryptoTypography
 fun FeaturesStep(
     modifier: Modifier = Modifier
 ) {
-    LocalCryptoColors.current
+    val dimensions = AppTheme.dimensions
     
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(24.dp),
+            .padding(dimensions.cardPadding * 2),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         FeaturesHeader()
         
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
         
         // 2x2 grid of feature cards
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(dimensions.itemSpacing)
         ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(dimensions.itemSpacing)
             ) {
                 FeatureCard(
                     feature = gridFeatures[0],
@@ -85,7 +86,7 @@ fun FeaturesStep(
                 )
             }
             Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(dimensions.itemSpacing)
             ) {
                 FeatureCard(
                     feature = gridFeatures[2],
@@ -100,7 +101,7 @@ fun FeaturesStep(
             }
         }
         
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
         
         FreeForeverBanner()
     }
@@ -117,6 +118,7 @@ fun FeaturesHeader(
 ) {
     val colors = LocalCryptoColors.current
     val typography = LocalCryptoTypography.current
+    val dimensions = AppTheme.dimensions
     
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -125,8 +127,8 @@ fun FeaturesHeader(
         // Zap icon in gradient rounded square
         Box(
             modifier = Modifier
-                .size(80.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .size(dimensions.appIconSize + 16.dp)
+                .clip(RoundedCornerShape(dimensions.cardCornerRadius))
                 .background(
                     Brush.linearGradient(
                         colors = listOf(colors.accentPurple500, colors.accentPink500)
@@ -134,10 +136,13 @@ fun FeaturesHeader(
                 ),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = "⚡", fontSize = 40.sp)
+            Text(
+                text = "⚡",
+                fontSize = (dimensions.appIconSize.value * 0.5f).sp
+            )
         }
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
         
         Text(
             text = "Everything You Need",
@@ -147,7 +152,7 @@ fun FeaturesHeader(
             textAlign = TextAlign.Center
         )
         
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(dimensions.smallSpacing))
         
         Text(
             text = "Track, analyze, and stay ahead of the market",
@@ -169,11 +174,12 @@ fun FreeForeverBanner(
 ) {
     val colors = LocalCryptoColors.current
     val typography = LocalCryptoTypography.current
+    val dimensions = AppTheme.dimensions
     
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(dimensions.cardCornerRadius))
             .background(
                 Brush.horizontalGradient(
                     colors = listOf(
@@ -182,11 +188,14 @@ fun FreeForeverBanner(
                     )
                 )
             )
-            .padding(16.dp)
+            .padding(dimensions.cardPadding)
     ) {
         Row(verticalAlignment = Alignment.Top) {
-            Text(text = "🛡️", fontSize = 20.sp)
-            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = "🛡️",
+                fontSize = (dimensions.coinIconSize.value * 0.42f).sp
+            )
+            Spacer(modifier = Modifier.width(dimensions.itemSpacing))
             Column {
                 Text(
                     text = "100% Free Forever",
@@ -194,7 +203,7 @@ fun FreeForeverBanner(
                     fontWeight = FontWeight.SemiBold,
                     color = colors.accentBlue400
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(dimensions.smallSpacing / 2))
                 Text(
                     text = "No credit card required. All premium features included.",
                     style = typography.bodySmall,

@@ -46,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.cryptovault.app.onboarding.domain.OnboardingFeature
 import com.example.cryptovault.app.onboarding.domain.welcomeFeatures
+import com.example.cryptovault.theme.AppTheme
 import com.example.cryptovault.theme.CoinRoutineTheme
 import com.example.cryptovault.theme.LocalCryptoAccessibility
 import com.example.cryptovault.theme.LocalCryptoColors
@@ -76,6 +77,7 @@ fun FeatureCard(
 ) {
     val colors = LocalCryptoColors.current
     val typography = LocalCryptoTypography.current
+    val dimensions = AppTheme.dimensions
     val accessibility = LocalCryptoAccessibility.current
     val reduceMotion = accessibility.reduceMotion
     
@@ -95,7 +97,7 @@ fun FeatureCard(
         animationSpec = tween(durationMillis = if (reduceMotion) 0 else 300)
     )
     
-    val cardShape = RoundedCornerShape(16.dp)
+    val cardShape = RoundedCornerShape(dimensions.cardCornerRadius)
     
     Box(
         modifier = modifier
@@ -109,7 +111,7 @@ fun FeatureCard(
                 color = SlateBorder.copy(alpha = 0.5f),
                 shape = cardShape
             )
-            .padding(20.dp)
+            .padding(dimensions.cardPadding + 8.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth()
@@ -117,8 +119,8 @@ fun FeatureCard(
             // Icon with rounded square background (rounded-xl = 12dp)
             Box(
                 modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .size(dimensions.coinIconSize)
+                    .clip(RoundedCornerShape(dimensions.cardCornerRadius * 0.75f))
                     .background(
                         Brush.linearGradient(feature.gradientColors)
                     ),
@@ -130,7 +132,7 @@ fun FeatureCard(
                 )
             }
             
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(dimensions.itemSpacing))
             
             // Title
             Text(
@@ -140,7 +142,7 @@ fun FeatureCard(
                 color = colors.textPrimary
             )
             
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(dimensions.smallSpacing / 2))
             
             // Description
             Text(

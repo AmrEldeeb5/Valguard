@@ -9,6 +9,7 @@
  * - Automatic dark/light mode based on system settings
  * - Material 3 color scheme integration
  * - Custom CryptoVault design tokens (colors, typography, spacing, shapes)
+ * - Responsive dimensions that adapt to screen size
  * - Legacy color palette support for backward compatibility
  * - Accessibility settings
  *
@@ -16,7 +17,7 @@
  * ```kotlin
  * CoinRoutineTheme {
  *     // Your app content here
- *     // Access theme values via LocalCryptoColors.current, etc.
+ *     // Access theme values via LocalCryptoColors.current, AppTheme.dimensions, etc.
  * }
  * ```
  *
@@ -25,6 +26,8 @@
  * @see LocalCryptoTypography for typography tokens
  * @see LocalCryptoSpacing for spacing tokens
  * @see LocalCryptoShapes for shape tokens
+ * @see LocalDimensions for responsive dimensions
+ * @see AppTheme for convenient theme accessors
  */
 package com.example.cryptovault.theme
 
@@ -34,6 +37,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 
 /**
  * Material 3 light color scheme for CryptoVault.
@@ -125,12 +129,47 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 /**
+ * CompositionLocal for providing responsive dimensions throughout the app.
+ *
+ * Provides access to dimension values that automatically adapt to screen size.
+ * Default value is medium phone dimensions as a fallback.
+ */
+val LocalDimensions = staticCompositionLocalOf {
+    // Default fallback dimensions (medium phone)
+    createMediumPhoneDimensions()
+}
+
+/**
+ * Convenient accessor object for theme values.
+ *
+ * Provides a clean API for accessing theme tokens in composables.
+ *
+ * Usage:
+ * ```kotlin
+ * val dimensions = AppTheme.dimensions
+ * val spacing = dimensions.screenPadding
+ * ```
+ */
+object AppTheme {
+    /**
+     * Access responsive dimensions for the current screen size.
+     *
+     * Dimensions automatically update when screen configuration changes
+     * (e.g., rotation, window resize).
+     */
+    val dimensions: Dimensions
+        @Composable
+        get() = LocalDimensions.current
+}
+
+/**
  * Main theme composable for the CryptoVault application.
  *
  * This function sets up the complete theming system including:
  * - Material 3 color scheme (dark/light based on system preference)
  * - Legacy CoinRoutine color palette (for backward compatibility)
  * - Custom CryptoVault design tokens (colors, typography, spacing, shapes)
+ * - Responsive dimensions that adapt to screen size
  * - Accessibility settings
  *
  * All theme values are provided via CompositionLocal, making them
@@ -144,6 +183,7 @@ private val DarkColorScheme = darkColorScheme(
  * CoinRoutineTheme(darkTheme = true) {
  *     val colors = LocalCryptoColors.current
  *     val typography = LocalCryptoTypography.current
+ *     val dimensions = AppTheme.dimensions
  *     // Build your UI
  * }
  * ```
@@ -163,6 +203,9 @@ internal fun CoinRoutineTheme(
     val cryptoTypography = DefaultCryptoTypography
     val cryptoSpacing = DefaultCryptoSpacing
     val cryptoShapes = DefaultCryptoShapes
+    
+    // Responsive dimensions
+    val dimensions = rememberDimensions()
 
     CompositionLocalProvider(
         // Legacy
@@ -173,6 +216,8 @@ internal fun CoinRoutineTheme(
         LocalCryptoSpacing provides cryptoSpacing,
         LocalCryptoShapes provides cryptoShapes,
         LocalCryptoAccessibility provides CryptoAccessibility(),
+        // Responsive dimensions
+        LocalDimensions provides dimensions,
     ) {
         MaterialTheme(
             colorScheme = colorScheme,

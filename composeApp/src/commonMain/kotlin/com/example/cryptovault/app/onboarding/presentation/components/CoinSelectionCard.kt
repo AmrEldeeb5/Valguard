@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cryptovault.app.onboarding.domain.OnboardingCoin
 import com.example.cryptovault.app.onboarding.domain.popularCoins
+import com.example.cryptovault.theme.AppTheme
 import com.example.cryptovault.theme.CoinRoutineTheme
 import com.example.cryptovault.theme.LocalCryptoAccessibility
 import com.example.cryptovault.theme.LocalCryptoColors
@@ -81,6 +82,7 @@ fun CoinSelectionCard(
 ) {
     val colors = LocalCryptoColors.current
     val typography = LocalCryptoTypography.current
+    val dimensions = AppTheme.dimensions
     val haptic = LocalHapticFeedback.current
     val accessibility = LocalCryptoAccessibility.current
     val reduceMotion = accessibility.reduceMotion
@@ -104,7 +106,7 @@ fun CoinSelectionCard(
     Box(
         modifier = modifier
             .scale(scale)
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(dimensions.cardCornerRadius))
             .then(
                 if (isSelected) {
                     // Full gradient background when selected
@@ -115,14 +117,14 @@ fun CoinSelectionCard(
                     // React: border-slate-700/50 bg-slate-800/30
                     Modifier
                         .background(slateBackground)
-                        .border(2.dp, slateBorder, RoundedCornerShape(16.dp))
+                        .border(2.dp, slateBorder, RoundedCornerShape(dimensions.cardCornerRadius))
                 }
             )
             .clickable {
                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                 onToggle()
             }
-            .padding(16.dp)
+            .padding(dimensions.cardPadding)
             .semantics {
                 role = Role.Checkbox
                 contentDescription = accessibilityDescription
@@ -141,8 +143,8 @@ fun CoinSelectionCard(
                 // Coin icon with gradient/white background
                 Box(
                     modifier = Modifier
-                        .size(40.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .size(dimensions.coinIconSize)
+                        .clip(RoundedCornerShape(dimensions.cardCornerRadius * 0.75f))
                         .then(
                             if (isSelected) {
                                 Modifier.background(Color.White.copy(alpha = 0.2f))
@@ -154,7 +156,7 @@ fun CoinSelectionCard(
                 ) {
                     Text(
                         text = coin.icon,
-                        fontSize = 20.sp,
+                        fontSize = (dimensions.coinIconSize.value * 0.5f).sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
@@ -164,7 +166,7 @@ fun CoinSelectionCard(
                 if (isSelected) {
                     Box(
                         modifier = Modifier
-                            .size(24.dp)
+                            .size(dimensions.coinIconSize * 0.5f)
                             .clip(CircleShape)
                             .background(Color.White),
                         contentAlignment = Alignment.Center
@@ -173,13 +175,13 @@ fun CoinSelectionCard(
                             imageVector = Icons.Default.Check,
                             contentDescription = null,
                             tint = coin.gradientColors.first(),
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(dimensions.coinIconSize * 0.33f)
                         )
                     }
                 }
             }
             
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(dimensions.smallSpacing))
             
             // Coin symbol
             Text(

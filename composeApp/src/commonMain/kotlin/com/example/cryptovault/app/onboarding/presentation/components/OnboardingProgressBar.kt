@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.example.cryptovault.theme.AppTheme
 import com.example.cryptovault.theme.LocalCryptoColors
 import com.example.cryptovault.theme.LocalCryptoTypography
 
@@ -57,6 +58,7 @@ fun OnboardingProgressBar(
 ) {
     val colors = LocalCryptoColors.current
     val typography = LocalCryptoTypography.current
+    val dimensions = AppTheme.dimensions
     val progress = ((currentStep + 1).toFloat() / totalSteps * 100).toInt()
     
     val accessibilityDescription = "Step ${currentStep + 1} of $totalSteps, $progress% complete"
@@ -64,7 +66,7 @@ fun OnboardingProgressBar(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp)
+            .padding(horizontal = dimensions.cardPadding * 2)
             .semantics { contentDescription = accessibilityDescription }
     ) {
         // Row with "Step X of 4" on left, progress segments in middle, percentage on right
@@ -84,8 +86,8 @@ fun OnboardingProgressBar(
             Row(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    .padding(horizontal = dimensions.verticalSpacing),
+                horizontalArrangement = Arrangement.spacedBy(dimensions.smallSpacing)
             ) {
                 repeat(totalSteps) { index ->
                     val isActive = index <= currentStep

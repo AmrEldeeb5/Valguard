@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cryptovault.app.onboarding.domain.popularCoins
 import com.example.cryptovault.app.onboarding.presentation.components.CoinSelectionCard
+import com.example.cryptovault.theme.AppTheme
 import com.example.cryptovault.theme.LocalCryptoColors
 import com.example.cryptovault.theme.LocalCryptoTypography
 
@@ -59,28 +60,31 @@ fun CoinSelectionStep(
     onToggleCoin: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LocalCryptoColors.current
+    val dimensions = AppTheme.dimensions
     
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(24.dp),
+            .padding(dimensions.cardPadding * 2),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         CoinSelectionHeader()
         
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
         
-        // 2x3 grid of coin cards
+        // Dynamic grid based on screen size
+        val columns = dimensions.gridColumns
+        val rows = (popularCoins.size + columns - 1) / columns // Ceiling division
+        
         Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(dimensions.itemSpacing)
         ) {
-            for (rowIndex in 0 until 3) {
+            for (rowIndex in 0 until rows) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(dimensions.itemSpacing)
                 ) {
-                    for (colIndex in 0 until 2) {
-                        val coinIndex = rowIndex * 2 + colIndex
+                    for (colIndex in 0 until columns) {
+                        val coinIndex = rowIndex * columns + colIndex
                         if (coinIndex < popularCoins.size) {
                             val coin = popularCoins[coinIndex]
                             CoinSelectionCard(
@@ -89,13 +93,16 @@ fun CoinSelectionStep(
                                 onToggle = { onToggleCoin(coin.symbol) },
                                 modifier = Modifier.weight(1f)
                             )
+                        } else {
+                            // Empty spacer to maintain grid alignment
+                            Spacer(modifier = Modifier.weight(1f))
                         }
                     }
                 }
             }
         }
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
         
         SelectionBadge(selectedCount = selectedCoins.size)
     }
@@ -112,6 +119,7 @@ fun CoinSelectionHeader(
 ) {
     val colors = LocalCryptoColors.current
     val typography = LocalCryptoTypography.current
+    val dimensions = AppTheme.dimensions
     
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -120,8 +128,8 @@ fun CoinSelectionHeader(
         // BarChart icon section
         Box(
             modifier = Modifier
-                .size(80.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .size(dimensions.appIconSize)
+                .clip(RoundedCornerShape(dimensions.cardCornerRadius))
                 .background(
                     Brush.linearGradient(
                         colors = listOf(colors.accentPink500, colors.loss)
@@ -129,10 +137,10 @@ fun CoinSelectionHeader(
                 ),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = "📊", fontSize = 40.sp)
+            Text(text = "📊", fontSize = (dimensions.appIconSize.value * 0.5f).sp)
         }
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(dimensions.itemSpacing))
         
         Text(
             text = "Choose Your Favorites",
@@ -142,7 +150,7 @@ fun CoinSelectionHeader(
             textAlign = TextAlign.Center
         )
         
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(dimensions.smallSpacing))
         
         Text(
             text = "Select coins to add to your watchlist",
@@ -151,7 +159,7 @@ fun CoinSelectionHeader(
             textAlign = TextAlign.Center
         )
         
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(dimensions.smallSpacing / 2))
         
         Text(
             text = "You can always change this later",
@@ -177,13 +185,17 @@ fun SelectionBadge(
 ) {
     val colors = LocalCryptoColors.current
     val typography = LocalCryptoTypography.current
+    val dimensions = AppTheme.dimensions
     
     if (selectedCount > 0) {
         Box(
             modifier = modifier
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(dimensions.cardCornerRadius))
                 .background(colors.profit.copy(alpha = 0.1f))
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(
+                    horizontal = dimensions.cardPadding + 4.dp,
+                    vertical = dimensions.itemSpacing
+                )
         ) {
             Text(
                 text = "✓ $selectedCount ${if (selectedCount == 1) "coin" else "coins"} selected",

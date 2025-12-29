@@ -53,6 +53,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.cryptovault.theme.AppTheme
 import com.example.cryptovault.theme.LocalCryptoAccessibility
 import com.example.cryptovault.theme.LocalCryptoColors
 import com.example.cryptovault.theme.LocalCryptoTypography
@@ -74,6 +75,7 @@ fun NotificationsStep(
     modifier: Modifier = Modifier
 ) {
     val colors = LocalCryptoColors.current
+    val dimensions = AppTheme.dimensions
     val accessibility = LocalCryptoAccessibility.current
     val reduceMotion = accessibility.reduceMotion
     
@@ -97,16 +99,16 @@ fun NotificationsStep(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(24.dp),
+            .padding(dimensions.cardPadding * 2),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         NotificationsHeader()
         
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
         
         // Notification type cards with pulsing status dots
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(dimensions.itemSpacing)
         ) {
             // Price Movement Alerts
             NotificationInfoCard(
@@ -142,14 +144,14 @@ fun NotificationsStep(
             )
         }
         
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
         
         EnableNotificationsToggle(
             enabled = notificationsEnabled,
             onToggle = onToggleNotifications
         )
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
         
         // Disclaimer text
         Text(
@@ -175,6 +177,7 @@ fun NotificationsHeader(
 ) {
     val colors = LocalCryptoColors.current
     val typography = LocalCryptoTypography.current
+    val dimensions = AppTheme.dimensions
     val accessibility = LocalCryptoAccessibility.current
     val reduceMotion = accessibility.reduceMotion
     
@@ -203,8 +206,8 @@ fun NotificationsHeader(
         Box(
             modifier = Modifier
                 .padding(top = (-bellBounce).dp)
-                .size(80.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .size(dimensions.appIconSize + 16.dp)
+                .clip(RoundedCornerShape(dimensions.cardCornerRadius))
                 .background(
                     Brush.linearGradient(
                         colors = listOf(colors.profit, Color(0xFF14B8A6))
@@ -212,10 +215,13 @@ fun NotificationsHeader(
                 ),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = "🔔", fontSize = 40.sp)
+            Text(
+                text = "🔔",
+                fontSize = (dimensions.appIconSize.value * 0.5f).sp
+            )
         }
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
         
         Text(
             text = "Never Miss a Move",
@@ -225,7 +231,7 @@ fun NotificationsHeader(
             textAlign = TextAlign.Center
         )
         
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(dimensions.smallSpacing))
         
         Text(
             text = "Get instant alerts on price changes",
@@ -254,12 +260,13 @@ fun EnableNotificationsToggle(
 ) {
     val colors = LocalCryptoColors.current
     val typography = LocalCryptoTypography.current
+    val dimensions = AppTheme.dimensions
     val haptic = LocalHapticFeedback.current
 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(dimensions.cardCornerRadius))
             .then(
                 if (enabled) {
                     Modifier.background(
@@ -270,14 +277,14 @@ fun EnableNotificationsToggle(
                 } else {
                     Modifier
                         .background(colors.cardBackground.copy(alpha = 0.3f))
-                        .border(1.dp, colors.cardBorder, RoundedCornerShape(16.dp))
+                        .border(1.dp, colors.cardBorder, RoundedCornerShape(dimensions.cardCornerRadius))
                 }
             )
             .clickable {
                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                 onToggle()
             }
-            .padding(20.dp)
+            .padding(dimensions.cardPadding + 8.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -287,17 +294,20 @@ fun EnableNotificationsToggle(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
-                        .size(48.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .size(dimensions.coinIconSize)
+                        .clip(RoundedCornerShape(dimensions.cardCornerRadius * 0.75f))
                         .background(
                             if (enabled) Color.White.copy(alpha = 0.2f) else colors.profit.copy(alpha = 0.2f)
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = "🔔", fontSize = 24.sp)
+                    Text(
+                        text = "🔔",
+                        fontSize = (dimensions.coinIconSize.value * 0.5f).sp
+                    )
                 }
                 
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(dimensions.itemSpacing))
                 
                 Column {
                     Text(
@@ -316,7 +326,7 @@ fun EnableNotificationsToggle(
             
             Box(
                 modifier = Modifier
-                    .size(24.dp)
+                    .size(dimensions.coinIconSize * 0.5f)
                     .clip(CircleShape)
                     .then(
                         if (enabled) Modifier.background(Color.White) else Modifier.border(2.dp, colors.cardBorder, CircleShape)
@@ -328,7 +338,7 @@ fun EnableNotificationsToggle(
                         imageVector = Icons.Default.Check,
                         contentDescription = null,
                         tint = colors.profit,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(dimensions.coinIconSize * 0.33f)
                     )
                 }
             }
@@ -363,10 +373,11 @@ private fun NotificationInfoCard(
 ) {
     val colors = LocalCryptoColors.current
     val typography = LocalCryptoTypography.current
+    val dimensions = AppTheme.dimensions
     // React: slate-800 = #1E293B, slate-700 = #334155
     val slateBackground = Color(0xFF1E293B).copy(alpha = 0.3f)
     val slateBorder = Color(0xFF334155).copy(alpha = 0.5f)
-    val cardShape = RoundedCornerShape(16.dp)
+    val cardShape = RoundedCornerShape(dimensions.cardCornerRadius)
     
     Box(
         modifier = modifier
@@ -374,7 +385,7 @@ private fun NotificationInfoCard(
             .clip(cardShape)
             .background(slateBackground)
             .border(1.dp, slateBorder, cardShape)
-            .padding(20.dp)
+            .padding(dimensions.cardPadding + 8.dp)
     ) {
         Column {
             Row(
@@ -383,8 +394,8 @@ private fun NotificationInfoCard(
                 // Icon with gradient background
                 Box(
                     modifier = Modifier
-                        .size(48.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .size(dimensions.coinIconSize)
+                        .clip(RoundedCornerShape(dimensions.cardCornerRadius * 0.75f))
                         .background(
                             Brush.linearGradient(iconGradient)
                         ),
@@ -392,11 +403,11 @@ private fun NotificationInfoCard(
                 ) {
                     Text(
                         text = icon,
-                        fontSize = 24.sp
+                        fontSize = (dimensions.coinIconSize.value * 0.5f).sp
                     )
                 }
                 
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(dimensions.verticalSpacing))
                 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
@@ -405,7 +416,7 @@ private fun NotificationInfoCard(
                         fontWeight = FontWeight.SemiBold,
                         color = colors.textPrimary
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(dimensions.smallSpacing / 2))
                     Text(
                         text = description,
                         style = typography.bodySmall,
@@ -414,23 +425,23 @@ private fun NotificationInfoCard(
                 }
             }
             
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(dimensions.itemSpacing))
             
             // Status row with pulsing dot
             Row(
-                modifier = Modifier.padding(start = 64.dp),
+                modifier = Modifier.padding(start = dimensions.coinIconSize + dimensions.verticalSpacing),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Pulsing status dot
                 Box(
                     modifier = Modifier
-                        .size(8.dp)
+                        .size(dimensions.smallSpacing)
                         .alpha(pulseAlpha)
                         .clip(CircleShape)
                         .background(statusDotColor)
                 )
                 
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(dimensions.smallSpacing))
                 
                 Text(
                     text = statusText,

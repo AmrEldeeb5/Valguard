@@ -39,6 +39,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.example.cryptovault.theme.AppTheme
 import com.example.cryptovault.theme.LocalCryptoColors
 import com.example.cryptovault.theme.LocalCryptoTypography
 
@@ -65,6 +66,7 @@ fun OnboardingButton(
 ) {
     val colors = LocalCryptoColors.current
     val typography = LocalCryptoTypography.current
+    val dimensions = AppTheme.dimensions
     val haptic = LocalHapticFeedback.current
     val buttonText = getButtonText(currentStep)
     
@@ -81,8 +83,8 @@ fun OnboardingButton(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp)
-            .clip(RoundedCornerShape(16.dp))
+            .height(dimensions.buttonHeight)
+            .clip(RoundedCornerShape(dimensions.cardCornerRadius))
             .then(
                 if (enabled) {
                     Modifier.background(gradient)
@@ -113,7 +115,7 @@ fun OnboardingButton(
                 imageVector = Icons.Default.KeyboardArrowRight,
                 contentDescription = null,
                 tint = textColor,
-                modifier = Modifier.size(24.dp).padding(start = 4.dp)
+                modifier = Modifier.size(dimensions.coinIconSize * 0.5f).padding(start = 4.dp)
             )
         }
     }

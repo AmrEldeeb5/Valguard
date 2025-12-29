@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cryptovault.app.onboarding.domain.OnboardingFeature
 import com.example.cryptovault.app.onboarding.domain.welcomeFeatures
+import com.example.cryptovault.theme.AppTheme
 import com.example.cryptovault.theme.LocalCryptoAccessibility
 import com.example.cryptovault.theme.LocalCryptoColors
 import com.example.cryptovault.theme.LocalCryptoTypography
@@ -67,25 +68,25 @@ import kotlinx.coroutines.delay
 fun WelcomeStep(
     modifier: Modifier = Modifier
 ) {
-    LocalCryptoColors.current
-    LocalCryptoTypography.current
+    val dimensions = AppTheme.dimensions
     val accessibility = LocalCryptoAccessibility.current
     val reduceMotion = accessibility.reduceMotion
     
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 32.dp),
+            .padding(
+                horizontal = dimensions.cardPadding * 2,
+                vertical = dimensions.verticalSpacing * 2
+            ),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+        verticalArrangement = Arrangement.spacedBy(dimensions.verticalSpacing)
     ) {
         WelcomeHeader()
-
         
         // Feature highlight cards
         Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(dimensions.itemSpacing)
         ) {
             welcomeFeatures.forEachIndexed { index, feature ->
                 WelcomeFeatureCard(
@@ -112,6 +113,7 @@ fun WelcomeHeader(
 ) {
     val colors = LocalCryptoColors.current
     val typography = LocalCryptoTypography.current
+    val dimensions = AppTheme.dimensions
     val accessibility = LocalCryptoAccessibility.current
     val reduceMotion = accessibility.reduceMotion
 
@@ -163,29 +165,27 @@ fun WelcomeHeader(
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(dimensions.verticalSpacing)
     ) {
         // Sparkles icon section
-
-
-
-            Box(
-                modifier = Modifier
-                    .size(96.dp)
-                    .scale(iconScale)
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(colors.accentBlue500, colors.accentPurple500)
-                        )
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "✦", fontSize = 48.sp, color = Color.White)
-            }
-
-
-
+        Box(
+            modifier = Modifier
+                .size(dimensions.appIconSize + 32.dp)
+                .scale(iconScale)
+                .clip(RoundedCornerShape(dimensions.cardCornerRadius + 8.dp))
+                .background(
+                    Brush.linearGradient(
+                        colors = listOf(colors.accentBlue500, colors.accentPurple500)
+                    )
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "✦",
+                fontSize = (dimensions.appIconSize.value * 0.5f).sp,
+                color = Color.White
+            )
+        }
 
         Text(
             text = "Welcome to CryptoVault",
@@ -201,8 +201,6 @@ fun WelcomeHeader(
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
-
-
 
         Text(
             text = "Your premium crypto tracking companion",
@@ -233,6 +231,7 @@ fun WelcomeFeatureCard(
 ) {
     val colors = LocalCryptoColors.current
     val typography = LocalCryptoTypography.current
+    val dimensions = AppTheme.dimensions
     val accessibility = LocalCryptoAccessibility.current
     val reduceMotion = accessibility.reduceMotion
 
@@ -248,7 +247,7 @@ fun WelcomeFeatureCard(
     }
 
     val alpha = if (isVisible) 1f else 0f
-    val cardShape = RoundedCornerShape(16.dp)
+    val cardShape = RoundedCornerShape(dimensions.cardCornerRadius)
     // React: bg-slate-800/50 border border-slate-700/50
     val slateBackground = Color(0xFF1E293B).copy(alpha = 0.5f)
     val slateBorder = Color(0xFF334155).copy(alpha = 0.5f)
@@ -264,18 +263,18 @@ fun WelcomeFeatureCard(
                 color = slateBorder,
                 shape = cardShape
             )
-            .padding(12.dp)
+            .padding(dimensions.itemSpacing)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(dimensions.verticalSpacing)
         ) {
             // Icon with gradient background (rounded-xl)
             Box(
                 modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .size(dimensions.coinIconSize)
+                    .clip(RoundedCornerShape(dimensions.cardCornerRadius * 0.75f))
                     .background(
                         Brush.linearGradient(feature.gradientColors)
                     ),
@@ -283,11 +282,9 @@ fun WelcomeFeatureCard(
             ) {
                 Text(
                     text = feature.iconType.emoji,
-                    fontSize = 16.sp
+                    fontSize = (dimensions.coinIconSize.value * 0.4f).sp
                 )
             }
-
-
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
