@@ -205,34 +205,3 @@ fun FreeForeverBanner(
     }
 }
 
-@org.jetbrains.compose.ui.tooling.preview.Preview
-@Composable
-fun FeaturesHeaderPreview() {
-    com.example.cryptowallet.theme.CoinRoutineTheme {
-        Box(modifier = Modifier.background(Color(0xFF0F172A)).padding(24.dp)) {
-            FeaturesHeader()
-        }
-    }
-}
-
-@org.jetbrains.compose.ui.tooling.preview.Preview
-@Composable
-fun FreeForeverBannerPreview() {
-    com.example.cryptowallet.theme.CoinRoutineTheme {
-        Box(modifier = Modifier.background(Color(0xFF0F172A)).padding(24.dp)) {
-            FreeForeverBanner()
-        }
-    }
-}
-
-@org.jetbrains.compose.ui.tooling.preview.Preview
-@Composable
-fun FeaturesStepPreview() {
-    com.example.cryptowallet.theme.CoinRoutineTheme {
-        Box(
-            modifier = Modifier.background(Color(0xFF0F172A))
-        ) {
-            FeaturesStep()
-        }
-    }
-}

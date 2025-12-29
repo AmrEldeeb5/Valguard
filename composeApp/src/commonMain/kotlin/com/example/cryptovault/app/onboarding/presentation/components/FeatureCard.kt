@@ -45,6 +45,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.cryptovault.app.onboarding.domain.OnboardingFeature
+import com.example.cryptovault.app.onboarding.domain.welcomeFeatures
+import com.example.cryptovault.theme.CoinRoutineTheme
 import com.example.cryptovault.theme.LocalCryptoAccessibility
 import com.example.cryptovault.theme.LocalCryptoColors
 import com.example.cryptovault.theme.LocalCryptoTypography
@@ -247,8 +249,8 @@ fun CompactFeatureCard(
 @org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun FeatureCardPreview() {
-    val feature = com.example.cryptowallet.app.onboarding.domain.welcomeFeatures[0]
-    com.example.cryptowallet.theme.CoinRoutineTheme {
+    val feature = welcomeFeatures[0]
+    CoinRoutineTheme {
         Column(
             modifier = Modifier.background(Color(0xFF0F172A)).padding(16.dp),
             verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp)

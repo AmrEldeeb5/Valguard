@@ -309,39 +309,3 @@ fun WelcomeFeatureCard(
     }
 }
 
-@org.jetbrains.compose.ui.tooling.preview.Preview
-@Composable
-fun WelcomeHeaderPreview() {
-    com.example.cryptowallet.theme.CoinRoutineTheme {
-        Box(modifier = Modifier.background(Color(0xFF0F172A)).padding(24.dp)) {
-            WelcomeHeader()
-        }
-    }
-}
-
-@org.jetbrains.compose.ui.tooling.preview.Preview
-@Composable
-fun WelcomeFeatureCardPreview() {
-    val feature = welcomeFeatures[0]
-    com.example.cryptowallet.theme.CoinRoutineTheme {
-        Box(
-            modifier = Modifier.background(Color(0xFF0F172A)).padding(16.dp)
-        ) {
-            WelcomeFeatureCard(feature = feature)
-        }
-    }
-}
-
-@org.jetbrains.compose.ui.tooling.preview.Preview
-@Composable
-fun WelcomeStepPreview() {
-    com.example.cryptowallet.theme.CoinRoutineTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFF0F172A))
-        ) {
-            WelcomeStep()
-        }
-    }
-}

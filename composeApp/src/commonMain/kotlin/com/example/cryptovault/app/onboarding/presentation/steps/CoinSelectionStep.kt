@@ -209,37 +209,3 @@ fun getSelectionCountText(count: Int): String {
     }
 }
 
-@org.jetbrains.compose.ui.tooling.preview.Preview
-@Composable
-fun CoinSelectionHeaderPreview() {
-    com.example.cryptowallet.theme.CoinRoutineTheme {
-        Box(modifier = Modifier.background(Color(0xFF0F172A)).padding(24.dp)) {
-            CoinSelectionHeader()
-        }
-    }
-}
-
-@org.jetbrains.compose.ui.tooling.preview.Preview
-@Composable
-fun SelectionBadgePreview() {
-    com.example.cryptowallet.theme.CoinRoutineTheme {
-        Box(modifier = Modifier.background(Color(0xFF0F172A)).padding(24.dp)) {
-            SelectionBadge(selectedCount = 5)
-        }
-    }
-}
-
-@org.jetbrains.compose.ui.tooling.preview.Preview
-@Composable
-fun CoinSelectionStepPreview() {
-    com.example.cryptowallet.theme.CoinRoutineTheme {
-        Box(
-            modifier = Modifier.background(Color(0xFF0F172A))
-        ) {
-            CoinSelectionStep(
-                selectedCoins = setOf("BTC", "ETH"),
-                onToggleCoin = {}
-            )
-        }
-    }
-}

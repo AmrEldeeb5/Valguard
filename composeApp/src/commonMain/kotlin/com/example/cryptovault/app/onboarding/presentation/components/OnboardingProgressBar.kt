@@ -135,30 +135,4 @@ fun calculateProgressPercentage(currentStep: Int, totalSteps: Int = 4): Int {
     return ((currentStep + 1).toFloat() / totalSteps * 100).toInt()
 }
 
-@org.jetbrains.compose.ui.tooling.preview.Preview
-@Composable
-fun OnboardingProgressBarPreview() {
-    com.example.cryptowallet.theme.CoinRoutineTheme {
-        Column(
-            modifier = Modifier.background(Color(0xFF0F172A)).padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            OnboardingProgressBar(
-                currentStep = 0,
-                stepGradient = Brush.horizontalGradient(listOf(Color(0xFF3B82F6), Color(0xFFA855F7)))
-            )
-            OnboardingProgressBar(
-                currentStep = 1,
-                stepGradient = Brush.horizontalGradient(listOf(Color(0xFFA855F7), Color(0xFFEC4899)))
-            )
-            OnboardingProgressBar(
-                currentStep = 2,
-                stepGradient = Brush.horizontalGradient(listOf(Color(0xFFEC4899), Color(0xFFF43F5E)))
-            )
-            OnboardingProgressBar(
-                currentStep = 3,
-                stepGradient = Brush.horizontalGradient(listOf(Color(0xFF10B981), Color(0xFF14B8A6)))
-            )
-        }
-    }
-}
+

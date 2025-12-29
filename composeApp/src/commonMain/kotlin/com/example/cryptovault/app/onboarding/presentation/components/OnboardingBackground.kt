@@ -301,27 +301,4 @@ private fun FloatingSymbol(data: SymbolData) {
     )
 }
 
-@org.jetbrains.compose.ui.tooling.preview.Preview
-@Composable
-fun OnboardingBackgroundPreview() {
-    com.example.cryptowallet.theme.CoinRoutineTheme {
-        OnboardingBackground()
-    }
-}
 
-@org.jetbrains.compose.ui.tooling.preview.Preview
-@Composable
-fun FloatingSymbolPreview() {
-    com.example.cryptowallet.theme.CoinRoutineTheme {
-        Box(modifier = Modifier.size(100.dp).background(Color(0xFF0F172A)), contentAlignment = Alignment.Center) {
-            FloatingSymbol(
-                data = SymbolData(
-                    symbol = "₿",
-                    x = 0, y = 0, size = 48, alpha = 0.8f,
-                    durationY = 3000, durationX = 4000,
-                    amplitudeY = 20f, amplitudeX = 15f, delay = 0
-                )
-            )
-        }
-    }
-}

@@ -54,6 +54,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cryptovault.app.onboarding.domain.OnboardingCoin
+import com.example.cryptovault.app.onboarding.domain.popularCoins
+import com.example.cryptovault.theme.CoinRoutineTheme
 import com.example.cryptovault.theme.LocalCryptoAccessibility
 import com.example.cryptovault.theme.LocalCryptoColors
 import com.example.cryptovault.theme.LocalCryptoTypography
@@ -202,10 +204,10 @@ fun CoinSelectionCard(
 @org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun CoinSelectionCardPreview() {
-    val btc = com.example.cryptowallet.app.onboarding.domain.popularCoins[0]
-    val eth = com.example.cryptowallet.app.onboarding.domain.popularCoins[1]
+    val btc = popularCoins[0]
+    val eth = popularCoins[1]
     
-    com.example.cryptowallet.theme.CoinRoutineTheme {
+    CoinRoutineTheme {
         Row(
             modifier = Modifier.background(Color(0xFF0F172A)).padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)

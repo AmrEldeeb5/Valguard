@@ -129,32 +129,3 @@ fun getButtonText(currentStep: Int): String {
     return if (currentStep == 3) "Get Started" else "Continue"
 }
 
-@org.jetbrains.compose.ui.tooling.preview.Preview
-@Composable
-fun OnboardingButtonPreview() {
-    com.example.cryptowallet.theme.CoinRoutineTheme {
-        androidx.compose.foundation.layout.Column(
-            modifier = Modifier.background(Color(0xFF0F172A)).padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            OnboardingButton(
-                currentStep = 0,
-                enabled = true,
-                gradient = Brush.horizontalGradient(listOf(Color(0xFF3B82F6), Color(0xFFA855F7))),
-                onClick = {}
-            )
-            OnboardingButton(
-                currentStep = 3,
-                enabled = true,
-                gradient = Brush.horizontalGradient(listOf(Color(0xFF10B981), Color(0xFF14B8A6))),
-                onClick = {}
-            )
-            OnboardingButton(
-                currentStep = 0,
-                enabled = false,
-                gradient = Brush.horizontalGradient(listOf(Color(0xFF3B82F6), Color(0xFFA855F7))),
-                onClick = {}
-            )
-        }
-    }
-}
