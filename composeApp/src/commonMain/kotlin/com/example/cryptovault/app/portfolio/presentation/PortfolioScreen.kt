@@ -12,9 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -35,8 +32,6 @@ import com.example.cryptovault.theme.AppTheme
 import com.example.cryptovault.theme.LocalCryptoColors
 import com.example.cryptovault.theme.LocalCryptoSpacing
 import com.example.cryptovault.theme.LocalCryptoTypography
-import com.example.cryptovault.theme.WindowSize
-import com.example.cryptovault.theme.rememberWindowSize
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -138,10 +133,8 @@ private fun PortfolioCoinsList(
                 
                 Spacer(modifier = Modifier.height(dimensions.smallSpacing))
                 
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(calculatePortfolioGridColumns()),
+                LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(dimensions.itemSpacing),
-                    horizontalArrangement = Arrangement.spacedBy(dimensions.itemSpacing),
                     modifier = Modifier.padding(horizontal = dimensions.screenPadding)
                 ) {
                     items(coins, key = { it.id }) { coin ->
@@ -170,19 +163,4 @@ private fun UiPortfolioCoinItem.toUiCoinItem(): UiCoinItem {
         holdingsAmount = amountInUnitText,
         holdingsValue = amountInFiatText
     )
-}
-
-/**
- * Calculates the number of columns for the portfolio grid based on screen size.
- * 
- * @return 1 for COMPACT screens (< 600dp), 2 for MEDIUM screens (600-840dp), 3 for EXPANDED screens (> 840dp)
- */
-@Composable
-private fun calculatePortfolioGridColumns(): Int {
-    val windowSize = rememberWindowSize()
-    return when (windowSize) {
-        WindowSize.COMPACT -> 1  // < 600dp
-        WindowSize.MEDIUM -> 2   // 600-840dp
-        WindowSize.EXPANDED -> 3 // > 840dp
-    }
 }

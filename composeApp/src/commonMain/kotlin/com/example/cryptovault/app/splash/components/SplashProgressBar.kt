@@ -45,7 +45,7 @@ fun SplashProgressBar(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.width(300.dp)
+        modifier = modifier.fillMaxWidth()
     ) {
         // Progress text row (Loading... | 47%)
         Row(

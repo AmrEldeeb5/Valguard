@@ -100,7 +100,7 @@ fun NotificationsStep(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(dimensions.cardPadding * 2),
+            .padding(dimensions.screenPadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         NotificationsHeader()
@@ -206,7 +206,7 @@ fun NotificationsHeader(
         // Bouncing bell icon section
         Box(
             modifier = Modifier
-                .size(dimensions.appIconSize + 16.dp)
+                .size(dimensions.appIconSize)
                 .offset(y = bellBounce.dp)
                 .clip(RoundedCornerShape(dimensions.cardCornerRadius))
                 .background(
@@ -222,7 +222,7 @@ fun NotificationsHeader(
             )
         }
         
-        Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
+        Spacer(modifier = Modifier.height(dimensions.smallSpacing))
         
         Text(
             text = "Never Miss a Move",

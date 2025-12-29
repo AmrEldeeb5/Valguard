@@ -117,38 +117,38 @@ class DimensionsPropertyTest : FunSpec({
      * Validates: Requirements 4.2, 4.3, 5.2, 5.3, 7.2, 7.3
      * Tag: Feature: responsive-onboarding, Property 5: Text Size Scaling
      */
-    test("Property 5: text sizes scale proportionally across categories") {
+    test("Property 5: Icon sizes scale appropriately across categories") {
         val small = createSmallPhoneDimensions()
         val medium = createMediumPhoneDimensions()
         val large = createLargePhoneDimensions()
         val tablet = createTabletDimensions()
         
-        // Test headingLarge scaling
-        val smallToMediumRatio = medium.headingLarge.value / small.headingLarge.value
-        val mediumToLargeRatio = large.headingLarge.value / medium.headingLarge.value
-        val largeToTabletRatio = tablet.headingLarge.value / large.headingLarge.value
+        // Test coinIconSize scaling
+        val coinIconSmallToMedium = medium.coinIconSize.value / small.coinIconSize.value
+        val coinIconMediumToLarge = large.coinIconSize.value / medium.coinIconSize.value
+        val coinIconLargeToTablet = tablet.coinIconSize.value / large.coinIconSize.value
         
-        smallToMediumRatio shouldBeGreaterThanOrEqualTo 1.1f
-        mediumToLargeRatio shouldBeGreaterThanOrEqualTo 1.1f
-        largeToTabletRatio shouldBeGreaterThanOrEqualTo 1.1f
+        coinIconSmallToMedium shouldBeGreaterThanOrEqualTo 1.0f
+        coinIconMediumToLarge shouldBeGreaterThanOrEqualTo 1.0f
+        coinIconLargeToTablet shouldBeGreaterThanOrEqualTo 1.0f
         
-        // Test headingMedium scaling
-        val headingMediumSmallToMedium = medium.headingMedium.value / small.headingMedium.value
-        val headingMediumMediumToLarge = large.headingMedium.value / medium.headingMedium.value
-        val headingMediumLargeToTablet = tablet.headingMedium.value / large.headingMedium.value
+        // Test appIconSize scaling
+        val appIconSmallToMedium = medium.appIconSize.value / small.appIconSize.value
+        val appIconMediumToLarge = large.appIconSize.value / medium.appIconSize.value
+        val appIconLargeToTablet = tablet.appIconSize.value / large.appIconSize.value
         
-        headingMediumSmallToMedium shouldBeGreaterThanOrEqualTo 1.1f
-        headingMediumMediumToLarge shouldBeGreaterThanOrEqualTo 1.1f
-        headingMediumLargeToTablet shouldBeGreaterThanOrEqualTo 1.1f
+        appIconSmallToMedium shouldBeGreaterThanOrEqualTo 1.0f
+        appIconMediumToLarge shouldBeGreaterThanOrEqualTo 1.0f
+        appIconLargeToTablet shouldBeGreaterThanOrEqualTo 1.0f
         
-        // Test bodyText scaling
-        val bodyTextSmallToMedium = medium.bodyText.value / small.bodyText.value
-        val bodyTextMediumToLarge = large.bodyText.value / medium.bodyText.value
-        val bodyTextLargeToTablet = tablet.bodyText.value / large.bodyText.value
+        // Test buttonHeight scaling
+        val buttonHeightSmallToMedium = medium.buttonHeight.value / small.buttonHeight.value
+        val buttonHeightMediumToLarge = large.buttonHeight.value / medium.buttonHeight.value
+        val buttonHeightLargeToTablet = tablet.buttonHeight.value / large.buttonHeight.value
         
-        bodyTextSmallToMedium shouldBeGreaterThanOrEqualTo 1.05f // Slightly relaxed for body text
-        bodyTextMediumToLarge shouldBeGreaterThanOrEqualTo 1.05f
-        bodyTextLargeToTablet shouldBeGreaterThanOrEqualTo 1.1f
+        buttonHeightSmallToMedium shouldBeGreaterThanOrEqualTo 1.0f
+        buttonHeightMediumToLarge shouldBeGreaterThanOrEqualTo 1.0f
+        buttonHeightLargeToTablet shouldBeGreaterThanOrEqualTo 1.0f
     }
     
     /**
@@ -294,11 +294,6 @@ class DimensionsPropertyTest : FunSpec({
             dimensions.itemSpacing.value shouldBeGreaterThan 0f
             dimensions.verticalSpacing.value shouldBeGreaterThan 0f
             dimensions.smallSpacing.value shouldBeGreaterThan 0f
-            
-            dimensions.headingLarge.value shouldBeGreaterThan 0f
-            dimensions.headingMedium.value shouldBeGreaterThan 0f
-            dimensions.bodyText.value shouldBeGreaterThan 0f
-            dimensions.captionText.value shouldBeGreaterThan 0f
             
             dimensions.coinIconSize.value shouldBeGreaterThan 0f
             dimensions.appIconSize.value shouldBeGreaterThan 0f

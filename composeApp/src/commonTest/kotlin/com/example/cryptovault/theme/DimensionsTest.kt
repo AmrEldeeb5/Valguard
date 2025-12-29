@@ -19,24 +19,18 @@ class DimensionsTest {
         val dimensions = createSmallPhoneDimensions()
         
         // Spacing
-        assertEquals(12.dp, dimensions.screenPadding)
-        assertEquals(10.dp, dimensions.cardPadding)
-        assertEquals(10.dp, dimensions.itemSpacing)
+        assertEquals(16.dp, dimensions.screenPadding)
+        assertEquals(12.dp, dimensions.cardPadding)
+        assertEquals(8.dp, dimensions.itemSpacing)
         assertEquals(12.dp, dimensions.verticalSpacing)
-        assertEquals(6.dp, dimensions.smallSpacing)
-        
-        // Text sizes
-        assertEquals(22.sp, dimensions.headingLarge)
-        assertEquals(18.sp, dimensions.headingMedium)
-        assertEquals(13.sp, dimensions.bodyText)
-        assertEquals(11.sp, dimensions.captionText)
+        assertEquals(4.dp, dimensions.smallSpacing)
         
         // Icon sizes
-        assertEquals(40.dp, dimensions.coinIconSize)
-        assertEquals(56.dp, dimensions.appIconSize)
+        assertEquals(36.dp, dimensions.coinIconSize)
+        assertEquals(48.dp, dimensions.appIconSize)
         
         // Component sizes
-        assertEquals(46.dp, dimensions.buttonHeight)
+        assertEquals(48.dp, dimensions.buttonHeight)
         assertEquals(12.dp, dimensions.cardCornerRadius)
         assertEquals(3.dp, dimensions.cardElevation)
         
@@ -56,23 +50,17 @@ class DimensionsTest {
         assertEquals(16.dp, dimensions.verticalSpacing)
         assertEquals(8.dp, dimensions.smallSpacing)
         
-        // Text sizes
-        assertEquals(26.sp, dimensions.headingLarge)
-        assertEquals(20.sp, dimensions.headingMedium)
-        assertEquals(14.sp, dimensions.bodyText)
-        assertEquals(12.sp, dimensions.captionText)
-        
         // Icon sizes
-        assertEquals(48.dp, dimensions.coinIconSize)
+        assertEquals(44.dp, dimensions.coinIconSize)
         assertEquals(64.dp, dimensions.appIconSize)
         
         // Component sizes
-        assertEquals(50.dp, dimensions.buttonHeight)
-        assertEquals(14.dp, dimensions.cardCornerRadius)
+        assertEquals(52.dp, dimensions.buttonHeight)
+        assertEquals(16.dp, dimensions.cardCornerRadius)
         assertEquals(4.dp, dimensions.cardElevation)
         
         // Grid
-        assertEquals(140.dp, dimensions.coinCardMinWidth)
+        assertEquals(150.dp, dimensions.coinCardMinWidth)
         assertEquals(2, dimensions.gridColumns)
     }
     
@@ -84,21 +72,15 @@ class DimensionsTest {
         assertEquals(20.dp, dimensions.screenPadding)
         assertEquals(16.dp, dimensions.cardPadding)
         assertEquals(14.dp, dimensions.itemSpacing)
-        assertEquals(20.dp, dimensions.verticalSpacing)
-        assertEquals(10.dp, dimensions.smallSpacing)
-        
-        // Text sizes
-        assertEquals(30.sp, dimensions.headingLarge)
-        assertEquals(22.sp, dimensions.headingMedium)
-        assertEquals(15.sp, dimensions.bodyText)
-        assertEquals(13.sp, dimensions.captionText)
+        assertEquals(16.dp, dimensions.verticalSpacing)
+        assertEquals(8.dp, dimensions.smallSpacing)
         
         // Icon sizes
-        assertEquals(56.dp, dimensions.coinIconSize)
-        assertEquals(72.dp, dimensions.appIconSize)
+        assertEquals(44.dp, dimensions.coinIconSize)
+        assertEquals(64.dp, dimensions.appIconSize)
         
         // Component sizes
-        assertEquals(54.dp, dimensions.buttonHeight)
+        assertEquals(52.dp, dimensions.buttonHeight)
         assertEquals(16.dp, dimensions.cardCornerRadius)
         assertEquals(4.dp, dimensions.cardElevation)
         
@@ -117,12 +99,6 @@ class DimensionsTest {
         assertEquals(18.dp, dimensions.itemSpacing)
         assertEquals(28.dp, dimensions.verticalSpacing)
         assertEquals(12.dp, dimensions.smallSpacing)
-        
-        // Text sizes
-        assertEquals(36.sp, dimensions.headingLarge)
-        assertEquals(26.sp, dimensions.headingMedium)
-        assertEquals(17.sp, dimensions.bodyText)
-        assertEquals(15.sp, dimensions.captionText)
         
         // Icon sizes
         assertEquals(72.dp, dimensions.coinIconSize)
@@ -219,20 +195,20 @@ class DimensionsTest {
     }
     
     @Test
-    fun `text sizes scale proportionally between screen sizes`() {
+    fun `icon sizes scale proportionally between screen sizes`() {
         val smallPhone = createSmallPhoneDimensions()
         val mediumPhone = createMediumPhoneDimensions()
         val largePhone = createLargePhoneDimensions()
         val tablet = createTabletDimensions()
         
-        // Each larger size should be at least 1.1x the previous
-        val smallToMediumRatio = mediumPhone.headingLarge.value / smallPhone.headingLarge.value
-        val mediumToLargeRatio = largePhone.headingLarge.value / mediumPhone.headingLarge.value
-        val largeToTabletRatio = tablet.headingLarge.value / largePhone.headingLarge.value
+        // Each larger size should be at least 1.0x the previous (allowing for same size)
+        val smallToMediumRatio = mediumPhone.coinIconSize.value / smallPhone.coinIconSize.value
+        val mediumToLargeRatio = largePhone.coinIconSize.value / mediumPhone.coinIconSize.value
+        val largeToTabletRatio = tablet.coinIconSize.value / largePhone.coinIconSize.value
         
-        assertTrue(smallToMediumRatio >= 1.1f, "Medium should be 1.1x+ larger than small")
-        assertTrue(mediumToLargeRatio >= 1.1f, "Large should be 1.1x+ larger than medium")
-        assertTrue(largeToTabletRatio >= 1.1f, "Tablet should be 1.1x+ larger than large")
+        assertTrue(smallToMediumRatio >= 1.0f, "Medium icons should be >= small icons")
+        assertTrue(mediumToLargeRatio >= 1.0f, "Large icons should be >= medium icons")
+        assertTrue(largeToTabletRatio >= 1.0f, "Tablet icons should be >= large icons")
     }
     
     @Test

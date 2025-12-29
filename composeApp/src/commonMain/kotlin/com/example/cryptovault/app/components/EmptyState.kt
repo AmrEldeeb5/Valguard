@@ -20,8 +20,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,9 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import com.example.cryptovault.theme.AppTheme
 import com.example.cryptovault.theme.LocalCryptoColors
-import com.example.cryptovault.theme.LocalCryptoSpacing
-import com.example.cryptovault.theme.LocalCryptoTypography
 
 /**
  * Empty state component for when no content is available.
@@ -54,15 +55,14 @@ fun EmptyState(
     modifier: Modifier = Modifier
 ) {
     val colors = LocalCryptoColors.current
-    val typography = LocalCryptoTypography.current
-    val spacing = LocalCryptoSpacing.current
+    val dimensions = AppTheme.dimensions
     
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = modifier
             .fillMaxWidth()
-            .padding(spacing.lg)
+            .padding(dimensions.screenPadding)
             .semantics {
                 contentDescription = "$title. $description"
             }
@@ -70,42 +70,44 @@ fun EmptyState(
         // Empty state icon
         Text(
             text = "📭",
-            style = typography.displayLarge
+            style = MaterialTheme.typography.displayLarge,
+            modifier = Modifier.size(dimensions.appIconSize)
         )
         
-        Spacer(modifier = Modifier.height(spacing.md))
+        Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
         
         // Title
         Text(
             text = title,
-            style = typography.titleLarge,
+            style = MaterialTheme.typography.titleLarge,
             color = colors.textPrimary,
             textAlign = TextAlign.Center
         )
         
-        Spacer(modifier = Modifier.height(spacing.xs))
+        Spacer(modifier = Modifier.height(dimensions.smallSpacing))
         
         // Description
         Text(
             text = description,
-            style = typography.bodyMedium,
+            style = MaterialTheme.typography.bodyMedium,
             color = colors.textSecondary,
             textAlign = TextAlign.Center
         )
         
         // Action button (only if both label and action are provided)
         if (actionLabel != null && onAction != null) {
-            Spacer(modifier = Modifier.height(spacing.lg))
+            Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
             
             Button(
                 onClick = onAction,
+                modifier = Modifier.height(dimensions.buttonHeight),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colors.buttonPrimary
                 )
             ) {
                 Text(
                     text = actionLabel,
-                    style = typography.labelLarge
+                    style = MaterialTheme.typography.labelLarge
                 )
             }
         }

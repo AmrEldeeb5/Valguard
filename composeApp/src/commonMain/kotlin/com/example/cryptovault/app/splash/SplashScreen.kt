@@ -161,7 +161,7 @@ fun SplashScreen(
                 )
             }
             
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(80.dp))
             
             // Progress bar
             SplashProgressBar(progress = progress)

@@ -48,6 +48,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -182,10 +183,18 @@ fun OnboardingScreen(
                                 }
                             }
                             
-                            Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
+                            Spacer(modifier = Modifier.height(dimensions.smallSpacing))
                         }
                     }
                     
+                    // Divider above button
+                    HorizontalDivider(
+                        color = Color(0xFF334155).copy(alpha = 0.5f),
+                        thickness = 1.dp
+                    )
+                    
+                    Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
+
                     // Fixed Continue button at bottom of card
                     OnboardingButton(
                         currentStep = state.currentStep,
@@ -194,9 +203,11 @@ fun OnboardingScreen(
                         onClick = { viewModel.onEvent(OnboardingEvent.NextStep) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = dimensions.cardPadding)
+                            .padding(horizontal = dimensions.screenPadding)
                     )
                     
+                    Spacer(modifier = Modifier.height(dimensions.smallSpacing))
+
                     // Back button (text) - only visible on steps > 0
                     AnimatedVisibility(
                         visible = state.currentStep > 0,
@@ -211,7 +222,7 @@ fun OnboardingScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable { viewModel.onEvent(OnboardingEvent.PreviousStep) }
-                                .padding(vertical = dimensions.smallSpacing)
+                                .padding(vertical = dimensions.smallSpacing / 2)
                         )
                     }
                     
@@ -231,11 +242,11 @@ fun OnboardingScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { viewModel.onEvent(OnboardingEvent.SkipToEnd) }
-                        .padding(vertical = dimensions.smallSpacing)
+                        .padding(vertical = dimensions.smallSpacing / 2)
                 )
             }
             
-            Spacer(modifier = Modifier.height(dimensions.smallSpacing))
+            Spacer(modifier = Modifier.height(dimensions.verticalSpacing))
         }
         
         // Skip confirmation dialog
