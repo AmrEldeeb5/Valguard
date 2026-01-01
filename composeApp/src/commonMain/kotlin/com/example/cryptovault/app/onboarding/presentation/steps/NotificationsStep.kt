@@ -58,6 +58,13 @@ import com.example.cryptovault.theme.AppTheme
 import com.example.cryptovault.theme.LocalCryptoAccessibility
 import com.example.cryptovault.theme.LocalCryptoColors
 import com.example.cryptovault.theme.LocalCryptoTypography
+import cryptovault.composeapp.generated.resources.Res
+import cryptovault.composeapp.generated.resources.material_symbols__account_balance_wallet_outline
+import cryptovault.composeapp.generated.resources.material_symbols__finance_mode_rounded
+import cryptovault.composeapp.generated.resources.material_symbols__notifications_outline
+import cryptovault.composeapp.generated.resources.material_symbols__query_stats_rounded
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 
 /**
  * Notifications step content for onboarding.
@@ -113,7 +120,7 @@ fun NotificationsStep(
         ) {
             // Price Movement Alerts
             NotificationInfoCard(
-                icon = "📈",
+                icon = Res.drawable.material_symbols__finance_mode_rounded,
                 iconGradient = listOf(colors.profit, Color(0xFF14B8A6)),
                 title = "Price Movement Alerts",
                 description = "Get notified when prices hit your targets",
@@ -124,7 +131,7 @@ fun NotificationsStep(
             
             // Portfolio Updates
             NotificationInfoCard(
-                icon = "💰",
+                icon = Res.drawable.material_symbols__account_balance_wallet_outline,
                 iconGradient = listOf(colors.accentBlue500, colors.accentPurple500),
                 title = "Portfolio Updates",
                 description = "Daily summaries of your portfolio performance",
@@ -132,10 +139,10 @@ fun NotificationsStep(
                 statusDotColor = colors.accentBlue500,
                 pulseAlpha = pulseAlpha
             )
-            
+
             // Market Insights
             NotificationInfoCard(
-                icon = "✨",
+                icon = Res.drawable.material_symbols__query_stats_rounded,
                 iconGradient = listOf(colors.accentPink500, colors.loss),
                 title = "Market Insights",
                 description = "Important news and market movements",
@@ -216,10 +223,13 @@ fun NotificationsHeader(
                 ),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "🔔",
-                fontSize = (dimensions.appIconSize.value * 0.5f).sp
+            Icon(
+                painter = painterResource(Res.drawable.material_symbols__notifications_outline),
+                contentDescription = "Notifications",
+                tint = Color.White,
+                modifier = Modifier.size(dimensions.coinIconSize * 1f)
             )
+
         }
         
         Spacer(modifier = Modifier.height(dimensions.smallSpacing))
@@ -302,9 +312,11 @@ fun EnableNotificationsToggle(
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "🔔",
-                        fontSize = (dimensions.coinIconSize.value * 0.5f).sp
+                    Icon(
+                        painter = painterResource(Res.drawable.material_symbols__notifications_outline),
+                        contentDescription = "Notifications",
+                        tint = Color.White,
+                        modifier = Modifier.size(dimensions.coinIconSize * 0.7f)
                     )
                 }
                 
@@ -363,7 +375,7 @@ fun EnableNotificationsToggle(
  */
 @Composable
 private fun NotificationInfoCard(
-    icon: String,
+    icon: DrawableResource,
     iconGradient: List<Color>,
     title: String,
     description: String,
@@ -402,9 +414,11 @@ private fun NotificationInfoCard(
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = icon,
-                        fontSize = (dimensions.coinIconSize.value * 0.5f).sp
+                    Icon(
+                        painter = painterResource(icon),
+                        contentDescription = title,
+                        tint = Color.White,
+                        modifier = Modifier.size(dimensions.coinIconSize * 0.7f)
                     )
                 }
 
@@ -421,12 +435,12 @@ private fun NotificationInfoCard(
                     Text(
                         text = description,
                         style = typography.bodySmall,
-                        color = colors.textSecondary
+                        color = colors.textTertiary.copy(alpha = 0.8f)
                     )
                 }
             }
             
-            Spacer(modifier = Modifier.height(dimensions.itemSpacing))
+            Spacer(modifier = Modifier.height(4.dp))
             
             // Status row with pulsing dot
             Row(
@@ -453,4 +467,3 @@ private fun NotificationInfoCard(
         }
     }
 }
-

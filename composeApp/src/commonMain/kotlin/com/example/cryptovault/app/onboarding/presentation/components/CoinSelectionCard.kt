@@ -142,12 +142,12 @@ fun CoinSelectionCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
             ) {
-                // Coin icon with gradient/white background
+                // Coin icon with brand-appropriate background color
                 Box(
                     modifier = Modifier
                         .size(dimensions.coinIconSize)
                         .clip(RoundedCornerShape(dimensions.cardCornerRadius * 0.75f))
-                        .background(Color.White),
+                        .background(coin.iconBackgroundColor),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
