@@ -94,6 +94,20 @@ data class CryptoTypography(
 }
 
 /**
+ * Standardized font sizes for the Valguard application.
+ */
+object FontSize {
+    val EXTRA_SMALL = 10.sp
+    val SMALL = 12.sp
+    val REGULAR = 14.sp
+    val EXTRA_REGULAR = 16.sp
+    val MEDIUM = 18.sp
+    val EXTRA_MEDIUM = 20.sp
+    val LARGE = 30.sp
+    val EXTRA_LARGE = 40.sp
+}
+
+/**
  * Default typography configuration for Valguard.
  *
  * Uses the system default font family with carefully tuned font sizes,
@@ -107,84 +121,84 @@ fun createCryptoTypography(
     displayLarge = TextStyle(
         fontFamily = displayFont,
         fontWeight = FontWeight.Bold,
-        fontSize = 36.sp,
-        lineHeight = 44.sp,
+        fontSize = FontSize.EXTRA_LARGE,
+        lineHeight = 48.sp,
         letterSpacing = (-0.25).sp
     ),
     displayMedium = TextStyle(
         fontFamily = displayFont,
         fontWeight = FontWeight.Bold,
-        fontSize = 28.sp,
+        fontSize = FontSize.LARGE,
         lineHeight = 36.sp,
         letterSpacing = 0.sp
     ),
     titleLarge = TextStyle(
         fontFamily = displayFont,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 22.sp,
+        fontSize = FontSize.EXTRA_MEDIUM,
         lineHeight = 28.sp,
         letterSpacing = 0.sp
     ),
     titleMedium = TextStyle(
         fontFamily = displayFont,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 18.sp,
+        fontSize = FontSize.MEDIUM,
         lineHeight = 24.sp,
         letterSpacing = 0.15.sp
     ),
     titleSmall = TextStyle(
         fontFamily = displayFont,
         fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
+        fontSize = FontSize.REGULAR,
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp
     ),
     bodyLarge = TextStyle(
         fontFamily = bodyFont,
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
+        fontSize = FontSize.EXTRA_REGULAR,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
     bodyMedium = TextStyle(
         fontFamily = bodyFont,
         fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
+        fontSize = FontSize.REGULAR,
         lineHeight = 20.sp,
         letterSpacing = 0.25.sp
     ),
     bodySmall = TextStyle(
         fontFamily = bodyFont,
         fontWeight = FontWeight.Normal,
-        fontSize = 12.sp,
+        fontSize = FontSize.SMALL,
         lineHeight = 16.sp,
         letterSpacing = 0.4.sp
     ),
     labelLarge = TextStyle(
         fontFamily = bodyFont,
         fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
+        fontSize = FontSize.REGULAR,
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp
     ),
     labelMedium = TextStyle(
         fontFamily = bodyFont,
         fontWeight = FontWeight.Medium,
-        fontSize = 12.sp,
+        fontSize = FontSize.SMALL,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
     ),
     labelSmall = TextStyle(
         fontFamily = bodyFont,
         fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
+        fontSize = 11.sp, // Note: No constant for 11sp, kept as is
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
     ),
     caption = TextStyle(
         fontFamily = bodyFont,
         fontWeight = FontWeight.Normal,
-        fontSize = 10.sp,
+        fontSize = FontSize.EXTRA_SMALL,
         lineHeight = 14.sp,
         letterSpacing = 0.4.sp
     )

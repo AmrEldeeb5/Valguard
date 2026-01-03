@@ -154,7 +154,7 @@ fun FeaturesHeader(
     ) {
         Text(
             text = "Everything You Need",
-            style = MaterialTheme.typography.headlineMedium.copy(
+            style = MaterialTheme.typography.displaySmall.copy(
                 fontFamily = bebasNeueFontFamily()
             ),
             fontWeight = FontWeight.Bold,

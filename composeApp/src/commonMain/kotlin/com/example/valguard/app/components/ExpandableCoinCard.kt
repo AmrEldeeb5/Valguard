@@ -105,18 +105,18 @@ fun ExpandableCoinCard(
             .border(1.dp, colors.cardBorder, shape)
             .clickable(onClick = onCardClick)
     ) {
-        // Main content row
+        // Main content row (Header)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Coin icon with gradient background
+            // Coin icon with rounded square shape
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .clip(CircleShape)
+                    .clip(RoundedCornerShape(12.dp))
                     .background(CryptoGradients.coinIconGradient(coin.symbol)),
                 contentAlignment = Alignment.Center
             ) {
@@ -144,69 +144,87 @@ fun ExpandableCoinCard(
                 Text(
                     text = coin.symbol,
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Bold,
                     color = colors.textPrimary
                 )
                 Text(
                     text = coin.name,
-                    fontSize = 12.sp,
+                    fontSize = 14.sp,
                     color = colors.textSecondary
                 )
             }
             
-            // Chart preview
+            // Chart preview (Right aligned)
             Box(
                 modifier = Modifier
-                    .width(60.dp)
-                    .height(30.dp)
+                    .width(80.dp)
+                    .height(40.dp)
+                    .padding(vertical = 4.dp)
             ) {
                 ChartPreview(
                     isPositive = coin.isPositive,
                     seed = coin.id.hashCode()
                 )
             }
-            
-            Spacer(modifier = Modifier.width(12.dp))
-            
-            // Price and change
-            Column(horizontalAlignment = Alignment.End) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = coin.formattedPrice,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = colors.textPrimary
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    PriceIndicator(direction = coin.priceDirection)
-                }
-                Text(
-                    text = coin.formattedChange,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = changeColor
-                )
-            }
         }
         
-        // Market cap row
-        if (coin.marketCap != null) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
+        // Stats Grid Row (Price, Change, Market Cap)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // Price Column
+            Column {
+                Text(
+                    text = "Price",
+                    fontSize = 12.sp,
+                    color = colors.textTertiary
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = coin.formattedPrice,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = colors.textPrimary
+                )
+            }
+            
+            // Change Column
+            Column {
+                Text(
+                    text = "24h Change",
+                    fontSize = 12.sp,
+                    color = colors.textTertiary
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    PriceIndicator(direction = coin.priceDirection)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = coin.formattedChange,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = changeColor
+                    )
+                }
+            }
+            
+            // Market Cap Column
+            Column {
                 Text(
                     text = "Market Cap",
                     fontSize = 12.sp,
                     color = colors.textTertiary
                 )
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = coin.marketCap,
-                    fontSize = 12.sp,
-                    color = colors.textSecondary
+                    text = coin.marketCap ?: "-",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = colors.textPrimary
                 )
             }
         }
@@ -217,32 +235,50 @@ fun ExpandableCoinCard(
                 color = colors.cardBorder,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            // Your Holdings Row (Amount)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .padding(horizontal = 16.dp, vertical = 2.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text(
-                        text = "Your Holdings",
-                        fontSize = 12.sp,
-                        color = colors.textTertiary
-                    )
-                    Text(
-                        text = coin.holdingsAmount ?: "",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = colors.textPrimary
-                    )
-                }
+                Text(
+                    text = "Your Holdings",
+                    fontSize = 14.sp,
+                    color = colors.textTertiary
+                )
+                Text(
+                    text = coin.holdingsAmount ?: "",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = colors.accentBlue400
+                )
+            }
+            
+            // Value Row
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 2.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Value",
+                    fontSize = 14.sp,
+                    color = colors.textTertiary
+                )
                 Text(
                     text = coin.holdingsValue ?: "",
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = colors.textPrimary
+                    fontWeight = FontWeight.Bold,
+                    color = colors.profit
                 )
             }
+            Spacer(modifier = Modifier.height(12.dp))
         }
         
         // Expanded section

@@ -48,6 +48,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.valguard.theme.AppTheme
 import com.example.valguard.theme.LocalCryptoColors
+import androidx.compose.foundation.layout.fillMaxSize
+import org.jetbrains.compose.resources.painterResource
+import valguard.composeapp.generated.resources.Res
+import valguard.composeapp.generated.resources.solar__chart_square_outline
 
 /**
  * Empty state component for when no content is available.
@@ -101,9 +105,11 @@ fun EmptyState(
                 .scale(scale),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "📈",
-                style = MaterialTheme.typography.displayLarge
+            Icon(
+                painter = painterResource(Res.drawable.solar__chart_square_outline),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                tint = colors.textPrimary
             )
         }
         

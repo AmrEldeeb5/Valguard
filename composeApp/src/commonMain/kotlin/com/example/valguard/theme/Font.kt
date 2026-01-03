@@ -40,11 +40,6 @@ fun bebasNeueFontFamily() = FontFamily(
     Font(Res.font.bebas_neue_regular, weight = FontWeight.Normal)
 )
 
-// TODO: Add Ubuntu font files to composeResources/font/ directory
-// import Valguard.composeapp.generated.resources.Ubuntu_Bold
-// import Valguard.composeapp.generated.resources.Ubuntu_Light
-// import Valguard.composeapp.generated.resources.Ubuntu_Medium
-// import Valguard.composeapp.generated.resources.Ubuntu_Regular
 
 /**
  * Creates the Ubuntu font family for use in typography.

@@ -16,11 +16,19 @@ package com.example.valguard.app.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,8 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.valguard.theme.LocalCryptoColors
-import java.text.NumberFormat
-import java.util.Locale
+import kotlin.math.abs
 import kotlin.math.pow
 
 /**
@@ -140,8 +147,21 @@ fun PortfolioValueCard(
  * @return Formatted currency string (e.g., "$1,234.56")
  */
 private fun formatCurrency(value: Double): String {
-    val formatter = NumberFormat.getCurrencyInstance(Locale.US)
-    return formatter.format(value)
+    val absValue = abs(value)
+    val intPart = absValue.toLong()
+    val decPart = ((absValue - intPart) * 100).toLong()
+
+    // Add thousand separators
+    val intStr = intPart.toString()
+    val withCommas = buildString {
+        intStr.forEachIndexed { index, c ->
+            if (index > 0 && (intStr.length - index) % 3 == 0) append(',')
+            append(c)
+        }
+    }
+
+    val sign = if (value < 0) "-" else ""
+    return "$sign\$$withCommas.${decPart.toString().padStart(2, '0')}"
 }
 
 /**

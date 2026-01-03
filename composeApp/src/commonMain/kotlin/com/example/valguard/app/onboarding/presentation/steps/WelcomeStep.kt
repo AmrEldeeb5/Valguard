@@ -124,7 +124,7 @@ fun WelcomeHeader(
     ) {
         Text(
             text = "Welcome to Valguard",
-            style = typography.titleLarge.copy(
+            style = typography.displayMedium.copy(
                 fontFamily = bebasNeueFontFamily(),
                 brush = Brush.linearGradient(
                     colors = listOf(

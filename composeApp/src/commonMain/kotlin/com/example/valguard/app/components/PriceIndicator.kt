@@ -17,7 +17,11 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import valguard.composeapp.generated.resources.Res
+import valguard.composeapp.generated.resources.solar__course_down_outline
+import valguard.composeapp.generated.resources.solar__course_up_outline
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -68,11 +72,28 @@ fun PriceIndicator(
             contentDescription = description
         }
     ) {
-        Text(
-            text = symbol,
-            color = animatedColor,
-            style = typography.bodySmall
-        )
+        if (direction == PriceDirection.UNCHANGED) {
+            Text(
+                text = symbol,
+                color = animatedColor,
+                style = typography.bodySmall
+            )
+        } else {
+            val iconRes = when (direction) {
+                PriceDirection.UP -> Res.drawable.solar__course_up_outline
+                PriceDirection.DOWN -> Res.drawable.solar__course_down_outline
+                else -> null // Should not happen given outer if
+            }
+            
+            if (iconRes != null) {
+                androidx.compose.material3.Icon(
+                    painter = org.jetbrains.compose.resources.painterResource(iconRes),
+                    contentDescription = null,
+                    tint = animatedColor,
+                    modifier = androidx.compose.foundation.layout.size(16.dp)
+                )
+            }
+        }
         
         if (showText) {
             Spacer(modifier = Modifier.width(4.dp))

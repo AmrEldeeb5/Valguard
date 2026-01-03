@@ -21,9 +21,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Star
@@ -51,9 +53,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
@@ -137,19 +144,33 @@ fun CompareScreen() {
                 item {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(spacing.sm)
+                        horizontalArrangement = Arrangement.spacedBy(spacing.md) // Increased spacing
                     ) {
                         OutlinedButton(
                             onClick = { viewModel.onEvent(CompareEvent.ClearComparison) },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            border = androidx.compose.foundation.BorderStroke(
+                                1.dp,
+                                colors.border.copy(alpha = 0.3f)
+                            ),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = colors.textSecondary
+                            )
                         ) {
-                            Text("Clear")
+                            Text("Clear", color = colors.textSecondary.copy(alpha = 0.7f))
                         }
+
                         Button(
                             onClick = { viewModel.onEvent(CompareEvent.SaveComparison) },
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1f)
+                                .shadow(
+                                    8.dp,
+                                    RoundedCornerShape(24.dp),
+                                    spotColor = colors.accentBlue400
+                                ),
                             colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.ui.graphics.Color.Transparent),
-                            contentPadding = PaddingValues(0.dp) // Handle padding in box for gradient
+                            contentPadding = PaddingValues(0.dp)
                         ) {
                             Box(
                                 modifier = Modifier
@@ -167,10 +188,15 @@ fun CompareScreen() {
                                     Icon(
                                         imageVector = Icons.Default.Star,
                                         contentDescription = null,
-                                        modifier = Modifier.size(18.dp)
+                                        modifier = Modifier.size(18.dp),
+                                        tint = androidx.compose.ui.graphics.Color.White
                                     )
                                     Spacer(modifier = Modifier.width(spacing.xs))
-                                    Text("Save Comparison")
+                                    Text(
+                                        "Save Comparison",
+                                        fontWeight = FontWeight.Bold,
+                                        color = androidx.compose.ui.graphics.Color.White
+                                    )
                                 }
                             }
                         }
@@ -429,14 +455,33 @@ private fun ComparisonTable(
                         pos2 = coin2.change24h > 0
                     )
                 },
-                "Market Cap" to { 
-                    MetricValues(formatLargeNumber(coin1.marketCap), formatLargeNumber(coin2.marketCap), comparisonData.marketCapWinner)
+                "Market Cap" to {
+                    MetricValues(
+                        value1 = formatLargeNumber(coin1.marketCap),
+                        value2 = formatLargeNumber(coin2.marketCap),
+                        winner = comparisonData.marketCapWinner,
+                        raw1 = coin1.marketCap,
+                        raw2 = coin2.marketCap,
+                        showBar = true
+                    )
                 },
-                "24h Volume" to { 
-                    MetricValues(formatLargeNumber(coin1.volume24h), formatLargeNumber(coin2.volume24h), comparisonData.volumeWinner)
+                "24h Volume" to {
+                    MetricValues(
+                        value1 = formatLargeNumber(coin1.volume24h),
+                        value2 = formatLargeNumber(coin2.volume24h),
+                        winner = comparisonData.volumeWinner,
+                        raw1 = coin1.volume24h,
+                        raw2 = coin2.volume24h,
+                        showBar = true
+                    )
                 },
-                "Market Rank" to { 
-                    MetricValues("#${coin1.marketCapRank}", "#${coin2.marketCapRank}", comparisonData.rankWinner)
+                "Market Rank" to {
+                    MetricValues(
+                        value1 = "#${coin1.marketCapRank}",
+                        value2 = "#${coin2.marketCapRank}",
+                        winner = comparisonData.rankWinner,
+                        isRank = true
+                    )
                 }
             )
             
@@ -468,42 +513,104 @@ private fun QuickVerdictRow(
 ) {
     val colors = LocalCryptoColors.current
     val spacing = LocalCryptoSpacing.current
-    
-    val verdict = remember(coin1, coin2) {
+
+    val verdictText: AnnotatedString = remember(coin1, coin2, comparisonData) {
         generateVerdict(coin1, coin2, comparisonData)
     }
-    
+
+    val whyItMatters: String = remember(comparisonData) {
+        if (comparisonData.marketCapWinner == MetricWinner.COIN_1) {
+            "${coin1.symbol.uppercase()}'s dominance suggests lower volatility and stronger institutional confidence today."
+        } else {
+            "${coin2.symbol.uppercase()}'s dominance suggests lower volatility and stronger institutional confidence today."
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(colors.accentBlue400.copy(alpha = 0.05f), RoundedCornerShape(12.dp))
-            .border(1.dp, colors.accentBlue400.copy(alpha = 0.1f), RoundedCornerShape(12.dp))
+            .background(colors.accentBlue400.copy(alpha = 0.08f), RoundedCornerShape(16.dp))
+            .border(1.dp, colors.accentBlue400.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
             .padding(spacing.md)
     ) {
-        Row(verticalAlignment = Alignment.Top) {
-            Icon(
-                imageVector = Icons.Default.Add, // Placeholder for "Analytics" icon
-                contentDescription = null,
-                tint = colors.accentBlue400,
-                modifier = Modifier.size(16.dp).padding(top = 2.dp)
-            )
-            Spacer(modifier = Modifier.width(spacing.sm))
+        Column(verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
+            // Header with AI Badge
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .background(colors.accentBlue400.copy(alpha = 0.2f), CircleShape)
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = "AI Insight",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = colors.accentBlue400,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            // Verdict Text
             Text(
-                text = verdict,
-                style = MaterialTheme.typography.bodySmall,
-                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
-                color = colors.textPrimary.copy(alpha = 0.9f),
+                text = verdictText,
+                style = MaterialTheme.typography.bodyMedium,
+                color = colors.textPrimary,
                 lineHeight = androidx.compose.ui.unit.TextUnit.Unspecified
             )
+
+            HorizontalDivider(
+                color = colors.accentBlue400.copy(alpha = 0.2f),
+                thickness = 1.dp,
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+
+            // Why it matters
+            Column {
+                Text(
+                    text = "Why this matters",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = colors.textSecondary.copy(alpha = 0.7f),
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = whyItMatters,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.textSecondary.copy(alpha = 0.9f),
+                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                )
+            }
         }
     }
 }
 
-private fun generateVerdict(coin1: CoinSlot, coin2: CoinSlot, data: ComparisonData): String {
-    val leadsLiquidity = if (data.marketCapWinner == MetricWinner.COIN_1) coin1.symbol else coin2.symbol
-    val leadsGrowth = if (data.change24hWinner == MetricWinner.COIN_1) coin1.symbol else coin2.symbol
-    
-    return "Quick Verdict: ${leadsLiquidity.uppercase()} leads in market dominance, while ${leadsGrowth.uppercase()} shows stronger price momentum today."
+private fun generateVerdict(
+    coin1: CoinSlot,
+    coin2: CoinSlot,
+    data: ComparisonData
+): AnnotatedString {
+    val liquidityLeader =
+        if (data.marketCapWinner == MetricWinner.COIN_1) coin1.symbol else coin2.symbol
+    val growthLeader =
+        if (data.change24hWinner == MetricWinner.COIN_1) coin1.symbol else coin2.symbol
+
+    return buildAnnotatedString {
+        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+            append(liquidityLeader.uppercase())
+        }
+        append(" leads in ")
+        withStyle(SpanStyle(color = androidx.compose.ui.graphics.Color(0xFF4CAF50))) { // Greenish
+            append("market dominance")
+        }
+        append(", while ")
+        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+            append(growthLeader.uppercase())
+        }
+        append(" shows stronger ")
+        withStyle(SpanStyle(color = androidx.compose.ui.graphics.Color(0xFF2196F3))) { // Blueish
+            append("price momentum")
+        }
+        append(" today.")
+    }
 }
 
 @Composable
@@ -512,11 +619,20 @@ private fun MetricValues(
     value2: String,
     winner: MetricWinner,
     isChange: Boolean = false,
+    isRank: Boolean = false,
     pos1: Boolean = true,
-    pos2: Boolean = true
+    pos2: Boolean = true,
+    raw1: Double = 0.0,
+    raw2: Double = 0.0,
+    showBar: Boolean = false
 ) {
     val colors = LocalCryptoColors.current
     val spacing = LocalCryptoSpacing.current
+
+    // Calculate bar fractions relative to max
+    val maxVal = maxOf(raw1, raw2).coerceAtLeast(1.0)
+    val frac1 = (raw1 / maxVal).toFloat().coerceIn(0f, 1f)
+    val frac2 = (raw2 / maxVal).toFloat().coerceIn(0f, 1f)
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -527,13 +643,19 @@ private fun MetricValues(
             value = value1,
             isWinner = winner == MetricWinner.COIN_1,
             color = if (isChange) (if (pos1) colors.profit else colors.loss) else colors.textPrimary,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            barFraction = if (showBar) frac1 else 0f,
+            isRank = isRank,
+            rankUp = !pos1 // For rank, we don't have pos1/pos2 flags passed correctly for arrows, handled below
         )
         MetricValueCell(
             value = value2,
             isWinner = winner == MetricWinner.COIN_2,
             color = if (isChange) (if (pos2) colors.profit else colors.loss) else colors.textPrimary,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            barFraction = if (showBar) frac2 else 0f,
+            isRank = isRank,
+            rankUp = !pos2
         )
     }
 }
@@ -543,12 +665,15 @@ private fun MetricValueCell(
     value: String,
     isWinner: Boolean,
     color: androidx.compose.ui.graphics.Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    barFraction: Float = 0f,
+    isRank: Boolean = false,
+    rankUp: Boolean = false // Not used effectively for rank yet without diff logic, keeping simple
 ) {
     val colors = LocalCryptoColors.current
 
     val animatedAlpha by animateFloatAsState(
-        targetValue = if (isWinner) 1f else 0.6f,
+        targetValue = if (isWinner) 1f else 0.7f,
         animationSpec = tween(500),
         label = "winnerAlpha"
     )
@@ -558,12 +683,35 @@ private fun MetricValueCell(
             .clip(RoundedCornerShape(8.dp))
             .then(
                 if (isWinner) {
-                    Modifier.background(colors.accentBlue400.copy(alpha = 0.08f))
+                    Modifier
+                        .background(colors.accentBlue400.copy(alpha = 0.12f))
+                        .border(
+                            1.dp,
+                            colors.accentBlue400.copy(alpha = 0.2f),
+                            RoundedCornerShape(8.dp)
+                        )
                 } else Modifier
             )
-            .padding(vertical = 4.dp),
+            .padding(vertical = 6.dp, horizontal = 4.dp),
         contentAlignment = Alignment.Center
     ) {
+        // Background Bar
+        if (barFraction > 0f) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .align(Alignment.CenterStart)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(barFraction)
+                        .height(4.dp)
+                        .align(Alignment.BottomStart)
+                        .background(color.copy(alpha = 0.2f), RoundedCornerShape(2.dp))
+                )
+            }
+        }
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
@@ -571,7 +719,7 @@ private fun MetricValueCell(
             Text(
                 text = value,
                 style = MaterialTheme.typography.bodyLarge,
-                fontWeight = if (isWinner) FontWeight.ExtraBold else FontWeight.Bold,
+                fontWeight = if (isWinner) FontWeight.Black else FontWeight.Medium, // Bolder for winner
                 color = color.copy(alpha = animatedAlpha),
                 textAlign = TextAlign.Center
             )
@@ -579,11 +727,14 @@ private fun MetricValueCell(
             if (isWinner) {
                 Spacer(modifier = Modifier.width(4.dp))
                 Icon(
-                    imageVector = Icons.Default.Add, // Placeholder for Crown or Arrow
-                    contentDescription = null,
+                    imageVector = Icons.Default.CheckCircle, // "Leading" badge
+                    contentDescription = "Winner",
                     tint = colors.accentBlue400,
-                    modifier = Modifier.size(12.dp)
+                    modifier = Modifier.size(14.dp)
                 )
+            } else if (isRank) {
+                // For loser in rank (or just non-winner), show arrow maybe? 
+                // Keeping it simple as per "Leading badge" request for winner.
             }
         }
     }
@@ -625,12 +776,19 @@ private fun SavedComparisonsSection(
     val spacing = LocalCryptoSpacing.current
     
     Column(verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
-        Text(
-            text = "Saved Comparisons",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = colors.textPrimary
-        )
+        Column {
+            Text(
+                text = "Saved Comparisons",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = colors.textPrimary
+            )
+            Text(
+                text = "Revisit past decisions",
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.textSecondary.copy(alpha = 0.7f)
+            )
+        }
         
         when (savedComparisons) {
             is UiState.Loading -> {
