@@ -35,6 +35,7 @@ class CompareViewModel(
             is CompareEvent.LoadSavedComparison -> loadSavedComparison(event.comparison)
             is CompareEvent.DeleteSavedComparison -> deleteSavedComparison(event.comparisonId)
             is CompareEvent.ClearComparison -> clearComparison()
+            is CompareEvent.DismissSnackbar -> _state.update { it.copy(showSnackbar = false, snackbarMessage = null) }
             is CompareEvent.Retry -> loadSavedComparisons()
         }
     }
@@ -135,6 +136,12 @@ class CompareViewModel(
                 coin2Symbol = coin2.symbol,
                 coin2IconUrl = coin2.iconUrl
             )
+            _state.update { 
+                it.copy(
+                    snackbarMessage = "${coin1.symbol.uppercase()} vs ${coin2.symbol.uppercase()} saved",
+                    showSnackbar = true
+                )
+            }
         }
     }
     

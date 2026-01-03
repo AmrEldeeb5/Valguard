@@ -70,7 +70,7 @@ class PortfolioRepositoryImpl(
             .onSuccess { coinDto ->
                 val portfolioCoinEntity = portfolioDao.getCoinById(coinId)
                 val coinDetails = coinDto.data.coin
-                val price = coinDetails.price.toDoubleOrNull() ?: 0.0
+                val price = coinDetails.price?.toDoubleOrNull() ?: 0.0
                 return if (portfolioCoinEntity != null) {
                     Result.Success(portfolioCoinEntity.toPortfolioCoinModel(price))
                 } else {
@@ -84,7 +84,7 @@ class PortfolioRepositoryImpl(
         return try {
             portfolioDao.insertPortfolioCoin(portfolioCoin.toPortfolioCoinEntity())
             Result.Success(Unit)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.Failure(DataError.Local.DISK_FULL)
         }
     }

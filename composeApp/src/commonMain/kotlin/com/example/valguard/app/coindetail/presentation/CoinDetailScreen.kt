@@ -1,6 +1,5 @@
 package com.example.valguard.app.coindetail.presentation
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -8,8 +7,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -31,8 +28,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -40,13 +35,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,15 +61,20 @@ import com.example.valguard.app.coindetail.domain.CoinHoldings
 import com.example.valguard.app.components.AlertModal
 import com.example.valguard.app.components.BarChart
 import com.example.valguard.app.components.BarChartData
+import com.example.valguard.app.components.ChartPoint
 import com.example.valguard.app.components.EmptyState
 import com.example.valguard.app.components.ErrorState
 import com.example.valguard.app.components.SkeletonBox
-import com.example.valguard.app.components.SkeletonText
+import com.example.valguard.app.components.XAxisLabelGenerator
 import com.example.valguard.app.core.util.UiState
 import com.example.valguard.app.core.util.getPriceChangeColor
 import com.example.valguard.theme.LocalCryptoColors
 import com.example.valguard.theme.LocalCryptoSpacing
 import org.koin.compose.viewmodel.koinViewModel
+import org.jetbrains.compose.resources.painterResource
+import valguard.composeapp.generated.resources.Res
+import valguard.composeapp.generated.resources.solar__bookmark_bold
+import valguard.composeapp.generated.resources.solar__bookmark_linear
 import kotlin.math.abs
 import kotlin.math.pow
 
@@ -85,8 +84,6 @@ private val SlateGradientStart = Color(0xFF1E293B) // slate-800
 private val SlateGradientEnd = Color(0xFF0F172A)   // slate-900
 private val EmeraldStart = Color(0xFF34D399)       // emerald-400
 private val EmeraldEnd = Color(0xFF10B981)         // emerald-500
-private val RoseStart = Color(0xFFFB7185)          // rose-400
-private val RoseEnd = Color(0xFFF43F5E)            // rose-500
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,7 +108,7 @@ fun CoinDetailScreen(
             .background(colors.backgroundPrimary)
             .statusBarsPadding()
     ) {
-        // Top bar
+        // Top bar (Compact Navigation Row)
         CoinDetailTopBar(
             isInWatchlist = state.isInWatchlist,
             onBackClick = onDismiss,
@@ -124,14 +121,14 @@ fun CoinDetailScreen(
             }
             is UiState.Success -> {
                 PullToRefreshBox(
-                    isRefreshing = state.isRefreshing,
+                    isRefreshing = state.isPullRefreshing,
                     onRefresh = { viewModel.onEvent(CoinDetailEvent.Refresh) },
                     modifier = Modifier.fillMaxSize()
                 ) {
                     CoinDetailContent(
                         coinData = coinData.data,
                         holdings = state.holdings,
-                        chartData = state.currentChartData,
+                        chartState = state.currentChartState,
                         selectedTimeframe = state.selectedTimeframe,
                         isOffline = state.isOffline,
                         onTimeframeSelected = { viewModel.onEvent(CoinDetailEvent.SelectTimeframe(it)) },
@@ -185,23 +182,32 @@ private fun CoinDetailTopBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = spacing.md, vertical = spacing.sm),
+            .height(48.dp) // Standard compact height
+            .padding(horizontal = spacing.sm), // Tighter horizontal padding
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = onBackClick) {
+        IconButton(
+            onClick = onBackClick,
+            modifier = Modifier.size(44.dp)
+        ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back",
-                tint = colors.textPrimary
+                tint = colors.textPrimary,
+                modifier = Modifier.size(24.dp)
             )
         }
         
-        IconButton(onClick = onWatchlistClick) {
+        IconButton(
+            onClick = onWatchlistClick,
+            modifier = Modifier.size(44.dp)
+        ) {
             Icon(
-                imageVector = if (isInWatchlist) Icons.Filled.Star else Icons.Outlined.Star,
+                painter = if (isInWatchlist) painterResource(Res.drawable.solar__bookmark_bold) else painterResource(Res.drawable.solar__bookmark_linear),
                 contentDescription = if (isInWatchlist) "Remove from watchlist" else "Add to watchlist",
-                tint = if (isInWatchlist) colors.accentBlue400 else colors.textSecondary
+                tint = if (isInWatchlist) colors.accentBlue400 else colors.textSecondary.copy(alpha = 0.85f),
+                modifier = Modifier.size(24.dp)
             )
         }
     }
@@ -211,7 +217,7 @@ private fun CoinDetailTopBar(
 private fun CoinDetailContent(
     coinData: CoinDetailData,
     holdings: CoinHoldings?,
-    chartData: List<Float>,
+    chartState: UiState<List<ChartPoint>>,
     selectedTimeframe: ChartTimeframe,
     isOffline: Boolean,
     onTimeframeSelected: (ChartTimeframe) -> Unit,
@@ -229,46 +235,41 @@ private fun CoinDetailContent(
             .verticalScroll(scrollState)
             .padding(horizontal = spacing.md)
     ) {
-        // Offline indicator
+        // Offline indicator (Stay integrated but visible)
         if (isOffline) {
-            OfflineBanner(modifier = Modifier.padding(bottom = spacing.sm))
+            OfflineBanner(modifier = Modifier.padding(top = spacing.xs, bottom = spacing.md))
         }
         
-        // Coin header
-        CoinDetailHeader(coinData = coinData)
-        
-        Spacer(modifier = Modifier.height(spacing.lg))
-        
-        // Price display card with gradient background
+        // Price display card with integrated identity and gradient background
         PriceDisplayCard(
             coinData = coinData,
-            chartData = chartData,
+            chartState = chartState,
             selectedTimeframe = selectedTimeframe,
             onTimeframeSelected = onTimeframeSelected
         )
         
         Spacer(modifier = Modifier.height(spacing.md))
         
-        // Quick stats row
-        QuickStatsRow(coinData = coinData)
+        // Meta stats (quiet row)
+        MetaStatsRow(coinData = coinData)
         
         Spacer(modifier = Modifier.height(spacing.md))
         
         // Detailed stats grid
         StatsGrid(coinData = coinData)
         
-        Spacer(modifier = Modifier.height(spacing.md))
+        Spacer(modifier = Modifier.height(12.dp))
         
-        // Price alert button
+        // Price alert button (Context Tool position)
         PriceAlertButton(onClick = onSetAlertClick)
         
         // Holdings section (only if user owns this coin)
         if (holdings != null && holdings.amountOwned > 0) {
-            Spacer(modifier = Modifier.height(spacing.md))
+            Spacer(modifier = Modifier.height(20.dp))
             HoldingsCard(holdings = holdings, coinData = coinData)
         }
         
-        Spacer(modifier = Modifier.height(spacing.lg))
+        Spacer(modifier = Modifier.height(20.dp))
         
         // Buy/Sell buttons with gradients
         ActionButtons(
@@ -277,51 +278,16 @@ private fun CoinDetailContent(
             canSell = holdings != null && holdings.amountOwned > 0
         )
         
-        Spacer(modifier = Modifier.height(spacing.xl))
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
 
-@Composable
-private fun CoinDetailHeader(coinData: CoinDetailData) {
-    val colors = LocalCryptoColors.current
-    val spacing = LocalCryptoSpacing.current
-    
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Coin icon - 64dp with 16dp corner radius
-        AsyncImage(
-            model = coinData.iconUrl,
-            contentDescription = "${coinData.name} icon",
-            modifier = Modifier
-                .size(64.dp)
-                .clip(RoundedCornerShape(16.dp))
-        )
-        
-        Spacer(modifier = Modifier.width(spacing.md))
-        
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = coinData.name,
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = colors.textPrimary
-            )
-            Text(
-                text = coinData.symbol.uppercase(),
-                style = MaterialTheme.typography.bodyLarge,
-                color = colors.textSecondary
-            )
-        }
-    }
-}
 
 @Composable
 private fun PriceDisplayCard(
     coinData: CoinDetailData,
-    chartData: List<Float>,
+    chartState: UiState<List<ChartPoint>>,
     selectedTimeframe: ChartTimeframe,
     onTimeframeSelected: (ChartTimeframe) -> Unit
 ) {
@@ -343,36 +309,68 @@ private fun PriceDisplayCard(
     )
     
     // Animated price value
-    var displayedPrice by remember { mutableStateOf(coinData.price) }
     val animatedPrice by animateFloatAsState(
         targetValue = coinData.price.toFloat(),
         animationSpec = tween(durationMillis = 800, easing = FastOutSlowInEasing),
         label = "priceAnimation"
     )
     
-    LaunchedEffect(coinData.price) {
-        displayedPrice = coinData.price
-    }
-    
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(20.dp)) // Slightly more rounded for premium feel
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(SlateGradientStart, SlateGradientEnd)
                 )
             )
-            .padding(24.dp)
+            .padding(
+                start = spacing.lg,
+                top = spacing.lg,
+                end = spacing.lg,
+                bottom = spacing.md
+            )
     ) {
         Column {
+            // Integrated Header: Icon + Name/Symbol
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AsyncImage(
+                    model = coinData.iconUrl,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(40.dp) // Optimized compact size
+                        .clip(RoundedCornerShape(10.dp))
+                )
+                
+                Spacer(modifier = Modifier.width(spacing.md))
+                
+                Column {
+                    Text(
+                        text = coinData.name,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textPrimary
+                    )
+                    Text(
+                        text = coinData.symbol.uppercase(),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = colors.textSecondary.copy(alpha = 0.8f)
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(spacing.md))
+            
             Text(
                 text = "Current Price",
-                style = MaterialTheme.typography.bodyMedium,
-                color = colors.textSecondary
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.textSecondary.copy(alpha = 0.7f)
             )
             
-            Spacer(modifier = Modifier.height(spacing.xs))
+            Spacer(modifier = Modifier.height(2.dp))
             
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -386,24 +384,23 @@ private fun PriceDisplayCard(
                     color = colors.textPrimary
                 )
                 
-                // Animated change badge
                 Box(
                     modifier = Modifier
                         .scale(scale)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(changeColor.copy(alpha = 0.15f))
+                        .background(changeColor.copy(alpha = 0.11f))
                         .padding(horizontal = spacing.md, vertical = spacing.xs)
                 ) {
                     Text(
                         text = "${if (isPositive) "+" else ""}${formatDecimal(coinData.change24h, 2)}%",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = changeColor
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = changeColor.copy(alpha = 0.9f)
                     )
                 }
             }
             
-            Spacer(modifier = Modifier.height(spacing.md))
+            Spacer(modifier = Modifier.height(spacing.sm))
             
             // Timeframe selector
             TimeframeSelector(
@@ -411,34 +408,74 @@ private fun PriceDisplayCard(
                 onTimeframeSelected = onTimeframeSelected
             )
             
-            Spacer(modifier = Modifier.height(spacing.md))
+            Spacer(modifier = Modifier.height(spacing.sm))
             
-            // Price chart with animation
-            AnimatedVisibility(
-                visible = chartData.isNotEmpty(),
-                enter = fadeIn(animationSpec = tween(300)),
-                exit = fadeOut(animationSpec = tween(300))
+            // Chart Section with State Handling
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                contentAlignment = Alignment.Center
             ) {
-                BarChart(
-                    data = BarChartData(
-                        values = chartData.map { it.toDouble() },
-                        labels = emptyList()
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    animate = true
-                )
-            }
-            
-            // Show skeleton when no chart data
-            if (chartData.isEmpty()) {
-                SkeletonBox(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    shape = RoundedCornerShape(8.dp)
-                )
+                when (chartState) {
+                    is UiState.Loading -> {
+                        Box(contentAlignment = Alignment.Center) {
+                            SkeletonBox(
+                                modifier = Modifier.fillMaxSize(),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    text = "Loading history...",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = colors.textSecondary.copy(alpha = 0.5f)
+                                )
+                            }
+                        }
+                    }
+                    is UiState.Success -> {
+                        // Generate labels with memoization for stability
+                        val labels = remember(chartState.data, selectedTimeframe) {
+                            XAxisLabelGenerator.generate(
+                                points = chartState.data,
+                                timeframe = selectedTimeframe,
+                                labelCount = 4
+                            )
+                        }
+                        
+                        BarChart(
+                            data = BarChartData(
+                                values = chartState.data.map { it.price },
+                                labels = labels
+                            ),
+                            modifier = Modifier.fillMaxSize(),
+                            animate = true,
+                            isLoading = false
+                        )
+                    }
+                    is UiState.Error -> {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "Chart unavailable",
+                                color = colors.textSecondary,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            TextButton(onClick = { onTimeframeSelected(selectedTimeframe) }) {
+                                Text("Retry", color = colors.accentBlue400)
+                            }
+                        }
+                    }
+                    is UiState.Empty -> {
+                        Text(
+                            text = "No historical data for this period",
+                            color = colors.textSecondary.copy(alpha = 0.6f),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
             }
         }
     }
@@ -491,67 +528,41 @@ private fun TimeframeSelector(
 }
 
 @Composable
-private fun QuickStatsRow(coinData: CoinDetailData) {
-    LocalCryptoColors.current
-    val spacing = LocalCryptoSpacing.current
+private fun MetaStatsRow(coinData: CoinDetailData) {
+    val colors = LocalCryptoColors.current
     
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(spacing.sm)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        QuickStatCard(
-            label = "Supply",
-            value = formatSupply(coinData.circulatingSupply, coinData.symbol),
-            modifier = Modifier.weight(1f)
+        Text(
+            text = "Supply · ${formatSupply(coinData.circulatingSupply, coinData.symbol)}",
+            style = MaterialTheme.typography.bodySmall,
+            color = colors.textSecondary.copy(alpha = 0.7f)
         )
-        QuickStatCard(
-            label = "ATH",
-            value = "\$${formatPrice(coinData.allTimeHigh)}",
-            modifier = Modifier.weight(1f)
+        Text(
+            text = "|",
+            style = MaterialTheme.typography.bodySmall,
+            color = colors.textSecondary.copy(alpha = 0.3f)
         )
-        QuickStatCard(
-            label = "Rank",
-            value = "#${coinData.marketCapRank}",
-            modifier = Modifier.weight(1f)
+        Text(
+            text = "ATH · \$${formatPrice(coinData.allTimeHigh)}",
+            style = MaterialTheme.typography.bodySmall,
+            color = colors.textSecondary.copy(alpha = 0.7f)
         )
-    }
-}
-
-@Composable
-private fun QuickStatCard(
-    label: String,
-    value: String,
-    modifier: Modifier = Modifier
-) {
-    val colors = LocalCryptoColors.current
-    val spacing = LocalCryptoSpacing.current
-    
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(16.dp))
-            .background(colors.cardBackground.copy(alpha = 0.4f))
-            .border(
-                width = 1.dp,
-                color = colors.textSecondary.copy(alpha = 0.1f),
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(horizontal = spacing.lg, vertical = spacing.md)
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.Medium,
-                color = colors.textTertiary.copy(alpha = 0.8f)
-            )
-            Spacer(modifier = Modifier.height(spacing.sm))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                color = colors.textPrimary
-            )
-        }
+        Text(
+            text = "|",
+            style = MaterialTheme.typography.bodySmall,
+            color = colors.textSecondary.copy(alpha = 0.3f)
+        )
+        Text(
+            text = "Rank · #${coinData.marketCapRank}",
+            style = MaterialTheme.typography.bodySmall,
+            color = colors.textSecondary.copy(alpha = 0.7f)
+        )
     }
 }
 
@@ -566,31 +577,24 @@ private fun StatsGrid(coinData: CoinDetailData) {
             horizontalArrangement = Arrangement.spacedBy(spacing.sm)
         ) {
             EnhancedStatCard(
-                label = "24h Volume",
-                value = "\$${formatLargeNumber(coinData.volume24h)}",
-                modifier = Modifier.weight(1f)
-            )
-            EnhancedStatCard(
                 label = "Market Cap",
                 value = "\$${formatLargeNumber(coinData.marketCap)}",
-                modifier = Modifier.weight(1f)
-            )
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(spacing.sm)
-        ) {
-            EnhancedStatCard(
-                label = "24h High",
-                value = "\$${formatPrice(coinData.high24h)}",
+                isPrimary = true,
                 modifier = Modifier.weight(1f)
             )
             EnhancedStatCard(
-                label = "24h Low",
-                value = "\$${formatPrice(coinData.low24h)}",
+                label = "24h Volume",
+                value = "\$${formatLargeNumber(coinData.volume24h)}",
+                isPrimary = false,
                 modifier = Modifier.weight(1f)
             )
         }
+        // 24h Range (combined High/Low)
+        RangeCard(
+            high = coinData.high24h,
+            low = coinData.low24h,
+            currentPrice = coinData.price
+        )
     }
 }
 
@@ -599,6 +603,7 @@ private fun StatsGrid(coinData: CoinDetailData) {
 private fun EnhancedStatCard(
     label: String,
     value: String,
+    isPrimary: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val colors = LocalCryptoColors.current
@@ -606,7 +611,7 @@ private fun EnhancedStatCard(
     
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(24.dp))
             .background(colors.cardBackground.copy(alpha = 0.4f))
             .border(
                 width = 1.dp,
@@ -616,9 +621,9 @@ private fun EnhancedStatCard(
                         colors.accentPurple400.copy(alpha = 0.3f)
                     )
                 ),
-                shape = RoundedCornerShape(20.dp)
+                shape = RoundedCornerShape(24.dp)
             )
-            .padding(spacing.md)
+            .padding(spacing.lg)
     ) {
         Column {
             Text(
@@ -628,12 +633,129 @@ private fun EnhancedStatCard(
                 color = colors.textTertiary.copy(alpha = 0.8f)
             )
             Spacer(modifier = Modifier.height(spacing.md))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                color = colors.textPrimary
+            val (value, suffix) = formatLargeNumberWithSuffix(value)
+            Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.Start) {
+                Text(
+                    text = value,
+                    style = if (isPrimary) MaterialTheme.typography.displaySmall else MaterialTheme.typography.headlineLarge,
+                    fontWeight = if (isPrimary) FontWeight.Bold else FontWeight.SemiBold,
+                    color = if (isPrimary) colors.textPrimary else colors.textPrimary.copy(alpha = 0.85f)
+                )
+                Text(
+                    text = suffix,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = colors.textSecondary.copy(alpha = 0.7f),
+                    modifier = Modifier.padding(bottom = 2.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun RangeCard(
+    high: Double,
+    low: Double,
+    currentPrice: Double
+) {
+    val colors = LocalCryptoColors.current
+    val spacing = LocalCryptoSpacing.current
+    
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .background(colors.cardBackground.copy(alpha = 0.4f))
+            .border(
+                width = 1.dp,
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        colors.accentBlue400.copy(alpha = 0.3f),
+                        colors.accentPurple400.copy(alpha = 0.3f)
+                    )
+                ),
+                shape = RoundedCornerShape(24.dp)
             )
+            .padding(spacing.lg)
+    ) {
+        Column {
+            Text(
+                text = "24h Range",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                color = colors.textTertiary.copy(alpha = 0.8f)
+            )
+            Spacer(modifier = Modifier.height(spacing.lg))
+            
+            // Range indicator bar with current price dot
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(colors.textSecondary.copy(alpha = 0.15f))
+            ) {
+                // Calculate position percentage
+                val range = (high - low).coerceAtLeast(0.000001)
+                val position = ((currentPrice - low) / range).coerceIn(0.0, 1.0).toFloat()
+                
+                // The dot
+                val dotColor = when {
+                    position > 0.85f -> colors.profit.copy(alpha = 0.9f)
+                    position < 0.15f -> colors.loss.copy(alpha = 0.9f)
+                    else -> Color.White
+                }
+                
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(position)
+                        .padding(end = 1.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .size(7.dp)
+                            .background(dotColor, RoundedCornerShape(4.dp))
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(spacing.sm))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = "Low",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = colors.textSecondary
+                    )
+                    Spacer(modifier = Modifier.height(spacing.xs))
+                    Text(
+                        text = "\$${formatPrice(low)}",
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.loss.copy(alpha = 0.85f)
+                    )
+                }
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        text = "High",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = colors.textSecondary
+                    )
+                    Spacer(modifier = Modifier.height(spacing.xs))
+                    Text(
+                        text = "\$${formatPrice(high)}",
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.profit.copy(alpha = 0.85f)
+                    )
+                }
+            }
         }
     }
 }
@@ -647,26 +769,29 @@ private fun PriceAlertButton(onClick: () -> Unit) {
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp),
+            .height(42.dp),
         shape = RoundedCornerShape(12.dp),
         border = ButtonDefaults.outlinedButtonBorder(enabled = true).copy(
             brush = Brush.linearGradient(
-                colors = listOf(colors.accentBlue400, colors.accentPurple400)
+                colors = listOf(
+                    colors.textSecondary.copy(alpha = 0.3f),
+                    colors.textSecondary.copy(alpha = 0.3f)
+                )
             )
         )
     ) {
         Icon(
             imageVector = Icons.Default.Notifications,
             contentDescription = null,
-            tint = colors.accentBlue400,
-            modifier = Modifier.size(20.dp)
+            tint = colors.textSecondary,
+            modifier = Modifier.size(18.dp)
         )
         Spacer(modifier = Modifier.width(spacing.sm))
         Text(
             text = "Set Price Alert",
             style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = colors.textPrimary
+            fontWeight = FontWeight.Normal,
+            color = colors.textSecondary
         )
     }
 }
@@ -818,44 +943,62 @@ private fun ActionButtons(
                 },
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "Buy",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "↗",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White.copy(alpha = 0.75f)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = "Buy",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            }
         }
         
-        // Sell button with rose gradient and glow
+        // Sell button (outlined/secondary)
         Box(
             modifier = Modifier
                 .weight(1f)
                 .height(56.dp)
-                .shadow(
-                    elevation = if (canSell) 12.dp else 0.dp,
-                    shape = RoundedCornerShape(16.dp),
-                    spotColor = if (canSell) RoseStart.copy(alpha = 0.4f) else Color.Transparent
-                )
                 .clip(RoundedCornerShape(16.dp))
-                .background(
-                    brush = if (canSell) {
-                        Brush.horizontalGradient(colors = listOf(RoseStart, RoseEnd))
-                    } else {
-                        Brush.horizontalGradient(colors = listOf(colors.buttonDisabled, colors.buttonDisabled))
-                    }
+                .border(
+                    width = 2.dp,
+                    color = if (canSell) colors.loss.copy(alpha = 0.5f) else colors.textSecondary.copy(alpha = 0.2f),
+                    shape = RoundedCornerShape(16.dp)
                 )
+                .background(colors.backgroundPrimary)
                 .clickable(enabled = canSell) {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     onSellClick()
                 },
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "Sell",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = if (canSell) Color.White else colors.textSecondary
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "↘",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = (if (canSell) colors.loss else colors.textSecondary).copy(alpha = 0.75f)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = "Sell",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = if (canSell) colors.loss else colors.textSecondary
+                )
+            }
         }
     }
 }
@@ -870,101 +1013,62 @@ private fun CoinDetailLoadingContent() {
             .fillMaxSize()
             .padding(horizontal = spacing.md)
     ) {
-        // Header skeleton
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            SkeletonBox(
-                modifier = Modifier.size(64.dp),
-                shape = RoundedCornerShape(16.dp)
-            )
-            Spacer(modifier = Modifier.width(spacing.md))
-            Column {
-                SkeletonText(width = 120.dp, height = 28.dp)
-                Spacer(modifier = Modifier.height(spacing.xs))
-                SkeletonText(width = 60.dp, height = 16.dp)
-            }
-        }
-        
-        Spacer(modifier = Modifier.height(spacing.lg))
-        
-        // Price card skeleton
+        // Integrated Card Skeleton (Matches new layout)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(20.dp))
                 .background(colors.cardBackground)
-                .padding(24.dp)
+                .padding(spacing.lg)
         ) {
             Column {
-                SkeletonText(width = 100.dp, height = 16.dp)
+                // Identity row shimmer
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    SkeletonBox(modifier = Modifier.size(40.dp), shape = RoundedCornerShape(10.dp))
+                    Spacer(modifier = Modifier.width(spacing.md))
+                    Column {
+                        SkeletonBox(modifier = Modifier.size(120.dp, 20.dp), shape = RoundedCornerShape(4.dp))
+                        Spacer(modifier = Modifier.height(6.dp))
+                        SkeletonBox(modifier = Modifier.size(60.dp, 12.dp), shape = RoundedCornerShape(3.dp))
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(spacing.lg))
+                
+                // Price shimmer
+                SkeletonBox(modifier = Modifier.size(100.dp, 12.dp), shape = RoundedCornerShape(3.dp))
                 Spacer(modifier = Modifier.height(spacing.sm))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    SkeletonText(width = 150.dp, height = 36.dp)
-                    SkeletonBox(
-                        modifier = Modifier.size(80.dp, 32.dp),
-                        shape = RoundedCornerShape(12.dp)
-                    )
+                Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
+                    SkeletonBox(modifier = Modifier.size(160.dp, 40.dp), shape = RoundedCornerShape(8.dp))
+                    SkeletonBox(modifier = Modifier.size(70.dp, 30.dp), shape = RoundedCornerShape(10.dp))
                 }
+                
                 Spacer(modifier = Modifier.height(spacing.md))
-                SkeletonBox(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp),
-                    shape = RoundedCornerShape(8.dp)
-                )
+                
+                // Timeframe shimmer
+                SkeletonBox(modifier = Modifier.fillMaxWidth().height(40.dp), shape = RoundedCornerShape(8.dp))
+                
                 Spacer(modifier = Modifier.height(spacing.md))
-                SkeletonBox(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    shape = RoundedCornerShape(8.dp)
-                )
+                
+                // Chart shimmer
+                SkeletonBox(modifier = Modifier.fillMaxWidth().height(200.dp), shape = RoundedCornerShape(8.dp))
             }
         }
         
         Spacer(modifier = Modifier.height(spacing.md))
         
-        // Quick stats skeleton
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(spacing.sm)
-        ) {
+        // Detailed stats skeleton
+        Column(verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
             repeat(3) {
-                SkeletonBox(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(60.dp),
-                    shape = RoundedCornerShape(12.dp)
-                )
-            }
-        }
-        
-        Spacer(modifier = Modifier.height(spacing.md))
-        
-        // Stats grid skeleton
-        repeat(2) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(spacing.sm)
-            ) {
-                repeat(2) {
-                    SkeletonBox(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(80.dp),
-                        shape = RoundedCornerShape(16.dp)
-                    )
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
+                    SkeletonBox(modifier = Modifier.weight(1f).height(100.dp), shape = RoundedCornerShape(16.dp))
+                    SkeletonBox(modifier = Modifier.weight(1f).height(100.dp), shape = RoundedCornerShape(16.dp))
                 }
             }
-            Spacer(modifier = Modifier.height(spacing.sm))
         }
     }
 }
+
 
 @Composable
 private fun OfflineBanner(modifier: Modifier = Modifier) {
@@ -1013,6 +1117,17 @@ private fun formatLargeNumber(number: Double): String {
         number >= 1_000_000 -> "${formatDecimal(number / 1_000_000, 2)}M"
         number >= 1_000 -> "${formatDecimal(number / 1_000, 2)}K"
         else -> formatDecimal(number, 2)
+    }
+}
+
+
+private fun formatLargeNumberWithSuffix(text: String): Pair<String, String> {
+    return when {
+        text.contains("T") -> text.substringBefore("T") to "T"
+        text.contains("B") -> text.substringBefore("B") to "B"
+        text.contains("M") -> text.substringBefore("M") to "M"
+        text.contains("K") -> text.substringBefore("K") to "K"
+        else -> text to ""
     }
 }
 

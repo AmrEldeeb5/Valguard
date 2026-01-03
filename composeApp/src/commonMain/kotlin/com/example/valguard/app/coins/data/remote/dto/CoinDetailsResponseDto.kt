@@ -19,8 +19,8 @@ data class CoinDetailsDto(
     val symbol: String,
     val name: String,
     val iconUrl: String,
-    val price: String,  // API returns price as String
+    val price: String?,  // Nullable to handle API inconsistencies
     val rank: Int,
-    val change: String  // API returns change as String
+    val change: String?  // Nullable to handle API inconsistencies
 )
 

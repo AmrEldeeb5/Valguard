@@ -3,23 +3,24 @@ package com.example.valguard.app.coindetail.presentation
 import com.example.valguard.app.coindetail.domain.ChartTimeframe
 import com.example.valguard.app.coindetail.domain.CoinDetailData
 import com.example.valguard.app.coindetail.domain.CoinHoldings
+import com.example.valguard.app.components.ChartPoint
 import com.example.valguard.app.core.util.UiState
 
 data class CoinDetailState(
     val coinId: String = "",
     val coinData: UiState<CoinDetailData> = UiState.Loading,
-    val chartData: Map<ChartTimeframe, List<Float>> = emptyMap(),
+    val chartData: Map<ChartTimeframe, UiState<List<ChartPoint>>> = emptyMap(),
     val holdings: CoinHoldings? = null,
     val selectedTimeframe: ChartTimeframe = ChartTimeframe.DAY_1,
     val isInWatchlist: Boolean = false,
     val isOffline: Boolean = false,
-    val isRefreshing: Boolean = false,
-    val showAlertModal: Boolean = false
+    val showAlertModal: Boolean = false,
+    val isPullRefreshing: Boolean = false // Only true when user explicitly pulls to refresh
 ) {
     val hasHoldings: Boolean get() = holdings != null && holdings.amountOwned > 0
     
-    val currentChartData: List<Float>
-        get() = chartData[selectedTimeframe] ?: emptyList()
+    val currentChartState: UiState<List<ChartPoint>>
+        get() = chartData[selectedTimeframe] ?: UiState.Loading
 }
 
 sealed class CoinDetailEvent {

@@ -101,7 +101,7 @@ fun ExpandableCoinCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(shape)
-            .background(colors.cardBackground)
+            .background(colors.cardBackground.copy(alpha = 0.4f))
             .border(1.dp, colors.cardBorder, shape)
             .clickable(onClick = onCardClick)
     ) {

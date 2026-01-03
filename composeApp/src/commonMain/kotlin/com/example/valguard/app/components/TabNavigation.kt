@@ -66,7 +66,7 @@ fun TabNavigation(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .background(colors.cardBackground, RoundedCornerShape(12.dp))
+            .background(colors.cardBackground.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
             .padding(4.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
@@ -113,7 +113,7 @@ private fun TabItem(
         )
     } else {
         Modifier.background(
-            color = colors.cardBackground.copy(alpha = 0.3f),
+            color = colors.cardBackground.copy(alpha = 0.4f),
             shape = shape
         )
     }

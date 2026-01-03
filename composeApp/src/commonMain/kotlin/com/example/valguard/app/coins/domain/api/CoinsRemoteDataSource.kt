@@ -10,7 +10,7 @@ interface CoinsRemoteDataSource {
 
     suspend fun getListOfCoins(): Result<CoinResponseDto, DataError.Remote>
 
-    suspend fun getCoinPriceHistory(coinId: String): Result<CoinPriceHistoryResponseDto, DataError.Remote>
+    suspend fun getCoinPriceHistory(coinId: String, timePeriod: String): Result<CoinPriceHistoryResponseDto, DataError.Remote>
 
     suspend fun getCoinById(coinId: String): Result<CoinDetailsResponseDto, DataError.Remote>
 }

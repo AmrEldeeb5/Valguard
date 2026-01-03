@@ -1,5 +1,9 @@
 package com.example.valguard.app.compare.presentation
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,7 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,13 +38,20 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -47,7 +59,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.example.valguard.app.compare.domain.SavedComparison
 import com.example.valguard.app.components.ErrorState
-import com.example.valguard.app.components.ScreenHeader
 import com.example.valguard.app.components.SkeletonCard
 import com.example.valguard.app.core.util.UiState
 import com.example.valguard.theme.LocalCryptoColors
@@ -56,21 +67,36 @@ import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.pow
 
 @Composable
-fun CompareScreen(
-    onBack: () -> Unit
-) {
+fun CompareScreen() {
     val viewModel = koinViewModel<CompareViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val colors = LocalCryptoColors.current
     val spacing = LocalCryptoSpacing.current
     
-    Scaffold(
-        topBar = {
-            ScreenHeader(
-                title = "Compare Coins",
-                subtitle = "Side-by-side analysis",
-                onBackClick = onBack
+    val snackbarHostState = remember { SnackbarHostState() }
+    
+    // Handle Snackbar from state
+    LaunchedEffect(state.showSnackbar) {
+        val message = state.snackbarMessage
+        if (state.showSnackbar && message != null) {
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = SnackbarDuration.Short
             )
+            viewModel.onEvent(CompareEvent.DismissSnackbar)
+        }
+    }
+    
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { data ->
+                Snackbar(
+                    snackbarData = data,
+                    containerColor = colors.accentBlue500,
+                    contentColor = androidx.compose.ui.graphics.Color.White,
+                    shape = RoundedCornerShape(12.dp)
+                )
+            }
         },
         containerColor = colors.backgroundPrimary
     ) { paddingValues ->
@@ -90,8 +116,7 @@ fun CompareScreen(
                     coin1 = state.coin1,
                     coin2 = state.coin2,
                     onSelectCoin1 = { viewModel.onEvent(CompareEvent.ShowCoinSelector(CoinSelectorTarget.COIN_1)) },
-                    onSelectCoin2 = { viewModel.onEvent(CompareEvent.ShowCoinSelector(CoinSelectorTarget.COIN_2)) },
-                    onSwap = { viewModel.onEvent(CompareEvent.SwapCoins) }
+                    onSelectCoin2 = { viewModel.onEvent(CompareEvent.ShowCoinSelector(CoinSelectorTarget.COIN_2)) }
                 )
             }
             
@@ -118,9 +143,31 @@ fun CompareScreen(
                         Button(
                             onClick = { viewModel.onEvent(CompareEvent.SaveComparison) },
                             modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = colors.accentBlue400)
+                            colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.ui.graphics.Color.Transparent),
+                            contentPadding = PaddingValues(0.dp) // Handle padding in box for gradient
                         ) {
-                            Text("Save Comparison")
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(ButtonDefaults.MinHeight)
+                                    .background(
+                                        Brush.horizontalGradient(
+                                            colors = listOf(colors.accentBlue400, colors.accentPurple400)
+                                        ),
+                                        shape = ButtonDefaults.shape
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        imageVector = Icons.Default.Star,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(spacing.xs))
+                                    Text("Save Comparison")
+                                }
+                            }
                         }
                     }
                 }
@@ -153,6 +200,7 @@ fun CompareScreen(
 @Composable
 private fun CompareHeader() {
     val colors = LocalCryptoColors.current
+    val spacing = LocalCryptoSpacing.current
     
     Column {
         Text(
@@ -162,9 +210,24 @@ private fun CompareHeader() {
             color = colors.textPrimary
         )
         Text(
-            text = "Compare metrics between two cryptocurrencies",
+            text = "Real-time market comparison",
             style = MaterialTheme.typography.bodyMedium,
-            color = colors.textSecondary
+            color = colors.textSecondary.copy(alpha = 0.8f)
+        )
+        
+        Spacer(modifier = Modifier.height(spacing.sm))
+        
+        // Identity Divider
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.15f)
+                .height(3.dp)
+                .clip(RoundedCornerShape(2.dp))
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(colors.accentBlue400, colors.accentPurple400)
+                    )
+                )
         )
     }
 }
@@ -174,15 +237,13 @@ private fun CoinSelectorRow(
     coin1: CoinSlot?,
     coin2: CoinSlot?,
     onSelectCoin1: () -> Unit,
-    onSelectCoin2: () -> Unit,
-    onSwap: () -> Unit
+    onSelectCoin2: () -> Unit
 ) {
     val colors = LocalCryptoColors.current
-    val spacing = LocalCryptoSpacing.current
-    
+
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(spacing.sm),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         CoinSelectorCard(
@@ -192,20 +253,9 @@ private fun CoinSelectorRow(
             modifier = Modifier.weight(1f)
         )
         
-        IconButton(
-            onClick = onSwap,
-            enabled = coin1 != null && coin2 != null
-        ) {
-            Icon(
-                imageVector = Icons.Default.Refresh,
-                contentDescription = "Swap coins",
-                tint = if (coin1 != null && coin2 != null) colors.textPrimary else colors.textSecondary
-            )
-        }
-        
         CoinSelectorCard(
             coin = coin2,
-            borderColor = colors.profit,
+            borderColor = colors.accentPurple400,
             onClick = onSelectCoin2,
             modifier = Modifier.weight(1f)
         )
@@ -222,55 +272,111 @@ private fun CoinSelectorCard(
     val colors = LocalCryptoColors.current
     val spacing = LocalCryptoSpacing.current
     
+    val shape = RoundedCornerShape(24.dp)
+    
+    // Selection micro-animation
+    val isSelected = coin != null
+    val scale by animateFloatAsState(
+        targetValue = if (isSelected) 1.02f else 1f,
+        animationSpec = spring(stiffness = Spring.StiffnessLow),
+        label = "coinScale"
+    )
+    
+    val glowAlpha by animateFloatAsState(
+        targetValue = if (isSelected) 0.15f else 0.05f,
+        animationSpec = tween(500),
+        label = "glowAlpha"
+    )
+    
     Box(
         modifier = modifier
-            .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(16.dp),
-                spotColor = borderColor.copy(alpha = 0.3f)
+            .scale(scale)
+            .clip(shape)
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        colors.cardBackground.copy(alpha = 0.6f),
+                        colors.cardBackground.copy(alpha = 0.4f)
+                    )
+                )
             )
-            .clip(RoundedCornerShape(16.dp))
-            .border(2.dp, borderColor, RoundedCornerShape(16.dp))
-            .background(colors.cardBackground)
+            .border(
+                width = 1.dp,
+                color = borderColor.copy(alpha = glowAlpha * 3),
+                shape = shape
+            )
             .clickable(onClick = onClick)
-            .padding(spacing.lg),
-        contentAlignment = Alignment.Center
+            .padding(12.dp),
+        contentAlignment = Alignment.CenterStart
     ) {
         if (coin != null) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(spacing.sm)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                AsyncImage(
-                    model = coin.iconUrl,
-                    contentDescription = "${coin.name} icon",
-                    modifier = Modifier.size(48.dp)
-                )
-                Text(
-                    text = coin.symbol.uppercase(),
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = colors.textPrimary
-                )
-                Text(
-                    text = coin.name,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = colors.textSecondary
-                )
+                // Icon Box with accent glow
+                Box(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(
+                            Brush.linearGradient(
+                                colors = listOf(borderColor.copy(alpha = 0.2f), borderColor.copy(alpha = 0.05f))
+                            )
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AsyncImage(
+                        model = coin.iconUrl,
+                        contentDescription = "${coin.name} icon",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+                
+                Column {
+                    Text(
+                        text = coin.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textPrimary
+                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = coin.symbol.uppercase(),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = colors.textSecondary.copy(alpha = 0.8f)
+                        )
+                        Spacer(modifier = Modifier.width(spacing.xs))
+                        // Mini price context
+                        Text(
+                            text = "$${formatPrice(coin.price)}",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Medium,
+                            color = colors.textSecondary.copy(alpha = 0.5f)
+                        )
+                    }
+                }
             }
         } else {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(spacing.sm)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Select coin",
-                    tint = colors.textSecondary,
-                    modifier = Modifier.size(48.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(colors.backgroundSecondary),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Select coin",
+                        tint = colors.textSecondary
+                    )
+                }
                 Text(
-                    text = "Select Coin",
+                    text = "Select",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Medium,
                     color = colors.textSecondary
@@ -289,70 +395,191 @@ private fun ComparisonTable(
     val colors = LocalCryptoColors.current
     val spacing = LocalCryptoSpacing.current
     
+    val shape = RoundedCornerShape(24.dp)
+    
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(
-                elevation = 10.dp,
-                shape = RoundedCornerShape(16.dp),
-                spotColor = colors.accentBlue400.copy(alpha = 0.2f)
+            .clip(shape)
+            .background(colors.cardBackground.copy(alpha = 0.4f))
+            .border(
+                width = 1.dp,
+                color = colors.border.copy(alpha = 0.1f),
+                shape = shape
             )
-            .clip(RoundedCornerShape(16.dp))
-            .background(colors.cardBackground)
-            .padding(spacing.lg)
+            .padding(spacing.xl)
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(spacing.md)) {
+        Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
+            val metrics: List<Pair<String, @Composable () -> Unit>> = listOf(
+                "Current Price" to { 
+                    MetricValues(formatPrice(coin1.price), formatPrice(coin2.price), comparisonData.priceWinner)
+                },
+                "24h Change" to { 
+                    MetricValues(
+                        "${formatPercentage(coin1.change24h)}%", 
+                        "${formatPercentage(coin2.change24h)}%", 
+                        comparisonData.change24hWinner,
+                        isChange = true,
+                        pos1 = coin1.change24h > 0,
+                        pos2 = coin2.change24h > 0
+                    )
+                },
+                "Market Cap" to { 
+                    MetricValues(formatLargeNumber(coin1.marketCap), formatLargeNumber(coin2.marketCap), comparisonData.marketCapWinner)
+                },
+                "24h Volume" to { 
+                    MetricValues(formatLargeNumber(coin1.volume24h), formatLargeNumber(coin2.volume24h), comparisonData.volumeWinner)
+                },
+                "Market Rank" to { 
+                    MetricValues("#${coin1.marketCapRank}", "#${coin2.marketCapRank}", comparisonData.rankWinner)
+                }
+            )
+            
+            metrics.forEachIndexed { index, (label, content) ->
+                ComparisonRow(label = label, content = content)
+
+                if (index < metrics.size - 1) {
+                    HorizontalDivider(
+                        color = colors.border.copy(alpha = 0.05f),
+                        thickness = 1.dp,
+                        modifier = Modifier.padding(vertical = spacing.md)
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(spacing.lg))
+            
+            // Quick Verdict Row
+            QuickVerdictRow(coin1, coin2, comparisonData)
+        }
+    }
+}
+
+@Composable
+private fun QuickVerdictRow(
+    coin1: CoinSlot,
+    coin2: CoinSlot,
+    comparisonData: ComparisonData
+) {
+    val colors = LocalCryptoColors.current
+    val spacing = LocalCryptoSpacing.current
+    
+    val verdict = remember(coin1, coin2) {
+        generateVerdict(coin1, coin2, comparisonData)
+    }
+    
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(colors.accentBlue400.copy(alpha = 0.05f), RoundedCornerShape(12.dp))
+            .border(1.dp, colors.accentBlue400.copy(alpha = 0.1f), RoundedCornerShape(12.dp))
+            .padding(spacing.md)
+    ) {
+        Row(verticalAlignment = Alignment.Top) {
+            Icon(
+                imageVector = Icons.Default.Add, // Placeholder for "Analytics" icon
+                contentDescription = null,
+                tint = colors.accentBlue400,
+                modifier = Modifier.size(16.dp).padding(top = 2.dp)
+            )
+            Spacer(modifier = Modifier.width(spacing.sm))
             Text(
-                text = "Comparison",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = colors.textPrimary,
-                modifier = Modifier.padding(bottom = spacing.sm)
+                text = verdict,
+                style = MaterialTheme.typography.bodySmall,
+                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
+                color = colors.textPrimary.copy(alpha = 0.9f),
+                lineHeight = androidx.compose.ui.unit.TextUnit.Unspecified
+            )
+        }
+    }
+}
+
+private fun generateVerdict(coin1: CoinSlot, coin2: CoinSlot, data: ComparisonData): String {
+    val leadsLiquidity = if (data.marketCapWinner == MetricWinner.COIN_1) coin1.symbol else coin2.symbol
+    val leadsGrowth = if (data.change24hWinner == MetricWinner.COIN_1) coin1.symbol else coin2.symbol
+    
+    return "Quick Verdict: ${leadsLiquidity.uppercase()} leads in market dominance, while ${leadsGrowth.uppercase()} shows stronger price momentum today."
+}
+
+@Composable
+private fun MetricValues(
+    value1: String,
+    value2: String,
+    winner: MetricWinner,
+    isChange: Boolean = false,
+    pos1: Boolean = true,
+    pos2: Boolean = true
+) {
+    val colors = LocalCryptoColors.current
+    val spacing = LocalCryptoSpacing.current
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(spacing.xl),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        MetricValueCell(
+            value = value1,
+            isWinner = winner == MetricWinner.COIN_1,
+            color = if (isChange) (if (pos1) colors.profit else colors.loss) else colors.textPrimary,
+            modifier = Modifier.weight(1f)
+        )
+        MetricValueCell(
+            value = value2,
+            isWinner = winner == MetricWinner.COIN_2,
+            color = if (isChange) (if (pos2) colors.profit else colors.loss) else colors.textPrimary,
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun MetricValueCell(
+    value: String,
+    isWinner: Boolean,
+    color: androidx.compose.ui.graphics.Color,
+    modifier: Modifier = Modifier
+) {
+    val colors = LocalCryptoColors.current
+
+    val animatedAlpha by animateFloatAsState(
+        targetValue = if (isWinner) 1f else 0.6f,
+        animationSpec = tween(500),
+        label = "winnerAlpha"
+    )
+
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .then(
+                if (isWinner) {
+                    Modifier.background(colors.accentBlue400.copy(alpha = 0.08f))
+                } else Modifier
+            )
+            .padding(vertical = 4.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = value,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = if (isWinner) FontWeight.ExtraBold else FontWeight.Bold,
+                color = color.copy(alpha = animatedAlpha),
+                textAlign = TextAlign.Center
             )
             
-            ComparisonRow(
-                label = "Current Price",
-                value1 = formatPrice(coin1.price),
-                value2 = formatPrice(coin2.price),
-                winner = comparisonData.priceWinner,
-                difference = "${formatPercentage(comparisonData.priceDifference)}%"
-            )
-            HorizontalDivider(color = colors.backgroundSecondary, thickness = 1.dp)
-            
-            ComparisonRow(
-                label = "24h Change",
-                value1 = "${formatPercentage(coin1.change24h)}%",
-                value2 = "${formatPercentage(coin2.change24h)}%",
-                winner = comparisonData.change24hWinner,
-                difference = "${formatPercentage(comparisonData.change24hDifference)}%"
-            )
-            HorizontalDivider(color = colors.backgroundSecondary, thickness = 1.dp)
-            
-            ComparisonRow(
-                label = "Market Cap",
-                value1 = formatLargeNumber(coin1.marketCap),
-                value2 = formatLargeNumber(coin2.marketCap),
-                winner = comparisonData.marketCapWinner,
-                difference = "${formatPercentage(comparisonData.marketCapDifference)}%"
-            )
-            HorizontalDivider(color = colors.backgroundSecondary, thickness = 1.dp)
-            
-            ComparisonRow(
-                label = "24h Volume",
-                value1 = formatLargeNumber(coin1.volume24h),
-                value2 = formatLargeNumber(coin2.volume24h),
-                winner = comparisonData.volumeWinner,
-                difference = "${formatPercentage(comparisonData.volumeDifference)}%"
-            )
-            HorizontalDivider(color = colors.backgroundSecondary, thickness = 1.dp)
-            
-            ComparisonRow(
-                label = "Market Rank",
-                value1 = "#${coin1.marketCapRank}",
-                value2 = "#${coin2.marketCapRank}",
-                winner = comparisonData.rankWinner,
-                difference = null
-            )
+            if (isWinner) {
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(
+                    imageVector = Icons.Default.Add, // Placeholder for Crown or Arrow
+                    contentDescription = null,
+                    tint = colors.accentBlue400,
+                    modifier = Modifier.size(12.dp)
+                )
+            }
         }
     }
 }
@@ -360,56 +587,24 @@ private fun ComparisonTable(
 @Composable
 private fun ComparisonRow(
     label: String,
-    value1: String,
-    value2: String,
-    winner: MetricWinner,
-    difference: String?
+    content: @Composable () -> Unit
 ) {
     val colors = LocalCryptoColors.current
-    val spacing = LocalCryptoSpacing.current
     
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = spacing.xs),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = value1,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = if (winner == MetricWinner.COIN_1) FontWeight.Bold else FontWeight.Normal,
-            color = if (winner == MetricWinner.COIN_1) colors.profit else colors.textPrimary,
-            modifier = Modifier.weight(1f)
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = colors.textSecondary,
+            modifier = Modifier.weight(1.2f)
         )
         
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = colors.textSecondary,
-                textAlign = TextAlign.Center
-            )
-            if (difference != null) {
-                Text(
-                    text = difference,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = colors.textTertiary,
-                    textAlign = TextAlign.Center
-                )
-            }
+        Box(modifier = Modifier.weight(2f)) {
+            content()
         }
-        
-        Text(
-            text = value2,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = if (winner == MetricWinner.COIN_2) FontWeight.Bold else FontWeight.Normal,
-            color = if (winner == MetricWinner.COIN_2) colors.profit else colors.textPrimary,
-            textAlign = TextAlign.End,
-            modifier = Modifier.weight(1f)
-        )
     }
 }
 
@@ -486,8 +681,8 @@ private fun SavedComparisonCard(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(colors.cardBackground)
+            .clip(RoundedCornerShape(16.dp))
+            .background(colors.cardBackground.copy(alpha = 0.5f))
             .clickable(onClick = onLoad)
             .padding(spacing.md)
     ) {
@@ -497,43 +692,65 @@ private fun SavedComparisonCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(spacing.sm),
+                horizontalArrangement = Arrangement.spacedBy(spacing.md),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AsyncImage(
-                    model = comparison.coin1IconUrl,
-                    contentDescription = null,
-                    modifier = Modifier.size(32.dp)
-                )
-                Text(
-                    text = "vs",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = colors.textSecondary
-                )
-                AsyncImage(
-                    model = comparison.coin2IconUrl,
-                    contentDescription = null,
-                    modifier = Modifier.size(32.dp)
-                )
+                // Stacked Icons Pair
+                Box(modifier = Modifier.size(48.dp)) {
+                    AsyncImage(
+                        model = comparison.coin1IconUrl,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .align(Alignment.TopStart)
+                    )
+                    AsyncImage(
+                        model = comparison.coin2IconUrl,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .align(Alignment.BottomEnd)
+                            .border(2.dp, colors.cardBackground, RoundedCornerShape(8.dp))
+                    )
+                }
+                
                 Column {
                     Text(
-                        text = "${comparison.coin1Symbol} vs ${comparison.coin2Symbol}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Medium,
+                        text = "${comparison.coin1Symbol.uppercase()} / ${comparison.coin2Symbol.uppercase()}",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
                         color = colors.textPrimary
+                    )
+                    Text(
+                        text = "Saved ${formatSavedTime(comparison.savedAt)}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = colors.textSecondary.copy(alpha = 0.6f)
                     )
                 }
             }
             
-            IconButton(onClick = onDelete) {
+            IconButton(
+                onClick = onDelete,
+                modifier = Modifier
+                    .size(32.dp)
+                    .background(colors.loss.copy(alpha = 0.1f), RoundedCornerShape(8.dp))
+            ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Delete",
-                    tint = colors.loss
+                    tint = colors.loss,
+                    modifier = Modifier.size(16.dp)
                 )
             }
         }
     }
+}
+
+private fun formatSavedTime(@Suppress("UNUSED_PARAMETER") timestamp: Long): String {
+    // Very simple mock time-ago (in real app, use kotlinx-datetime)
+    return "just now" 
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

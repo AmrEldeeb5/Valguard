@@ -6,7 +6,8 @@ import com.example.valguard.app.coindetail.domain.ChartTimeframe
 import com.example.valguard.app.coindetail.domain.CoinDetailData
 import com.example.valguard.app.coindetail.domain.CoinHoldings
 import com.example.valguard.app.coins.domain.usecase.GetCoinDetailsUseCase
-import com.example.valguard.app.core.domain.onError
+import com.example.valguard.app.coins.domain.usecase.GetCoinPriceHistoryUseCase
+import com.example.valguard.app.components.ChartPoint
 import com.example.valguard.app.core.domain.onSuccess
 import com.example.valguard.app.core.util.UiState
 import com.example.valguard.app.portfolio.domain.PortfolioRepository
@@ -16,12 +17,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlin.math.sin
-import kotlin.random.Random
 
 class CoinDetailViewModel(
     private val getCoinDetailsUseCase: GetCoinDetailsUseCase,
+    private val getCoinPriceHistoryUseCase: GetCoinPriceHistoryUseCase,
     private val portfolioRepository: PortfolioRepository,
     private val watchlistRepository: WatchlistRepository
 ) : ViewModel() {
@@ -29,8 +28,6 @@ class CoinDetailViewModel(
     private val _state = MutableStateFlow(CoinDetailState())
     val state: StateFlow<CoinDetailState> = _state.asStateFlow()
     
-    // Random seed for consistent chart data per coin
-    private var chartSeed: Long = Clock.System.now().toEpochMilliseconds()
     
     fun onEvent(event: CoinDetailEvent) {
         when (event) {
@@ -45,106 +42,122 @@ class CoinDetailViewModel(
         }
     }
     
-    private fun loadCoin(coinId: String) {
-        _state.update { it.copy(coinId = coinId, coinData = UiState.Loading, isRefreshing = false) }
-        chartSeed = coinId.hashCode().toLong()
+    private fun loadCoin(coinId: String, isRefresh: Boolean = false) {
+        // Set Loading state - but keep existing data if refreshing
+        _state.update { 
+            it.copy(
+                coinId = coinId, 
+                coinData = if (isRefresh && it.coinData is UiState.Success) it.coinData else UiState.Loading
+            ) 
+        }
         
         viewModelScope.launch {
-            getCoinDetailsUseCase.execute(coinId)
-                .onSuccess { coinModel ->
-                    // Generate mock rank based on coin id hash (consistent per coin)
-                    val mockRank = (coinModel.coin.id.hashCode().and(0x7FFFFFFF) % 100) + 1
-                    
-                    val coinDetailData = CoinDetailData(
-                        id = coinModel.coin.id,
-                        name = coinModel.coin.name,
-                        symbol = coinModel.coin.symbol,
-                        iconUrl = coinModel.coin.iconUrl,
-                        price = coinModel.price,
-                        change24h = coinModel.change,
-                        marketCapRank = mockRank, // Mock rank - would come from detailed API
-                        volume24h = coinModel.price * 1_000_000 * Random(chartSeed).nextDouble(0.5, 2.0),
-                        high24h = coinModel.price * 1.05,
-                        low24h = coinModel.price * 0.95,
-                        marketCap = coinModel.price * 19_500_000, // Mock circulating supply
-                        circulatingSupply = 19_500_000.0, // Mock for BTC-like
-                        allTimeHigh = coinModel.price * 1.5, // Mock ATH
-                        allTimeLow = coinModel.price * 0.1, // Mock ATL (10% of current)
-                        maxSupply = 21_000_000.0, // Mock max supply (BTC-like)
-                        description = "A decentralized digital currency that enables instant payments to anyone, anywhere in the world." // Mock description
-                    )
-                    
-                    // Generate chart data for all timeframes
-                    val chartData = generateAllChartData(coinModel.price)
-                    
-                    _state.update { 
-                        it.copy(
-                            coinData = UiState.Success(coinDetailData),
-                            chartData = chartData,
-                            isRefreshing = false
-                        ) 
+            // Use runCatching to guarantee all code paths exit Loading state
+            runCatching {
+                getCoinDetailsUseCase.execute(coinId)
+            }.onSuccess { result ->
+                when (result) {
+                    is com.example.valguard.app.core.domain.Result.Success -> {
+                        val coinModel = result.data
+                        // Generate mock rank based on coin id hash (consistent per coin)
+                        val mockRank = (coinModel.coin.id.hashCode().and(0x7FFFFFFF) % 100) + 1
+                        
+                        val coinDetailData = CoinDetailData(
+                            id = coinModel.coin.id,
+                            name = coinModel.coin.name,
+                            symbol = coinModel.coin.symbol,
+                            iconUrl = coinModel.coin.iconUrl,
+                            price = coinModel.price,
+                            change24h = coinModel.change,
+                            marketCapRank = mockRank,
+                            volume24h = coinModel.price * 1_000_000,
+                            high24h = coinModel.price * 1.05,
+                            low24h = coinModel.price * 0.95,
+                            marketCap = coinModel.price * 19_500_000,
+                            circulatingSupply = 19_500_000.0,
+                            allTimeHigh = coinModel.price * 1.5,
+                            allTimeLow = coinModel.price * 0.1,
+                            maxSupply = 21_000_000.0,
+                            description = "A decentralized digital currency that enables instant payments to anyone, anywhere in the world."
+                        )
+                        
+                        // Update state to Success and clear pull refresh flag
+                        _state.update { it.copy(coinData = UiState.Success(coinDetailData), isOffline = false, isPullRefreshing = false) }
+                        
+                        // Fetch chart data for current timeframe
+                        fetchPriceHistory(coinModel.coin.id, _state.value.selectedTimeframe)
+                        
+                        // Load holdings after coin data is loaded
+                        loadHoldings(coinId, coinModel.price)
                     }
-                    
-                    // Load holdings after coin data is loaded
-                    loadHoldings(coinId, coinModel.price)
-                }
-                .onError { error ->
-                    _state.update { 
-                        it.copy(
-                            coinData = UiState.Error("Failed to load coin details"),
-                            isOffline = true,
-                            isRefreshing = false
-                        ) 
+                    is com.example.valguard.app.core.domain.Result.Failure -> {
+                        _state.update { 
+                            it.copy(
+                                coinData = UiState.Error("Failed to load coin details"),
+                                isOffline = true,
+                                isPullRefreshing = false
+                            ) 
+                        }
                     }
                 }
+            }.onFailure { throwable ->
+                // Handles exceptions, cancellation, etc. - always exits Loading and clears refresh
+                _state.update { 
+                    it.copy(
+                        coinData = UiState.Error(throwable.message ?: "An error occurred"),
+                        isOffline = true,
+                        isPullRefreshing = false
+                    ) 
+                }
+            }
             
             // Check watchlist status
             checkWatchlistStatus(coinId)
         }
     }
     
-    private fun generateAllChartData(currentPrice: Double): Map<ChartTimeframe, List<Float>> {
-        return ChartTimeframe.entries.associateWith { timeframe ->
-            generateMockChartData(timeframe, currentPrice)
-        }
-    }
-    
-    fun generateMockChartData(timeframe: ChartTimeframe, currentPrice: Double): List<Float> {
-        val random = Random(chartSeed + timeframe.ordinal)
-        val dataPoints = when (timeframe) {
-            ChartTimeframe.DAY_1 -> 24    // Hourly for 24h
-            ChartTimeframe.WEEK_1 -> 7    // Daily for 7d
-            ChartTimeframe.MONTH_1 -> 30  // Daily for 1M
-            ChartTimeframe.MONTH_3 -> 12  // Weekly for 3M
-            ChartTimeframe.YEAR_1 -> 12   // Monthly for 1Y
-            ChartTimeframe.ALL -> 12      // Use 1Y data for ALL
-        }
-        
-        val prices = mutableListOf<Float>()
-        var price = currentPrice * (1 - random.nextDouble(0.02, 0.05)) // Start slightly lower
-        
-        // Generate price points with realistic fluctuations
-        for (i in 0 until dataPoints) {
-            // Add some trend + noise
-            val trend = sin(i.toDouble() / dataPoints * 3.14159) * 0.02 // Slight wave pattern
-            val noise = random.nextDouble(-0.015, 0.015) // +/- 1.5% noise
-            val change = trend + noise
+    private fun fetchPriceHistory(coinId: String, timeframe: ChartTimeframe) {
+        viewModelScope.launch {
+            _state.update { 
+                it.copy(chartData = it.chartData + (timeframe to UiState.Loading))
+            }
             
-            price *= (1 + change)
-            prices.add(price.toFloat())
-        }
-        
-        // Ensure the last price is close to current price
-        if (prices.isNotEmpty()) {
-            val adjustment = currentPrice / prices.last()
-            for (i in prices.indices) {
-                // Gradually adjust towards current price
-                val factor = i.toFloat() / prices.size
-                prices[i] = (prices[i] * (1 + (adjustment - 1) * factor)).toFloat()
+            runCatching {
+                getCoinPriceHistoryUseCase.execute(coinId, timeframe.apiPeriod)
+            }.onSuccess { result ->
+                when (result) {
+                    is com.example.valguard.app.core.domain.Result.Success -> {
+                        val history = result.data.sortedBy { it.timestamp }
+                        // Map PriceModel to ChartPoint with timestamp and price
+                        val chartPoints = history.map { priceModel -> 
+                            ChartPoint(
+                                timestamp = priceModel.timestamp,
+                                price = priceModel.price
+                            )
+                        }
+                        
+                        _state.update { 
+                            it.copy(
+                                chartData = it.chartData + (timeframe to if (chartPoints.isEmpty()) {
+                                    UiState.Empty
+                                } else {
+                                    UiState.Success(chartPoints)
+                                })
+                            )
+                        }
+                    }
+                    is com.example.valguard.app.core.domain.Result.Failure -> {
+                        _state.update { 
+                            it.copy(chartData = it.chartData + (timeframe to UiState.Error("Failed to load chart data")))
+                        }
+                    }
+                }
+            }.onFailure { throwable ->
+                _state.update { 
+                    it.copy(chartData = it.chartData + (timeframe to UiState.Error(throwable.message ?: "Chart error")))
+                }
             }
         }
-        
-        return prices
     }
     
     private suspend fun loadHoldings(coinId: String, currentPrice: Double) {
@@ -174,13 +187,19 @@ class CoinDetailViewModel(
         try {
             val isInWatchlist = watchlistRepository.isInWatchlist(coinId)
             _state.update { it.copy(isInWatchlist = isInWatchlist) }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Watchlist check failed, default to false
         }
     }
     
+
     private fun selectTimeframe(timeframe: ChartTimeframe) {
         _state.update { it.copy(selectedTimeframe = timeframe) }
+        val currentState = _state.value.chartData[timeframe]
+        // Allow re-fetch if no data exists OR if previous attempt failed
+        if (currentState == null || currentState is UiState.Error) {
+            fetchPriceHistory(_state.value.coinId, timeframe)
+        }
     }
     
     private fun toggleWatchlist() {
@@ -195,7 +214,7 @@ class CoinDetailViewModel(
                     watchlistRepository.addToWatchlist(coinId)
                 }
                 _state.update { it.copy(isInWatchlist = !isCurrentlyInWatchlist) }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // Failed to toggle watchlist
             }
         }
@@ -204,8 +223,16 @@ class CoinDetailViewModel(
     fun refreshData() {
         val coinId = _state.value.coinId
         if (coinId.isNotEmpty()) {
-            _state.update { it.copy(isRefreshing = true) }
-            loadCoin(coinId)
+            // Set pull refresh flag and clear error for current timeframe
+            _state.update { 
+                it.copy(
+                    isPullRefreshing = true,
+                    chartData = if (it.chartData[it.selectedTimeframe] is UiState.Error) {
+                        it.chartData - it.selectedTimeframe
+                    } else it.chartData
+                ) 
+            }
+            loadCoin(coinId, isRefresh = true)
         }
     }
     

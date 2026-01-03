@@ -11,6 +11,8 @@ data class CompareState(
     val showCoinSelector: CoinSelectorTarget? = null,
     val coinSearchQuery: String = "",
     val isLoading: Boolean = false,
+    val snackbarMessage: String? = null,
+    val showSnackbar: Boolean = false,
     val error: String? = null
 )
 
@@ -61,6 +63,7 @@ sealed class CompareEvent {
     data class LoadSavedComparison(val comparison: SavedComparison) : CompareEvent()
     data class DeleteSavedComparison(val comparisonId: Long) : CompareEvent()
     data object ClearComparison : CompareEvent()
+    data object DismissSnackbar : CompareEvent()
     data object Retry : CompareEvent()
 }
 

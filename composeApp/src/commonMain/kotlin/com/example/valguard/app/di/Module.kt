@@ -125,7 +125,7 @@ val sharedModule = module {
     viewModel { PortfolioViewModel(get(), get()) }
     viewModel { (coinId: String) -> BuyViewModel(coinId, get(), get(), get(), get()) }
     viewModel { (coinId: String) -> SellViewModel(coinId, get(), get(), get(), get()) }
-    viewModel { CoinDetailViewModel(get(), get(), get()) }
+    viewModelOf(::CoinDetailViewModel)
     viewModel { DCAViewModel(get()) }
     viewModel { CompareViewModel(get()) }
     viewModel { OnboardingViewModel(get()) }

@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.valguard.app.coins.presentation.CoinsListViewModel
 import com.example.valguard.app.coins.presentation.UiCoinListItem
+import com.example.valguard.app.compare.presentation.CompareScreen
 import com.example.valguard.app.components.AlertModal
 import com.example.valguard.app.components.BottomNavItem
 import com.example.valguard.app.components.CryptoBottomNavigation
@@ -142,9 +143,7 @@ fun MainScreen(
                         )
                     }
                     BottomNavItem.COMPARE -> {
-                        com.example.valguard.app.compare.presentation.CompareScreen(
-                            onBack = { activeBottomNav = BottomNavItem.MARKET }
-                        )
+                        CompareScreen()
                     }
                     else -> {
                         // Market / Portfolio / Watchlist logic

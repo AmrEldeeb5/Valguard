@@ -180,7 +180,7 @@ class CoinsListViewModel(
         }
 
         viewModelScope.launch {
-            when (val priceHistory = getCoinPriceHistoryUseCase.execute(coinId)) {
+            when (val priceHistory = getCoinPriceHistoryUseCase.execute(coinId, "24h")) {
                 is Result.Success -> {
                     _state.update { currentState ->
                         currentState.copy(

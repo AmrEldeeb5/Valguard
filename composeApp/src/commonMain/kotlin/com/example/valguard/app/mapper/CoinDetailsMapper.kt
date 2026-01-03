@@ -11,7 +11,7 @@ fun CoinDetailsDto.toCoinModel() = CoinModel(
         symbol = symbol,
         iconUrl = iconUrl,
     ),
-    price = price.toDoubleOrNull() ?: 0.0,
-    change = change.toDoubleOrNull() ?: 0.0,
+    price = price?.toDoubleOrNull() ?: 0.0,
+    change = change?.toDoubleOrNull() ?: 0.0,
 )
 
