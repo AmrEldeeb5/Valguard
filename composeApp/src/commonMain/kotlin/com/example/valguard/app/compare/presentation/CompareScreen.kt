@@ -9,6 +9,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -25,7 +26,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CheckCircle
+
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 
@@ -48,11 +49,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -80,6 +86,8 @@ import valguard.composeapp.generated.resources.solar__bookmark_linear
 
 // Locked row height for consistent spacing
 private val ComparisonRowHeight = 56.dp
+// Padding to clear the floating bottom navigation
+private val BottomNavPadding = 100.dp
 
 @Composable
 fun CompareScreen() {
@@ -104,7 +112,10 @@ fun CompareScreen() {
     
     Scaffold(
         snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState) { data ->
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.padding(bottom = BottomNavPadding)
+            ) { data ->
                 Snackbar(
                     snackbarData = data,
                     containerColor = colors.accentBlue500,
@@ -123,7 +134,7 @@ fun CompareScreen() {
                 start = spacing.md,
                 end = spacing.md,
                 top = spacing.md,
-                bottom = 100.dp // Clear floating bottom nav
+                bottom = BottomNavPadding
             ),
             verticalArrangement = Arrangement.spacedBy(spacing.md)
         ) {
@@ -185,8 +196,12 @@ fun CompareScreen() {
                             Text("Clear", color = colors.textSecondary.copy(alpha = 0.7f))
                         }
 
+                        val haptic = LocalHapticFeedback.current
                         Button(
-                            onClick = { viewModel.onEvent(CompareEvent.SaveComparison) },
+                            onClick = { 
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                viewModel.onEvent(CompareEvent.SaveComparison) 
+                            },
                             modifier = Modifier
                                 .weight(1f)
                                 .shadow(
@@ -197,6 +212,7 @@ fun CompareScreen() {
                             colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.ui.graphics.Color.Transparent),
                             contentPadding = PaddingValues(0.dp)
                         ) {
+                            val haptic = LocalHapticFeedback.current // Re-declare or use parent scope if possible, but localized is fine for composition
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -295,10 +311,12 @@ private fun CompareHeader(
             )
         }
 
-        // Bookmark Button with Gradient Border/Fill
+// Bookmark Button with Gradient Border/Fill
         val borderGradient = Brush.linearGradient(
             colors = listOf(colors.accentBlue400, colors.accentPurple400)
         )
+        
+        val haptic = LocalHapticFeedback.current
         
         Box(
             modifier = Modifier
@@ -315,7 +333,10 @@ private fun CompareHeader(
                     brush = borderGradient,
                     shape = RoundedCornerShape(12.dp)
                 )
-                .clickable { onToggleSave() }
+                .clickable { 
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onToggleSave() 
+                }
                 .padding(10.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -756,7 +777,7 @@ private fun MetricValueCell(
         label = "winnerAlpha"
     )
 
-    Box(
+    BoxWithConstraints(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
             .then(
@@ -778,46 +799,37 @@ private fun MetricValueCell(
             ),
         contentAlignment = Alignment.Center
     ) {
-        // Background Bar
-        if (barFraction > 0f) {
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .align(Alignment.CenterStart)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(barFraction)
-                        .height(4.dp)
-                        .align(Alignment.BottomStart)
-                        .background(color.copy(alpha = 0.2f), RoundedCornerShape(2.dp))
-                )
-            }
-        }
-
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
             // Crown removed per feedback - rank pill treatment is sufficient emphasis
             
+            val initialTextStyle = MaterialTheme.typography.bodyMedium
+            var textStyle by remember(value) { mutableStateOf(initialTextStyle) }
+            var readyToDraw by remember(value) { mutableStateOf(false) }
+
             Text(
                 text = value,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = if (isWinner) FontWeight.Black else FontWeight.Medium, // Bolder for winner
+                style = textStyle,
+                fontWeight = if (isWinner) FontWeight.Bold else FontWeight.Medium, // Bolder for winner
                 color = color.copy(alpha = animatedAlpha),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                softWrap = false,
+                onTextLayout = { textLayoutResult ->
+                    if (textLayoutResult.didOverflowWidth) {
+                        textStyle = textStyle.copy(fontSize = textStyle.fontSize * 0.95)
+                    } else {
+                        readyToDraw = true
+                    }
+                },
+                modifier = Modifier.drawWithContent {
+                    if (readyToDraw) drawContent()
+                }
             )
             
-            if (isWinner && !isRank) {
-                Spacer(modifier = Modifier.width(4.dp))
-                Icon(
-                    imageVector = Icons.Default.CheckCircle, // "Leading" badge
-                    contentDescription = "Winner",
-                    tint = colors.accentBlue400,
-                    modifier = Modifier.size(14.dp)
-                )
-            }
+
         }
     }
 }

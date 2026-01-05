@@ -63,7 +63,7 @@ fun DCAScreen(
                 name = coin.name,
                 symbol = coin.symbol,
                 iconUrl = coin.iconUrl,
-                formattedPrice = coin.price?.let { "$${String.format("%.2f", it)}" } ?: "-",
+                formattedPrice = coin.price?.let { "$${formatAmount(it)}" } ?: "-",
                 formattedChange = "-",
                 changePercent = 0.0,
                 isPositive = true,

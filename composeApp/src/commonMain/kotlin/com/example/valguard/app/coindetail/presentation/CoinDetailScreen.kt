@@ -27,11 +27,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import valguard.composeapp.generated.resources.solar__alt_arrow_left_outline
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -86,7 +90,6 @@ private val SlateGradientEnd = Color(0xFF0F172A)   // slate-900
 private val EmeraldStart = Color(0xFF34D399)       // emerald-400
 private val EmeraldEnd = Color(0xFF10B981)         // emerald-500
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CoinDetailScreen(
     coinId: String,
@@ -103,54 +106,84 @@ fun CoinDetailScreen(
         viewModel.onEvent(CoinDetailEvent.LoadCoin(coinId))
     }
     
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(colors.backgroundPrimary)
-            .statusBarsPadding()
-    ) {
-        // Top bar (Compact Navigation Row)
-        CoinDetailTopBar(
-            isInWatchlist = state.isInWatchlist,
-            onBackClick = onDismiss,
-            onWatchlistClick = { viewModel.onEvent(CoinDetailEvent.ToggleWatchlist) }
-        )
-        
-        when (val coinData = state.coinData) {
-            is UiState.Loading -> {
-                CoinDetailLoadingContent()
-            }
-            is UiState.Success -> {
-                CoinDetailContent(
-                    coinData = coinData.data,
-                    holdings = state.holdings,
-                    chartState = state.currentChartState,
-                    selectedTimeframe = state.selectedTimeframe,
-                    isOffline = state.isOffline,
-                    onTimeframeSelected = { viewModel.onEvent(CoinDetailEvent.SelectTimeframe(it)) },
-                    onSetAlertClick = { viewModel.onEvent(CoinDetailEvent.ShowAlertModal) },
-                    onBuyClick = { onBuyClick(coinId) },
-                    onSellClick = { onSellClick(coinId) }
-                )
-            }
-            is UiState.Error -> {
-                ErrorState(
-                    message = coinData.message,
-                    onRetry = { viewModel.onEvent(CoinDetailEvent.Retry) },
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-            is UiState.Empty -> {
-                EmptyState(
-                    title = "Coin Not Found",
-                    description = "The requested coin could not be found.",
-                    actionLabel = null,
-                    onAction = null,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(state.showSnackbar) {
+        val message = state.snackbarMessage
+        if (state.showSnackbar && message != null) {
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = SnackbarDuration.Short
+            )
+            viewModel.onEvent(CoinDetailEvent.DismissSnackbar)
         }
     }
+
+    Scaffold(
+        containerColor = colors.backgroundPrimary,
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { data ->
+                Snackbar(
+                    snackbarData = data,
+                    containerColor = colors.accentBlue500,
+                    contentColor = Color.White,
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        },
+        content = { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(colors.backgroundPrimary)
+                    .statusBarsPadding()
+                    .padding(paddingValues)
+            ) {
+                // Top bar (Compact Navigation Row)
+                CoinDetailTopBar(
+                    isInWatchlist = state.isInWatchlist,
+                    onBackClick = onDismiss,
+                    onWatchlistClick = { viewModel.onEvent(CoinDetailEvent.ToggleWatchlist) }
+                )
+                
+                when (val coinData = state.coinData) {
+                    is UiState.Loading -> {
+                        CoinDetailLoadingContent()
+                    }
+                    is UiState.Success -> {
+                        CoinDetailContent(
+                            coinData = coinData.data,
+                            holdings = state.holdings,
+                            chartState = state.currentChartState,
+                            selectedTimeframe = state.selectedTimeframe,
+                            isOffline = state.isOffline,
+                            onTimeframeSelected = { viewModel.onEvent(CoinDetailEvent.SelectTimeframe(it)) },
+                            onSetAlertClick = { viewModel.onEvent(CoinDetailEvent.ShowAlertModal) },
+                            onBuyClick = { onBuyClick(coinId) },
+                            onSellClick = { onSellClick(coinId) }
+                        )
+                    }
+                    is UiState.Error -> {
+                        ErrorState(
+                            message = coinData.message,
+                            onRetry = { viewModel.onEvent(CoinDetailEvent.Retry) },
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                    is UiState.Empty -> {
+                        EmptyState(
+                            title = "Coin Not Found",
+                            description = "The requested coin could not be found.",
+                            actionLabel = null,
+                            onAction = null,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
+            }
+        }
+    )
     
     // Alert modal
     if (state.showAlertModal) {
@@ -198,6 +231,8 @@ private fun CoinDetailTopBar(
         val borderGradient = Brush.linearGradient(
             colors = listOf(colors.accentBlue400, colors.accentPurple400)
         )
+        
+        val haptic = LocalHapticFeedback.current
 
         Box(
             modifier = Modifier
@@ -215,7 +250,10 @@ private fun CoinDetailTopBar(
                     brush = borderGradient,
                     shape = RoundedCornerShape(12.dp)
                 )
-                .clickable { onWatchlistClick() }, // Removed padding inside click to ensure full box is clickable
+                .clickable { 
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onWatchlistClick() 
+                }, 
             contentAlignment = Alignment.Center
         ) {
             Icon(

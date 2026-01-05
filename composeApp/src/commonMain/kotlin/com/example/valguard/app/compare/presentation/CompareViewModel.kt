@@ -149,6 +149,23 @@ class CompareViewModel(
         val coin1 = _state.value.coin1 ?: return
         val coin2 = _state.value.coin2 ?: return
         
+        // Check for duplicates
+        val currentSaved = (_state.value.savedComparisons as? UiState.Success)?.data ?: emptyList()
+        val isDuplicate = currentSaved.any { saved ->
+            (saved.coin1Id == coin1.id && saved.coin2Id == coin2.id) ||
+            (saved.coin1Id == coin2.id && saved.coin2Id == coin1.id)
+        }
+
+        if (isDuplicate) {
+            _state.update { 
+                it.copy(
+                    snackbarMessage = "Comparison already saved",
+                    showSnackbar = true
+                )
+            }
+            return
+        }
+        
         viewModelScope.launch {
             comparisonRepository.saveComparison(
                 coin1Id = coin1.id,
@@ -162,7 +179,7 @@ class CompareViewModel(
             )
             _state.update { 
                 it.copy(
-                    snackbarMessage = "${coin1.symbol.uppercase()} vs ${coin2.symbol.uppercase()} saved",
+                    snackbarMessage = "Comparison saved",
                     showSnackbar = true
                 )
             }

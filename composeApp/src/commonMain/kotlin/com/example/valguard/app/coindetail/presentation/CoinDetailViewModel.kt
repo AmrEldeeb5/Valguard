@@ -49,6 +49,7 @@ class CoinDetailViewModel(
             is CoinDetailEvent.Retry -> retry()
             is CoinDetailEvent.ShowAlertModal -> _state.update { it.copy(showAlertModal = true) }
             is CoinDetailEvent.HideAlertModal -> _state.update { it.copy(showAlertModal = false) }
+            is CoinDetailEvent.DismissSnackbar -> _state.update { it.copy(showSnackbar = false, snackbarMessage = null) }
             else -> { /* Navigation events handled by UI */ }
         }
     }
@@ -250,10 +251,24 @@ class CoinDetailViewModel(
             try {
                 if (isCurrentlyInWatchlist) {
                     watchlistRepository.removeFromWatchlist(coinId)
+                    // Optional: "Removed from Watchlist" (User requested stronger feedback here, reusing snackbar logic for consistency, maybe different text in future)
+                    _state.update { 
+                        it.copy(
+                            isInWatchlist = false,
+                            snackbarMessage = "Removed from Watchlist",
+                            showSnackbar = true 
+                        ) 
+                    }
                 } else {
                     watchlistRepository.addToWatchlist(coinId)
+                    _state.update { 
+                        it.copy(
+                            isInWatchlist = true,
+                            snackbarMessage = "Added to Watchlist",
+                            showSnackbar = true
+                        ) 
+                    }
                 }
-                _state.update { it.copy(isInWatchlist = !isCurrentlyInWatchlist) }
             } catch (_: Exception) {
                 // Failed to toggle watchlist
             }
