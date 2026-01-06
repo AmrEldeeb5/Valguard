@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,6 +33,8 @@ import com.example.valguard.app.components.ConnectionStatusIndicator
 import com.example.valguard.app.components.ErrorState
 import com.example.valguard.app.components.SkeletonCoinList
 import com.example.valguard.app.components.UiCoinItem
+import com.example.valguard.app.navigation.ScrollBehaviorState
+import com.example.valguard.app.navigation.rememberScrollBehaviorState
 import com.example.valguard.theme.LocalCryptoColors
 import com.example.valguard.theme.LocalCryptoSpacing
 import com.example.valguard.theme.LocalCryptoTypography
@@ -42,6 +45,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun CoinsListScreen(
     onCoinClicked: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    scrollBehaviorState: ScrollBehaviorState = rememberScrollBehaviorState()
 ) {
     val coinsListViewModel = koinViewModel<CoinsListViewModel>()
     val state by coinsListViewModel.state.collectAsStateWithLifecycle()
@@ -50,7 +55,9 @@ fun CoinsListScreen(
         state = state,
         onDismissChart = { coinsListViewModel.onDismissChart() },
         onCoinLongPressed = { coinId -> coinsListViewModel.onCoinLongPressed(coinId) },
-        onCoinClicked = onCoinClicked
+        onCoinClicked = onCoinClicked,
+        modifier = modifier,
+        scrollBehaviorState = scrollBehaviorState
     )
 }
 
@@ -60,14 +67,17 @@ fun CoinsListContent(
     onDismissChart: () -> Unit,
     onCoinLongPressed: (String) -> Unit,
     onCoinClicked: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    scrollBehaviorState: ScrollBehaviorState = rememberScrollBehaviorState()
 ) {
     val colors = LocalCryptoColors.current
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(colors.cardBackground.copy(alpha = 0.4f))
-            .windowInsetsPadding(WindowInsets.safeDrawing),
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .nestedScroll(scrollBehaviorState.nestedScrollConnection),
         contentAlignment = Alignment.Center
     ) {
         when {

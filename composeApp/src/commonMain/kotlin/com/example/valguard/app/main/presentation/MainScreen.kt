@@ -1,5 +1,8 @@
 package com.example.valguard.app.main.presentation
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,13 +47,15 @@ import com.example.valguard.app.components.ExpandableCoinCard
 import com.example.valguard.app.components.MoreMenuDropdown
 import com.example.valguard.app.components.PortfolioValueCard
 import com.example.valguard.app.components.PriceAlert
-import com.example.valguard.app.components.SearchBar
 import com.example.valguard.app.components.Tab
 import com.example.valguard.app.components.TabNavigation
 import com.example.valguard.app.components.Timeframe
 import com.example.valguard.app.components.UiCoinItem
 import com.example.valguard.app.components.activeCount
 import com.example.valguard.app.dca.presentation.DCAScreen
+import com.example.valguard.app.navigation.ScrollBehaviorState
+import com.example.valguard.app.navigation.animatedVisibilityFraction
+import com.example.valguard.app.navigation.rememberScrollBehaviorState
 import com.example.valguard.app.portfolio.presentation.PortfolioViewModel
 import com.example.valguard.app.portfolio.presentation.UiPortfolioCoinItem
 import com.example.valguard.app.watchlist.domain.WatchlistRepository
@@ -62,7 +69,8 @@ fun MainScreen(
     onBuyClick: (String) -> Unit,
     onSellClick: (String) -> Unit,
     onCoinClick: (String) -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    scrollBehaviorState: ScrollBehaviorState = rememberScrollBehaviorState()
 ) {
     val colors = LocalCryptoColors.current
     val spacing = LocalCryptoSpacing.current
@@ -96,11 +104,31 @@ fun MainScreen(
         }
     }
     
+    // Animated offsets for smooth hide/show
+    val visibilityFraction = scrollBehaviorState.animatedVisibilityFraction()
+    val headerOffset by animateDpAsState(
+        targetValue = if (visibilityFraction > 0.01f) 0.dp else (-200).dp, // Increased to fully hide header + tabs
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioNoBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
+        label = "HeaderOffset"
+    )
+    val bottomNavOffset by animateDpAsState(
+        targetValue = if (visibilityFraction > 0.01f) 0.dp else 120.dp, // Increased to fully hide bottom nav
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioNoBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
+        label = "BottomNavOffset"
+    )
+
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(colors.backgroundPrimary)
             .statusBarsPadding()
+            .nestedScroll(scrollBehaviorState.nestedScrollConnection)
     ) {
         Column(
             modifier = Modifier
@@ -108,37 +136,41 @@ fun MainScreen(
         ) {
             // Only show common header/tabs for Market, Portfolio, and Watchlist
             if (activeBottomNav == BottomNavItem.MARKET || activeBottomNav == BottomNavItem.PORTFOLIO) {
-                // Header
-                // Search placeholder logic
-                val searchPlaceholder = when (activeTab) {
-                    Tab.PORTFOLIO -> "Search your assets"
-                    else -> "Search cryptocurrencies"
-                }
-
-                // Header with integrated search
-                ValguardHeader(
-                    searchQuery = coinsState.searchQuery,
-                    onSearchQueryChange = { coinsViewModel.onSearchQueryChange(it) },
-                    placeholder = searchPlaceholder,
-                    alertCount = alerts.activeCount(),
-                    onAlertClick = { showAlertModal = true },
-                    onMoreClick = { showMoreMenu = true }
-                )
-                
-                // Tab navigation
-                TabNavigation(
-                    activeTab = activeTab,
-                    onTabSelected = { tab ->
-                        activeTab = tab
-                        activeBottomNav = when (tab) {
-                            Tab.MARKET -> BottomNavItem.MARKET
-                            Tab.PORTFOLIO -> BottomNavItem.PORTFOLIO
-                            Tab.WATCHLIST -> activeBottomNav // Keep current nav if it's already Market/Portfolio
-                        }
+                Column(
+                    modifier = Modifier.offset(y = headerOffset)
+                ) {
+                    // Header
+                    // Search placeholder logic
+                    val searchPlaceholder = when (activeTab) {
+                        Tab.PORTFOLIO -> "Search your assets"
+                        else -> "Search cryptocurrencies"
                     }
-                )
-                
-                Spacer(modifier = Modifier.height(spacing.sm))
+
+                    // Header with integrated search
+                    ValguardHeader(
+                        searchQuery = coinsState.searchQuery,
+                        onSearchQueryChange = { coinsViewModel.onSearchQueryChange(it) },
+                        placeholder = searchPlaceholder,
+                        alertCount = alerts.activeCount(),
+                        onAlertClick = { showAlertModal = true },
+                        onMoreClick = { showMoreMenu = true }
+                    )
+
+                    // Tab navigation
+                    TabNavigation(
+                        activeTab = activeTab,
+                        onTabSelected = { tab ->
+                            activeTab = tab
+                            activeBottomNav = when (tab) {
+                                Tab.MARKET -> BottomNavItem.MARKET
+                                Tab.PORTFOLIO -> BottomNavItem.PORTFOLIO
+                                Tab.WATCHLIST -> activeBottomNav // Keep current nav if it's already Market/Portfolio
+                            }
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(spacing.sm))
+                }
             }
             
             // Content based on active bottom nav
@@ -215,11 +247,12 @@ fun MainScreen(
             }
         }
         
-        // Bottom navigation with padding container
+        // Bottom navigation with padding container and smooth animation
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
+                .offset(y = bottomNavOffset)
                 .padding(spacing.md)
         ) {
             CryptoBottomNavigation(
