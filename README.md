@@ -201,15 +201,6 @@ Release builds use comprehensive ProGuard rules in `proguard-rules.pro`:
 
 ## 📦 Release Build
 
-### Generate Release APK
-```bash
-# Build release APK
-./gradlew :composeApp:assembleRelease
-
-# Output location:
-# composeApp/build/outputs/apk/release/composeApp-release.apk
-```
-
 ### APK Size
 - **Debug**: ~25-30 MB
 - **Release** (with ProGuard): ~15-20 MB
@@ -230,7 +221,7 @@ This is a personal learning project demonstrating Kotlin Multiplatform capabilit
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- see the [LICENSE](LICENSE) file for details.
 
 ---
 
