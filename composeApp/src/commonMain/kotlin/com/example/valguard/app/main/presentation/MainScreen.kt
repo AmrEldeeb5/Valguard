@@ -108,7 +108,7 @@ fun MainScreen(
     // Animated offsets for smooth hide/show
     val visibilityFraction = scrollBehaviorState.animatedVisibilityFraction()
     val headerOffset by animateDpAsState(
-        targetValue = if (visibilityFraction > 0.01f) 0.dp else (-200).dp, // Increased to fully hide header + tabs
+        targetValue = if (scrollBehaviorState.isVisible) 0.dp else (-200).dp, // Increased to fully hide header + tabs
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioNoBouncy,
             stiffness = Spring.StiffnessMedium
@@ -116,7 +116,7 @@ fun MainScreen(
         label = "HeaderOffset"
     )
     val bottomNavOffset by animateDpAsState(
-        targetValue = if (visibilityFraction > 0.01f) 0.dp else 120.dp, // Increased to fully hide bottom nav
+        targetValue = if (scrollBehaviorState.isVisible) 0.dp else 120.dp, // Increased to fully hide bottom nav
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioNoBouncy,
             stiffness = Spring.StiffnessMedium
@@ -135,19 +135,27 @@ fun MainScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Only show header spacer for Market, Portfolio, and Watchlist
-            if (activeBottomNav == BottomNavItem.MARKET || activeBottomNav == BottomNavItem.PORTFOLIO) {
-                // Spacer that shrinks when header hides
-                val headerSpacerHeight by animateDpAsState(
-                    targetValue = if (visibilityFraction > 0.01f) 140.dp else 0.dp,
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioNoBouncy,
-                        stiffness = Spring.StiffnessMedium
-                    ),
-                    label = "HeaderSpacer"
-                )
-                Spacer(modifier = Modifier.height(headerSpacerHeight))
-            }
+            // Top and Bottom padding animations
+            val topPadding by animateDpAsState(
+                targetValue = if (activeBottomNav == BottomNavItem.MARKET || activeBottomNav == BottomNavItem.PORTFOLIO) {
+                    if (scrollBehaviorState.isVisible) 170.dp else 0.dp
+                } else 0.dp,
+                animationSpec = spring(stiffness = Spring.StiffnessMedium),
+                label = "TopPadding"
+            )
+
+            val bottomPadding by animateDpAsState(
+                targetValue = if (scrollBehaviorState.isVisible) 100.dp else 24.dp, // Reduce bottom padding when nav is hidden
+                animationSpec = spring(stiffness = Spring.StiffnessMedium),
+                label = "BottomPadding"
+            )
+
+            val currentContentPadding = PaddingValues(
+                start = spacing.md,
+                end = spacing.md,
+                top = topPadding,
+                bottom = bottomPadding
+            )
             
             // Content based on active bottom nav
             Box(
@@ -183,6 +191,7 @@ fun MainScreen(
                                         watchlistIds = watchlistIds,
                                         expandedCoinId = expandedCoinId,
                                         selectedTimeframe = selectedTimeframe,
+                                        contentPadding = currentContentPadding,
                                         onCardClick = { coinId -> onCoinClick(coinId) },
                                         onTimeframeSelected = { selectedTimeframe = it },
                                         onSetAlertClick = { showAlertModal = true },
@@ -198,6 +207,7 @@ fun MainScreen(
                                         watchlistIds = watchlistIds,
                                         expandedCoinId = expandedCoinId,
                                         selectedTimeframe = selectedTimeframe,
+                                        contentPadding = currentContentPadding,
                                         onCardClick = { coinId -> onCoinClick(coinId) },
                                         onTimeframeSelected = { selectedTimeframe = it },
                                         onSetAlertClick = { showAlertModal = true },
@@ -211,6 +221,7 @@ fun MainScreen(
                                         watchlistIds = watchlistIds,
                                         expandedCoinId = expandedCoinId,
                                         selectedTimeframe = selectedTimeframe,
+                                        contentPadding = currentContentPadding,
                                         onCardClick = { coinId -> onCoinClick(coinId) },
                                         onTimeframeSelected = { selectedTimeframe = it },
                                         onSetAlertClick = { showAlertModal = true },
@@ -321,6 +332,7 @@ private fun MarketContent(
     watchlistIds: List<String>,
     expandedCoinId: String?,
     selectedTimeframe: Timeframe,
+    contentPadding: PaddingValues,
     onCardClick: (String) -> Unit,
     onTimeframeSelected: (Timeframe) -> Unit,
     onSetAlertClick: () -> Unit,
@@ -341,12 +353,7 @@ private fun MarketContent(
     } else {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(spacing.sm),
-            contentPadding = PaddingValues(
-                start = spacing.md,
-                end = spacing.md,
-                top = spacing.sm,
-                bottom = 100.dp  // Clear bottom nav
-            ),
+            contentPadding = contentPadding,
             modifier = Modifier.fillMaxSize()
         ) {
             items(coins, key = { it.id }) { coin ->
@@ -406,6 +413,7 @@ private fun PortfolioContent(
     watchlistIds: List<String>,
     expandedCoinId: String?,
     selectedTimeframe: Timeframe,
+    contentPadding: PaddingValues,
     onCardClick: (String) -> Unit,
     onTimeframeSelected: (Timeframe) -> Unit,
     onSetAlertClick: () -> Unit,
@@ -424,12 +432,7 @@ private fun PortfolioContent(
     
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(spacing.sm),
-        contentPadding = PaddingValues(
-            start = spacing.md,
-            end = spacing.md, 
-            top = spacing.sm,
-            bottom = 100.dp // Clear bottom nav
-        ),
+        contentPadding = contentPadding,
         modifier = Modifier.fillMaxSize()
     ) {
         // Portfolio value card
@@ -499,6 +502,7 @@ private fun WatchlistContent(
     watchlistIds: List<String>,
     expandedCoinId: String?,
     selectedTimeframe: Timeframe,
+    contentPadding: PaddingValues,
     onCardClick: (String) -> Unit,
     onTimeframeSelected: (Timeframe) -> Unit,
     onSetAlertClick: () -> Unit,
@@ -520,7 +524,7 @@ private fun WatchlistContent(
     } else {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(spacing.sm),
-            contentPadding = PaddingValues(horizontal = spacing.md, vertical = spacing.sm),
+            contentPadding = contentPadding,
             modifier = Modifier.fillMaxSize()
         ) {
             items(coins, key = { it.id }) { coin ->
