@@ -137,7 +137,7 @@ fun BarChart(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 4.dp),
+                    .padding(top = 1.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 data.labels.forEach { label ->

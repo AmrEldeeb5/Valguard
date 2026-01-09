@@ -41,7 +41,14 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -210,8 +217,8 @@ private fun CoinDetailTopBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp) // Standard compact height
-            .padding(horizontal = spacing.sm), // Tighter horizontal padding
+            .height(56.dp) // Increased height
+            .padding(horizontal = spacing.md), // Increased padding
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -301,28 +308,28 @@ private fun CoinDetailContent(
             onTimeframeSelected = onTimeframeSelected
         )
         
-        Spacer(modifier = Modifier.height(spacing.md))
+        Spacer(modifier = Modifier.height(spacing.sm))
         
         // Meta stats (quiet row)
         MetaStatsRow(coinData = coinData)
         
-        Spacer(modifier = Modifier.height(spacing.md))
+        Spacer(modifier = Modifier.height(spacing.sm))
         
         // Detailed stats grid
         StatsGrid(coinData = coinData)
         
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(10.dp))
         
         // Price alert button (Context Tool position)
         PriceAlertButton(onClick = onSetAlertClick)
         
         // Holdings section (only if user owns this coin)
         if (holdings != null && holdings.amountOwned > 0) {
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(14.dp))
             HoldingsCard(holdings = holdings, coinData = coinData)
         }
         
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         
         // Buy/Sell buttons with gradients
         ActionButtons(
@@ -331,7 +338,7 @@ private fun CoinDetailContent(
             canSell = holdings != null && holdings.amountOwned > 0
         )
         
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(20.dp))
     }
 }
 
@@ -371,17 +378,17 @@ private fun PriceDisplayCard(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp)) // Slightly more rounded for premium feel
+            .clip(RoundedCornerShape(16.dp)) // Slightly more rounded for premium feel
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(SlateGradientStart, SlateGradientEnd)
                 )
             )
             .padding(
-                start = spacing.lg,
-                top = spacing.lg,
-                end = spacing.lg,
-                bottom = spacing.md
+                start = spacing.md,
+                top = spacing.md,
+                end = spacing.md,
+                bottom = spacing.sm
             )
     ) {
         Column {
@@ -393,34 +400,34 @@ private fun PriceDisplayCard(
                 CoinIconBox(
                     iconUrl = coinData.iconUrl ?: "",
                     contentDescription = null,
-                    size = 40.dp,
-                    iconSize = 24.dp,
-                    cornerRadius = 10.dp,
+                    size = 32.dp,
+                    iconSize = 20.dp,
+                    cornerRadius = 8.dp,
                     borderColor = colors.accentPurple400
                 )
                 
-                Spacer(modifier = Modifier.width(spacing.md))
+                Spacer(modifier = Modifier.width(spacing.sm))
                 
                 Column {
                     Text(
                         text = coinData.name,
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = colors.textPrimary
                     )
                     Text(
                         text = coinData.symbol.uppercase(),
-                        style = MaterialTheme.typography.labelMedium,
+                        style = MaterialTheme.typography.labelSmall,
                         color = colors.textSecondary.copy(alpha = 0.8f)
                     )
                 }
             }
             
-            Spacer(modifier = Modifier.height(spacing.md))
+            Spacer(modifier = Modifier.height(spacing.sm))
             
             Text(
                 text = "Current Price",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.labelSmall,
                 color = colors.textSecondary.copy(alpha = 0.7f)
             )
             
@@ -431,23 +438,21 @@ private fun PriceDisplayCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Bottom
             ) {
-                Text(
-                    text = "\$${formatPrice(animatedPrice.toDouble())}",
-                    style = MaterialTheme.typography.displaySmall,
-                    fontWeight = FontWeight.Bold,
+                AutoSizingPriceText(
+                    price = animatedPrice.toDouble(),
                     color = colors.textPrimary
                 )
                 
                 Box(
                     modifier = Modifier
                         .scale(scale)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(10.dp))
                         .background(changeColor.copy(alpha = 0.11f))
-                        .padding(horizontal = spacing.md, vertical = spacing.xs)
+                        .padding(horizontal = spacing.sm, vertical = 4.dp)
                 ) {
                     Text(
                         text = "${if (isPositive) "+" else ""}${formatDecimal(coinData.change24h, 2)}%",
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Medium,
                         color = changeColor.copy(alpha = 0.9f)
                     )
@@ -468,7 +473,7 @@ private fun PriceDisplayCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp),
+                    .height(180.dp),
                 contentAlignment = Alignment.Center
             ) {
                 when (chartState) {
@@ -551,7 +556,7 @@ private fun TimeframeSelector(
     
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(spacing.xs)
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         ChartTimeframe.entries.forEach { timeframe ->
             val isSelected = timeframe == selectedTimeframe
@@ -559,7 +564,7 @@ private fun TimeframeSelector(
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(6.dp))
                     .background(
                         if (isSelected) {
                             Brush.horizontalGradient(
@@ -572,12 +577,12 @@ private fun TimeframeSelector(
                         }
                     )
                     .clickable { onTimeframeSelected(timeframe) }
-                    .padding(vertical = spacing.sm),
+                    .padding(vertical = 8.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = timeframe.displayName,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.SemiBold,
                     color = if (isSelected) Color.White else colors.textSecondary
                 )
@@ -593,33 +598,33 @@ private fun MetaStatsRow(coinData: CoinDetailData) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 6.dp),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = "Supply · ${formatSupply(coinData.circulatingSupply, coinData.symbol)}",
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.labelSmall,
             color = colors.textSecondary.copy(alpha = 0.7f)
         )
         Text(
             text = "|",
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.labelSmall,
             color = colors.textSecondary.copy(alpha = 0.3f)
         )
         Text(
             text = "ATH · \$${formatPrice(coinData.allTimeHigh)}",
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.labelSmall,
             color = colors.textSecondary.copy(alpha = 0.7f)
         )
         Text(
             text = "|",
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.labelSmall,
             color = colors.textSecondary.copy(alpha = 0.3f)
         )
         Text(
             text = "Rank · #${coinData.marketCapRank}",
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.labelSmall,
             color = colors.textSecondary.copy(alpha = 0.7f)
         )
     }
@@ -630,10 +635,10 @@ private fun StatsGrid(coinData: CoinDetailData) {
     LocalCryptoColors.current
     val spacing = LocalCryptoSpacing.current
     
-    Column(verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
+    Column(verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(spacing.sm)
+            horizontalArrangement = Arrangement.spacedBy(spacing.xs)
         ) {
             EnhancedStatCard(
                 label = "Market Cap",
@@ -670,7 +675,8 @@ private fun EnhancedStatCard(
     
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(24.dp))
+            .height(82.dp) // Fixed compact height
+            .clip(RoundedCornerShape(16.dp))
             .background(colors.cardBackground.copy(alpha = 0.4f))
             .border(
                 width = 1.dp,
@@ -680,32 +686,37 @@ private fun EnhancedStatCard(
                         colors.accentPurple400.copy(alpha = 0.3f)
                     )
                 ),
-                shape = RoundedCornerShape(24.dp)
+                shape = RoundedCornerShape(16.dp)
             )
-            .padding(spacing.lg)
+            .padding(spacing.md)
     ) {
-        Column {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
             Text(
                 text = label,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Medium,
                 color = colors.textTertiary.copy(alpha = 0.8f)
             )
-            Spacer(modifier = Modifier.height(spacing.md))
             val (value, suffix) = formatLargeNumberWithSuffix(value)
-            Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.Start) {
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.Start
+            ) {
                 Text(
                     text = value,
-                    style = if (isPrimary) MaterialTheme.typography.displaySmall else MaterialTheme.typography.headlineLarge,
-                    fontWeight = if (isPrimary) FontWeight.Bold else FontWeight.SemiBold,
-                    color = if (isPrimary) colors.textPrimary else colors.textPrimary.copy(alpha = 0.85f)
+                    style = MaterialTheme.typography.titleLarge, // Same size for both
+                    fontWeight = FontWeight.Bold,
+                    color = colors.textPrimary
                 )
                 Text(
                     text = suffix,
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = colors.textSecondary.copy(alpha = 0.7f),
-                    modifier = Modifier.padding(bottom = 2.dp)
+                    modifier = Modifier.padding(start = 1.dp, bottom = 2.dp)
                 )
             }
         }
@@ -727,7 +738,8 @@ private fun RangeCard(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(24.dp))
+            .height(100.dp) // Fixed compact height
+            .clip(RoundedCornerShape(16.dp))
             .background(colors.cardBackground.copy(alpha = 0.4f))
             .border(
                 width = 1.dp,
@@ -737,24 +749,26 @@ private fun RangeCard(
                         colors.accentPurple400.copy(alpha = 0.3f)
                     )
                 ),
-                shape = RoundedCornerShape(24.dp)
+                shape = RoundedCornerShape(16.dp)
             )
-            .padding(spacing.lg)
+            .padding(spacing.md)
     ) {
-        Column {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
             Text(
                 text = "24h Range",
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Medium,
                 color = colors.textTertiary.copy(alpha = 0.8f)
             )
-            Spacer(modifier = Modifier.height(spacing.lg))
             
             // Range indicator bar with current price dot
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(4.dp)
+                    .height(3.dp)
                     .clip(RoundedCornerShape(2.dp))
                     .background(colors.textSecondary.copy(alpha = 0.15f))
             ) {
@@ -777,13 +791,12 @@ private fun RangeCard(
                     Box(
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
-                            .size(7.dp)
-                            .background(dotColor, RoundedCornerShape(4.dp))
+                            .size(6.dp)
+                            .background(dotColor, RoundedCornerShape(3.dp))
                     )
                 }
             }
             
-            Spacer(modifier = Modifier.height(spacing.sm))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -792,28 +805,26 @@ private fun RangeCard(
                 Column {
                     Text(
                         text = "Low",
-                        style = MaterialTheme.typography.labelMedium,
+                        style = MaterialTheme.typography.labelSmall,
                         color = colors.textSecondary
                     )
-                    Spacer(modifier = Modifier.height(spacing.xs))
                     Text(
                         text = "\$${formatPrice(low)}",
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
                         color = colors.loss.copy(alpha = 0.85f)
                     )
                 }
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
                         text = "High",
-                        style = MaterialTheme.typography.labelMedium,
+                        style = MaterialTheme.typography.labelSmall,
                         color = colors.textSecondary
                     )
-                    Spacer(modifier = Modifier.height(spacing.xs))
                     Text(
                         text = "\$${formatPrice(high)}",
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
                         color = colors.profit.copy(alpha = 0.85f)
                     )
                 }
@@ -831,8 +842,8 @@ private fun PriceAlertButton(onClick: () -> Unit) {
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(42.dp),
-        shape = RoundedCornerShape(12.dp),
+            .height(40.dp),
+        shape = RoundedCornerShape(10.dp),
         border = ButtonDefaults.outlinedButtonBorder(enabled = true).copy(
             brush = Brush.linearGradient(
                 colors = listOf(
@@ -846,12 +857,12 @@ private fun PriceAlertButton(onClick: () -> Unit) {
             painter = painterResource(Res.drawable.material_symbols__notifications_outline),
             contentDescription = null,
             tint = colors.textSecondary,
-            modifier = Modifier.size(18.dp)
+            modifier = Modifier.size(14.dp)
         )
-        Spacer(modifier = Modifier.width(spacing.sm))
+        Spacer(modifier = Modifier.width(spacing.xs))
         Text(
             text = "Set Price Alert",
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Normal,
             color = colors.textSecondary
         )
@@ -872,11 +883,11 @@ private fun HoldingsCard(
         modifier = Modifier
             .fillMaxWidth()
             .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(16.dp),
+                elevation = 6.dp,
+                shape = RoundedCornerShape(14.dp),
                 spotColor = if (isProfit) colors.profit.copy(alpha = 0.2f) else colors.loss.copy(alpha = 0.2f)
             )
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(14.dp))
             .border(
                 width = 1.dp,
                 brush = Brush.linearGradient(
@@ -885,52 +896,18 @@ private fun HoldingsCard(
                         profitLossColor.copy(alpha = 0.1f)
                     )
                 ),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(14.dp)
             )
             .background(colors.cardBackground)
-            .padding(spacing.lg)
+            .padding(spacing.md)
     ) {
         Column {
             Text(
                 text = "Your Holdings",
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 color = colors.textPrimary
             )
-            
-            Spacer(modifier = Modifier.height(spacing.md))
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text(
-                        text = "Amount",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = colors.textSecondary
-                    )
-                    Text(
-                        text = "${formatAmount(holdings.amountOwned)} ${coinData.symbol.uppercase()}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = colors.textPrimary
-                    )
-                }
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        text = "Value",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = colors.textSecondary
-                    )
-                    Text(
-                        text = "\$${formatPrice(holdings.currentValue)}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = colors.textPrimary
-                    )
-                }
-            }
             
             Spacer(modifier = Modifier.height(spacing.sm))
             
@@ -940,25 +917,59 @@ private fun HoldingsCard(
             ) {
                 Column {
                     Text(
+                        text = "Amount",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = colors.textSecondary
+                    )
+                    Text(
+                        text = "${formatAmount(holdings.amountOwned)} ${coinData.symbol.uppercase()}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = colors.textPrimary
+                    )
+                }
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        text = "Value",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = colors.textSecondary
+                    )
+                    Text(
+                        text = "\$${formatPrice(holdings.currentValue)}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = colors.textPrimary
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(spacing.xs))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
                         text = "Avg. Purchase Price",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.labelSmall,
                         color = colors.textSecondary
                     )
                     Text(
                         text = "\$${formatPrice(holdings.averagePurchasePrice)}",
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodySmall,
                         color = colors.textPrimary
                     )
                 }
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
                         text = "Profit/Loss",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.labelSmall,
                         color = colors.textSecondary
                     )
                     Text(
                         text = "${if (isProfit) "+" else ""}\$${formatPrice(abs(holdings.profitLoss))} (${formatDecimal(holdings.profitLossPercentage, 2)}%)",
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.SemiBold,
                         color = profitLossColor
                     )
@@ -987,13 +998,13 @@ private fun ActionButtons(
         Box(
             modifier = Modifier
                 .weight(1f)
-                .height(56.dp)
+                .height(48.dp)
                 .shadow(
-                    elevation = 12.dp,
-                    shape = RoundedCornerShape(16.dp),
+                    elevation = 8.dp,
+                    shape = RoundedCornerShape(14.dp),
                     spotColor = EmeraldStart.copy(alpha = 0.4f)
                 )
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(14.dp))
                 .background(
                     brush = Brush.horizontalGradient(
                         colors = listOf(EmeraldStart, EmeraldEnd)
@@ -1011,14 +1022,14 @@ private fun ActionButtons(
             ) {
                 Text(
                     text = "↗",
-                    fontSize = 15.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White.copy(alpha = 0.75f)
                 )
-                Spacer(modifier = Modifier.width(6.dp))
+                Spacer(modifier = Modifier.width(5.dp))
                 Text(
                     text = "Buy",
-                    fontSize = 18.sp,
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
@@ -1029,12 +1040,12 @@ private fun ActionButtons(
         Box(
             modifier = Modifier
                 .weight(1f)
-                .height(56.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .height(48.dp)
+                .clip(RoundedCornerShape(14.dp))
                 .border(
                     width = 2.dp,
                     color = if (canSell) colors.loss.copy(alpha = 0.5f) else colors.textSecondary.copy(alpha = 0.2f),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(14.dp)
                 )
                 .background(colors.backgroundPrimary)
                 .clickable(enabled = canSell) {
@@ -1049,14 +1060,14 @@ private fun ActionButtons(
             ) {
                 Text(
                     text = "↘",
-                    fontSize = 15.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = (if (canSell) colors.loss else colors.textSecondary).copy(alpha = 0.75f)
                 )
-                Spacer(modifier = Modifier.width(6.dp))
+                Spacer(modifier = Modifier.width(5.dp))
                 Text(
                     text = "Sell",
-                    fontSize = 18.sp,
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = if (canSell) colors.loss else colors.textSecondary
                 )
@@ -1159,6 +1170,41 @@ private fun OfflineBanner(modifier: Modifier = Modifier) {
             color = colors.statusError
         )
     }
+}
+
+
+/**
+ * Auto-sizing price text that adjusts font size to fit on a single line.
+ * Starts at a base size and scales down as needed for longer price strings.
+ */
+@Composable
+private fun AutoSizingPriceText(
+    price: Double,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
+    val priceText = "\$${formatPrice(price)}"
+    
+    // Calculate font size based on string length
+    // Shorter prices (e.g., $97,000) get larger text, longer ones scale down
+    val fontSize = when {
+        priceText.length <= 8 -> 24.sp   // e.g., $97,000
+        priceText.length <= 10 -> 22.sp  // e.g., $100,000.00
+        priceText.length <= 12 -> 20.sp  // e.g., $1,234,567.89
+        priceText.length <= 14 -> 18.sp  // e.g., very long prices
+        else -> 16.sp                     // extremely long prices
+    }
+    
+    Text(
+        text = priceText,
+        style = TextStyle(
+            fontSize = fontSize,
+            fontWeight = FontWeight.Bold
+        ),
+        color = color,
+        maxLines = 1,
+        overflow = TextOverflow.Visible
+    )
 }
 
 
